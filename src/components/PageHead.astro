@@ -27,11 +27,13 @@ const { coordinate, title, lede } = Astro.props;
 </section>
 
 <style>
-  /* Held deliberately tighter than a section band. This is a page's nameplate,
-     not a hero — it should hand the reader down to the content, not occupy a
-     viewport doing it. */
+  /* Held tighter than a section band, and still fluid where the bands are not:
+     this is the one place a phone genuinely wants less than a desktop, because
+     the nameplate is the first thing under the masthead and a phone has no room
+     to spend on it. A page's nameplate, not a hero — it should hand the reader
+     down to the content, not occupy a viewport doing it. */
   .head {
-    padding-block: clamp(var(--space-8), 4.5vw, var(--space-16));
+    padding-block: clamp(var(--space-8), 4.5vw, var(--space-12));
   }
 
   .head__title {

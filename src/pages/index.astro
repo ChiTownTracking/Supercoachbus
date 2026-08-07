@@ -2,16 +2,17 @@
 import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
-import SeatPlan from '../components/SeatPlan.astro';
 import QuickQuote from '../components/QuickQuote.astro';
 import Testimonials from '../components/Testimonials.astro';
 import { BUSINESS, TRUST_CLAIMS } from '../config/site';
-import { FLEET } from '../data/fleet';
+import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
 import { SERVICES } from '../data/services';
 
 import heroCoach from '../assets/images/hero-caoch-bus.png';
 import coachExterior from '../assets/images/coach-exterior.jpg';
-import coachInterior from '../assets/images/coach-interior.png';
+import coachBus44 from '../assets/images/coach-bus-44.png';
+import coachBus28 from '../assets/images/coach-bus-28.png';
+import executiveSprinter from '../assets/images/excutive-sprinter.png';
 import coachInteriorWide from '../assets/images/coach-interior-wide.jpg';
 import chicagoSkyline from '../assets/images/chicago-skyline.png';
 import svcCorporate from '../assets/images/svc-corporate.jpg';
@@ -29,15 +30,42 @@ const SERVICE_IMAGES: Record<string, { src: ImageMetadata; alt: string }> = {
   'youth-groups': { src: svcYouth, alt: 'A youth group on an outing at a park' },
 };
 
-// The fleet is one coach. The old two-vehicle framing is gone rather than
-// backfilled with an invented second option — see the note in data/fleet.ts.
-const coach = FLEET[0];
+/** The bottom of the range the fleet covers, read off the data rather than typed. */
+const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
+
+/**
+ * Fleet card photography, keyed by slug. All four are the operator's own,
+ * supplied by the owner.
+ *
+ * Still keyed rather than held on the vehicle record, and the card still draws
+ * the capacity into the same frame for a slug that is missing here: a fifth
+ * vehicle can arrive before its photograph does, and the answer to that is a
+ * drawn panel, never another vehicle's photograph.
+ */
+const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
+  supercoach: {
+    src: coachExterior,
+    alt: 'The Supercoach bus parked with its luggage bays open',
+  },
+  coach: {
+    src: coachBus44,
+    alt: 'The Coach Bus, a white full-length coach, seen from the front and side',
+  },
+  'small-coach': {
+    src: coachBus28,
+    alt: 'The Small Coach Bus, a white short coach, seen from the front and side',
+  },
+  'executive-sprinter': {
+    src: executiveSprinter,
+    alt: 'The Executive Sprinter Van, a black high-roof Mercedes-Benz Sprinter, seen from the front and side',
+  },
+};
 ---
 
 <Layout
   path="/"
   title="Shuttle Bus Service | Charter Bus Service in Chicago IL"
-  description="Chicago Super Coach — charter bus rental for group transportation. Get a free quote on a 54–57 passenger executive coach with licensed, insured drivers. Call 630-624-3448."
+  description="Chicago Super Coach — charter bus rental for group transportation. Get a free quote on a coach bus or Sprinter van for 13 to 57 passengers, with licensed, insured drivers. Call 630-624-3448."
 >
   <!-- Thesis viewport: the coach carries the proof, the offer runs in one line
        beside it, and the action is in high-vis. The photograph is the ground of
@@ -94,6 +122,73 @@ const coach = FLEET[0];
 
   <QuickQuote />
 
+  <!-- Fleet. Directly under the form, because the question the form raises —
+       "will my group fit?" — is answered here and nowhere earlier.
+       Drawn rather than photographed: there is one real photograph in this
+       building and there are four vehicles, and a fleet grid where one card is a
+       coach and three are hatched boxes is worse than a fleet grid that leads
+       with the number. The bar under each numeral is the same capacity to scale,
+       so the four read as a fleet instead of four repeats. -->
+  <section class="section fleet" id="fleet">
+    <div class="shell">
+      <p class="coordinate coordinate--ink fleet__coord">
+        {FLEET.length} vehicles · {SMALLEST}–{MAX_SINGLE_VEHICLE} passengers
+      </p>
+      <h2 class="title fleet__head">Four sizes, so the group fits the vehicle.</h2>
+      <p class="lede measure fleet__lede">
+        We are not a broker reselling somebody else's bus. This is the vehicle
+        you are quoted and the vehicle that turns up.
+      </p>
+
+      <ul class="fleet__grid">
+        {
+          FLEET.map((v) => {
+            const photo = FLEET_PHOTOS[v.slug];
+            return (
+              <li>
+                <a class="vcard" href={`/fleet#${v.slug}`}>
+                  <span class="vcard__frame">
+                    {photo ? (
+                      <Image
+                        src={photo.src}
+                        alt={photo.alt}
+                        widths={[300, 480, 720]}
+                        sizes="(min-width: 80rem) 18rem, (min-width: 46rem) 44vw, 92vw"
+                      />
+                    ) : (
+                      <span class="vcard__drawn">
+                        <span class="vcard__num">{v.capacityLabel}</span>
+                        <span class="vcard__unit mono">Passengers</span>
+                      </span>
+                    )}
+                  </span>
+
+                  {/* Capacity as length, against the same ceiling for all four,
+                      so the row reads as a fleet to scale. */}
+                  <span
+                    class="vcard__scale"
+                    style={`--of:${Math.round((v.seatsMax / MAX_SINGLE_VEHICLE) * 100)}%`}
+                    aria-hidden="true"
+                  />
+
+                  <span class="vcard__cap mono">
+                    <b class="vcard__capnum">{v.capacityLabel}</b> Passengers
+                  </span>
+                  <span class="vcard__name gothic">{v.name}</span>
+                  <span class="vcard__role">{v.role}</span>
+                  <span class="vcard__more direction">
+                    View details
+                    <Icon name="arrow" size={15} />
+                  </span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+
   <!-- Trust: the answers a school district and a corporate buyer both ask for. -->
   <section class="section--tight trust">
     <div class="shell">
@@ -107,50 +202,6 @@ const coach = FLEET[0];
           ))
         }
       </ul>
-    </div>
-  </section>
-
-  <!-- Fleet -->
-  <section class="section" id="fleet">
-    <div class="shell">
-      <h2 class="title fleet__head">One coach. Every seat accounted for.</h2>
-      <p class="lede measure fleet__lede">
-        We are not a broker reselling somebody else's bus. This is the vehicle
-        you are quoted and the vehicle that turns up.
-      </p>
-
-      <div class="fleet__grid">
-        <figure class="shot shot--tall">
-          <Image
-            src={coachInterior}
-            alt="Interior of the coach: high back leather reclining seats down both sides of the aisle"
-            widths={[520, 840, 1200]}
-            sizes="(min-width: 60rem) 52vw, 92vw"
-          />
-        </figure>
-
-        <div class="fleet__spec">
-          <h3 class="subtitle fleet__name">
-            {coach.capacityLabel} Passenger {coach.name}
-          </h3>
-          <p class="fleet__role">{coach.role}</p>
-          <SeatPlan vehicle={coach} />
-          <ul class="fleet__amenities">
-            {
-              coach.amenities.slice(0, 5).map((a) => (
-                <li>
-                  <Icon name="check" size={15} />
-                  {a}
-                </li>
-              ))
-            }
-          </ul>
-          <a class="direction" href="/fleet">
-            Full specification
-            <Icon name="arrow" size={15} />
-          </a>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -265,7 +316,7 @@ const coach = FLEET[0];
 
     position: relative;
     isolation: isolate;
-    padding-block: clamp(var(--space-12), 6vw, var(--space-24));
+    padding-block: var(--space-12);
     background-color: var(--paper);
     overflow: hidden;
   }
@@ -479,37 +530,11 @@ const coach = FLEET[0];
     flex: none;
   }
 
-  /* ---- Photographs are mounted like sign plates ---- */
-
-  .shot {
-    position: relative;
-    margin: 0;
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--enamel-deep);
-  }
-
-  .shot::after {
-    content: '';
-    position: absolute;
-    inset: 5px;
-    border: 1px solid var(--keyline);
-    border-radius: 1px;
-    pointer-events: none;
-  }
-
-  .shot :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-  }
-
-  .shot--tall :global(img) {
-    aspect-ratio: 4 / 3;
-  }
-
   /* ---- Fleet ---- */
+
+  .fleet__coord {
+    margin-bottom: var(--space-5);
+  }
 
   .fleet__head {
     max-width: 20ch;
@@ -523,46 +548,162 @@ const coach = FLEET[0];
   .fleet__grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-12);
-    align-items: start;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  @media (min-width: 60rem) {
+  @media (min-width: 46rem) {
     .fleet__grid {
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-      gap: var(--space-16);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
-  .fleet__name {
-    margin-bottom: var(--space-3);
+  /* Four across only once there is room for the numeral to stay at display
+     scale. Below that, two-up keeps it a plate rather than a caption. */
+  @media (min-width: 80rem) {
+    .fleet__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
-  .fleet__role {
-    max-width: 42ch;
-    margin-bottom: var(--space-8);
+  .vcard {
+    display: grid;
+    /* frame, scale, capacity, name, role, link. The role takes the slack so the
+       four links sit on one line across the row however the names wrap. */
+    grid-template-rows: auto auto auto auto 1fr auto;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Mounted like a sign plate: 3px corners, a scribed keyline a few millimetres
+     in, an enamel-deep backing, no shadow. Same treatment the /fleet shots and
+     the service rows carry. */
+  .vcard__frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .vcard__frame::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  /* 16:10 rather than 3:2. The vehicle photographs run from 1.5:1 to 2:1, and
+     at 3:2 `cover` took 12.5% off each side of the widest one — which is exactly
+     where the front bumper and the tail are. This frame crops all four inside
+     their own margins. */
+  .vcard__frame :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform 320ms var(--ease-out);
+  }
+
+  /* The same frame with the capacity drawn in it, for a vehicle we have not
+     photographed. It fills the identical box, so a row of four is a row of four
+     whether or not the photographs have arrived. */
+  .vcard__drawn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    aspect-ratio: 16 / 10;
+    padding: var(--space-6);
+    background-image: var(--enamel-pattern);
+    color: var(--signal);
+  }
+
+  .vcard__num {
+    display: block;
+    font-size: clamp(2.25rem, 4vw, 3rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vcard__unit {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--signal-dim);
+  }
+
+  /* Capacity as length. Every bar in the row is drawn against the same ceiling,
+     so the four together are the fleet to scale — the one thing four numbers
+     side by side do not tell you at a glance. */
+  .vcard__scale {
+    display: block;
+    width: var(--of);
+    height: 3px;
+    margin-top: var(--space-4);
+    background: var(--enamel);
+  }
+
+  .vcard__cap {
+    margin-top: var(--space-4);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
     color: var(--ink-dim);
   }
 
-  .fleet__amenities {
-    display: grid;
-    gap: var(--space-3);
-    margin: var(--space-8) 0;
-    padding: 0;
-    list-style: none;
+  .vcard__capnum {
     font-size: 0.9375rem;
-  }
-
-  .fleet__amenities li {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-3);
-  }
-
-  .fleet__amenities :global(svg) {
-    flex: none;
-    margin-top: 4px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
     color: var(--enamel);
+  }
+
+  .vcard__name {
+    margin-top: var(--space-2);
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .vcard__role {
+    margin-top: var(--space-3);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
+  }
+
+  .vcard__more {
+    margin-top: var(--space-5);
+    align-self: end;
+    justify-self: start;
+  }
+
+  /* The photograph pushes in slightly under the cursor. The frame clips it, so
+     the mount stays exactly where it was and only the image moves. */
+  .vcard:hover .vcard__frame :global(img) {
+    transform: scale(1.03);
+  }
+
+  /* The card is one link, so the ring belongs to the card and not to the phrase
+     inside it that happens to be focusable-looking. */
+  .vcard:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 4px;
+    border-radius: 1px;
   }
 
   /* ---- Services ---- */
@@ -725,7 +866,7 @@ const coach = FLEET[0];
   /* ---- Close ---- */
 
   .close {
-    padding-block: clamp(var(--space-16), 8vw, var(--space-24));
+    padding-block: var(--space-12);
   }
 
   .close__inner {

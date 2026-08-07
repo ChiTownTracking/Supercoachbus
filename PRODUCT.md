@@ -29,7 +29,7 @@ Success is a qualified inbound quote request: one that carries date, headcount, 
 
 ## Positioning
 
-An owner-operated Chicago charter company that drives its own coach — not a broker. The specificity is the position: one 54–57 passenger executive coach, named and photographed, is the vehicle quoted and the vehicle that arrives. A caller gets the actual operator, and the actual bus they were quoted.
+An owner-operated Chicago charter company that drives its own buses — not a broker. The specificity is the position: four named vehicles with published capacities, from a 13–16 passenger Sprinter van to a 50–57 passenger Supercoach, and the one quoted is the one that arrives. A caller gets the actual operator, and the actual bus they were quoted.
 
 Distinct from sister brand **ChiTown Trolley**, which sells an occasion (weddings, holiday trolleys, celebration). Chicago Super Coach sells logistics: capacity, schedule, compliance, arrival. Same company, same trust signals, different buyer intent — the sites must not read as templated from each other.
 
@@ -45,12 +45,16 @@ Distinct from sister brand **ChiTown Trolley**, which sells an occasion (wedding
 ## Capabilities and Constraints
 
 - **Confirmed services:** Corporate Charter, School Shuttle Transportation, Chicago Sporting Event Charters, Wedding Transportation, Youth Group Transportation.
-- **Confirmed fleet** (verified against the live site, confirmed current by the owner):
-  - **54–57 Passenger Executive Coach Bus** — high back leather reclining seats, laminate wood floors, overhead luggage space, undercarriage luggage on request, premium sound system, TV/DVD/CD/iPod connections, seatbelts on all seats, USB charging port at every seat.
-  - **Coach-bus only.** The 13 passenger Executive Sprinter Shuttle was removed from the site at the owner's direction; this is a coach-bus operation. **OPEN QUESTION: does the real fleet run more than one coach size or capacity?** If it does, those coaches belong in `src/data/fleet.ts` and in the homepage fleet section. Until answered, one vehicle is the honest answer — no second option is to be invented to balance a layout.
+- **Confirmed fleet** — four vehicles, supplied by the owner on 7 Aug 2026 and used exactly as given; the ranges below are the owner's same-day revision of the first set and supersede it. This closed the open question that stood through the rebuild. They live in `src/data/fleet.ts`, which is the single source for the fleet grid, `/fleet`, both forms' option lists, and the destination blade's recommendation.
+  - **Supercoach Bus** — 50–57 passengers.
+  - **Coach Bus** — 39–44 passengers.
+  - **Small Coach Bus** — 22–28 passengers.
+  - **Executive Sprinter Van** — 13–16 passengers.
+  - **Amenities are confirmed for one vehicle only:** high back leather reclining seats, laminate wood floors, overhead luggage space, undercarriage luggage on request, premium sound system, TV/DVD/CD/iPod connections, seatbelts on all seats, USB charging port at every seat. These were verified against the live site's fleet page when it listed a single "54–57 passenger" coach, and are now attached to the Supercoach on the assumption that it is that same vehicle renamed and re-ranged. **Confirm this.** The other three carry no amenity list and no seating plan rather than an invented one.
+  - **Photography (resolved):** the owner supplied exteriors for the other three on 7 Aug 2026 — `coach-bus-44.png`, `coach-bus-28.png`, `excutive-sprinter.png`. All four vehicles now carry their own photograph in the fleet grid and on `/fleet`. Bodies are unbranded; only manufacturer badges (Freightliner, Ford, Mercedes-Benz) and one small dealer plate in the 28-seater's front plate holder are visible, all illegible at render size. Interiors still exist only for the Supercoach. This replaced an earlier search of licensed stock (Wikimedia Commons, Pexels) that was rejected outright: every usable exterior carried a competitor's livery, a manufacturer model script, or a legible plate.
 - **Hours (resolved):** office staffed Mon–Sun 9:00 am – 5:00 pm; charters operate 24/7. Both claims are true and must be stated together — the live site's unqualified "24 hours a day" on About contradicted the 9–5 footer.
 - **Canonical domain (resolved):** `chicagosupercoachbus.com`. The contact email remains `@chicagosupercoach.com`; the mismatch is cosmetic and intentional, kept because the ranking equity lives on the `bus` domain. Canonical origin is a single constant in `src/config/site.ts`.
-- **Not confirmed — must not be invented:** pricing, years in business, fleet size beyond the single coach above, driver headcount, insurance carrier or coverage amounts, USDOT/MC numbers, awards, certifications, customer volume.
+- **Not confirmed — must not be invented:** pricing, years in business, vehicle counts (the fleet lists four *sizes*, not four *buses* — how many of each is unknown and must never be implied), amenities or seating plans for the three vehicles below the Supercoach, driver headcount, insurance carrier or coverage amounts, USDOT/MC numbers, awards, certifications, customer volume.
 - The old site's "Thousands of people throughout Chicago" is unverified agency copy and is not carried forward.
 
 ## Brand Commitments

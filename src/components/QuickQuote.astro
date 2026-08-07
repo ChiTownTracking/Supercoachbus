@@ -34,13 +34,7 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
 
 <section class="qq" id="quote-form">
   <div class="shell qq__inner">
-    <div class="qq__intro">
-      <h2 class="title qq__head">Tell us the trip. We'll price it.</h2>
-      <p class="qq__sub">
-        Everything we need in one pass — or call
-        <a href={BUSINESS.phone.href}>{BUSINESS.phone.display}</a>, office {BUSINESS.hours.officeSummary}.
-      </p>
-    </div>
+    <h2 class="title qq__head">Tell us the trip. We'll price it.</h2>
 
     <form class="qq__form" method="get" action="/reserve" data-quick-quote data-endpoint="">
       <fieldset class="qq__set">
@@ -193,7 +187,7 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
 
 <style>
   .qq {
-    padding-block: clamp(var(--space-12), 6vw, var(--space-24));
+    padding-block: var(--space-12);
     border-bottom: 1px solid var(--paper-line);
     /* Clears the fixed header when anything links to #quote-form. */
     scroll-margin-top: 6rem;
@@ -204,38 +198,8 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
     gap: var(--space-8);
   }
 
-  .qq__intro {
-    display: grid;
-    gap: var(--space-3);
-  }
-
-  @media (min-width: 56rem) {
-    .qq__intro {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 0.75fr);
-      gap: var(--space-8);
-      align-items: end;
-    }
-
-    .qq__sub {
-      padding-bottom: 0.45em;
-      text-align: right;
-    }
-  }
-
   .qq__head {
     max-width: 20ch;
-  }
-
-  .qq__sub {
-    font-size: 0.9375rem;
-    line-height: 1.55;
-    color: var(--ink-dim);
-  }
-
-  .qq__sub a {
-    font-weight: 700;
-    color: var(--ink);
-    white-space: nowrap;
   }
 
   /* ---- Fields ---- */
@@ -715,9 +679,15 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
       out.when.textContent = departure(field('date')?.value ?? '', field('time')?.value ?? '');
 
       const { name, detail } = recommendVehicle(count);
+
+      // The detail is a function of the headcount, not only of the vehicle: two
+      // counts inside one vehicle's range can read differently. It updates every
+      // time. Only the name gates the roll, because re-rolling a line that has
+      // not changed is motion for its own sake.
+      out.detail.textContent = detail;
+
       if (name !== lastVehicle) {
         out.vehicle.textContent = name;
-        out.detail.textContent = detail;
         // Restart the roll.
         out.vehicle.removeAttribute('data-rolling');
         void out.vehicle.offsetWidth;

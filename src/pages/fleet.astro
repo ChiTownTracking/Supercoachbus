@@ -4,21 +4,48 @@ import PageHead from '../components/PageHead.astro';
 import SeatPlan from '../components/SeatPlan.astro';
 import Icon from '../components/Icon.astro';
 import { Image } from 'astro:assets';
-import { FLEET } from '../data/fleet';
+import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
 import { BUSINESS } from '../config/site';
 import coachExterior from '../assets/images/coach-exterior.jpg';
 import coachInterior from '../assets/images/coach-interior.png';
+import coachBus44 from '../assets/images/coach-bus-44.png';
+import coachBus28 from '../assets/images/coach-bus-28.png';
+import executiveSprinter from '../assets/images/excutive-sprinter.png';
+
+/**
+ * Every vehicle's own photography, keyed by slug. The Supercoach carries two
+ * frames because an interior exists for it; the rest carry one. A slug with no
+ * entry falls back to the drawn capacity below rather than borrowing another
+ * vehicle's photograph.
+ */
+const SHOTS: Record<string, { src: ImageMetadata; alt: string }[]> = {
+  supercoach: [
+    { src: coachExterior, alt: 'The Supercoach bus, luggage bays open' },
+    { src: coachInterior, alt: 'Interior of the Supercoach: high back leather reclining seats down both sides of the aisle' },
+  ],
+  coach: [
+    { src: coachBus44, alt: 'The Coach Bus, a white full-length coach, seen from the front and side' },
+  ],
+  'small-coach': [
+    { src: coachBus28, alt: 'The Small Coach Bus, a white short coach, seen from the front and side' },
+  ],
+  'executive-sprinter': [
+    { src: executiveSprinter, alt: 'The Executive Sprinter Van, a black high-roof Mercedes-Benz Sprinter, seen from the front and side' },
+  ],
+};
+
+const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 ---
 
 <Layout
   path="/fleet"
   title="Charter Coach, Shuttle Bus Rentals Chicago | Fleet"
-  description="The Chicago Super Coach fleet: a 54–57 passenger executive coach bus with high back leather reclining seats, USB charging at every seat and seatbelts on all seats."
+  description="The Chicago Super Coach fleet: Supercoach Bus 50–57, Coach Bus 39–44, Small Coach Bus 22–28 and Executive Sprinter Van 13–16 passengers. Chicago charter bus rental."
 >
   <PageHead
-    coordinate="54–57 passengers"
-    title="One coach, specified in full."
-    lede="Capacity is the number that decides a charter, so it leads. Everything below is what is actually in the vehicle you would be quoted."
+    coordinate={`${SMALLEST}–${MAX_SINGLE_VEHICLE} passengers`}
+    title="Four vehicles, by the number that decides."
+    lede="Capacity is what decides a charter, so it leads. Pick the size that fits the group and we will confirm the exact seat count when we quote."
   />
 
   <div class="section">
@@ -27,13 +54,21 @@ import coachInterior from '../assets/images/coach-interior.png';
         FLEET.map((v) => (
           <article class="v" id={v.slug}>
             <div class="v__figure">
-              <figure class="v__shot">
-                <Image src={coachExterior} alt="The Chicago Super Coach executive coach bus, luggage bays open" widths={[420, 720, 1028]} sizes="(min-width: 60rem) 44vw, 92vw" />
-              </figure>
-              <figure class="v__shot">
-                <Image src={coachInterior} alt="Interior of the executive coach: high back leather reclining seats down both sides of the aisle" widths={[420, 720, 1028]} sizes="(min-width: 60rem) 44vw, 92vw" />
-              </figure>
-              <SeatPlan vehicle={v} />
+              {(SHOTS[v.slug] ?? []).map((shot) => (
+                <figure class="v__shot">
+                  <Image src={shot.src} alt={shot.alt} widths={[420, 720, 1028]} sizes="(min-width: 60rem) 44vw, 92vw" />
+                </figure>
+              ))}
+              {v.layout && <SeatPlan vehicle={v} />}
+              {/* Neither a photograph nor a seating plan yet. The capacity is
+                  drawn instead — the one thing about this vehicle that is
+                  confirmed — rather than padding the column with a stand-in. */}
+              {!SHOTS[v.slug] && !v.layout && (
+                <p class="v__only">
+                  <span class="v__onlynum">{v.capacityLabel}</span>
+                  <span class="v__onlyunit mono">passengers</span>
+                </p>
+              )}
             </div>
 
             <div class="v__body">
@@ -43,15 +78,19 @@ import coachInterior from '../assets/images/coach-interior.png';
               </p>
               <p class="lede v__role">{v.role}</p>
 
-              <h3 class="v__subhead mono">On board</h3>
-              <ul class="v__amenities">
-                {v.amenities.map((a) => (
-                  <li>
-                    <Icon name="check" size={15} />
-                    {a}
-                  </li>
-                ))}
-              </ul>
+              {v.amenities.length > 0 && (
+                <Fragment>
+                  <h3 class="v__subhead mono">On board</h3>
+                  <ul class="v__amenities">
+                    {v.amenities.map((a) => (
+                      <li>
+                        <Icon name="check" size={15} />
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                </Fragment>
+              )}
 
               <div class="v__actions">
                 <a class="action" href="/#quote-form">
@@ -72,11 +111,12 @@ import coachInterior from '../assets/images/coach-interior.png';
 
   <section class="section--tight field field--deep note">
     <div class="shell">
-      <h2 class="subtitle note__head">More than 57 passengers?</h2>
+      <h2 class="subtitle note__head">More than {MAX_SINGLE_VEHICLE} passengers?</h2>
       <p class="lede note__body">
-        Groups above a single coach are handled case by case. Call us with the
-        headcount and date and we will confirm what we can run — we would rather
-        tell you plainly than promise a fleet size we have not committed to you.
+        Groups above a single Supercoach are handled case by case. Call us with
+        the headcount and date and we will confirm what we can run — we would
+        rather tell you plainly than promise a fleet size we have not committed
+        to you.
       </p>
       <a class="action" href="/#quote-form">
         Start a quote
@@ -89,7 +129,7 @@ import coachInterior from '../assets/images/coach-interior.png';
 <style>
   .vehicles {
     display: grid;
-    gap: clamp(var(--space-16), 10vw, var(--space-32));
+    gap: clamp(var(--space-12), 10vw, var(--space-16));
   }
 
   .v {
@@ -138,6 +178,38 @@ import coachInterior from '../assets/images/coach-interior.png';
     height: auto;
     aspect-ratio: 3 / 2;
     object-fit: cover;
+  }
+
+  /* The capacity standing on its own, for a vehicle with neither a photograph
+     nor a plan. Set at the scale a photograph would have occupied so the row
+     still has a left-hand weight to it. */
+  .v__only {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-8) var(--space-6);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    background: var(--paper-lift);
+  }
+
+  .v__onlynum {
+    font-size: clamp(3.25rem, 8vw, 5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--enamel);
+  }
+
+  .v__onlyunit {
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
   }
 
   .v__name {

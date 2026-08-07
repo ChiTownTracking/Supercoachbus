@@ -61,8 +61,25 @@ export const OPEN_ITEMS = {
   // src/assets/images/. Still worth reshooting at higher resolution when
   // convenient, but no longer an unresolved item.
   //
-  // fleet.photo.sprinter — REMOVED along with the Sprinter itself. This is a
-  // coach-bus-only operation.
+  // fleet.sizes — RESOLVED 7 Aug 2026. The owner supplied all four vehicles and
+  // their passenger counts; they are in src/data/fleet.ts exactly as given.
+  //
+  // fleet.photos — RESOLVED. The owner supplied coach-bus-44.png,
+  // coach-bus-28.png and excutive-sprinter.png; all four vehicles now carry
+  // their own exterior in the fleet grid and on /fleet. The drawn-capacity
+  // fallback stays in both, because a fifth vehicle can arrive before its
+  // photograph does. Interiors still exist only for the Supercoach.
+  //
+  // The one below is why three of the four /fleet entries carry no "On board"
+  // list. It ships no visible marker, because it ships nothing at all — an
+  // absent block is honest, an invented one is not, and a hatched box on a live
+  // page is neither. It is declared here so the manifest still asks for it.
+  fleetSpecs: todo(
+    'fleet.specs',
+    'fact',
+    'On-board specification for the three vehicles below the Supercoach',
+    'Seating, luggage, power and entertainment for the Coach Bus, Small Coach Bus and Executive Sprinter Van, plus confirmation that the Supercoach Bus is the coach the old site listed at 54–57 with the amenity list now attached to it.'
+  ),
   // brand.logo — RESOLVED. The owner supplied src/assets/images/logo.png, now
   // used in the header and footer. A vector version would still be preferable
   // for very large renderings, but the raster is sufficient at every size the

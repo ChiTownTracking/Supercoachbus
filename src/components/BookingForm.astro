@@ -527,9 +527,14 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
 
       const { name, detail } = recommendVehicle(count);
 
+      // The detail is a function of the headcount, not only of the vehicle: two
+      // counts inside one vehicle's range can read differently. It updates every
+      // time. Only the name gates the roll, because re-rolling a line that has
+      // not changed is motion for its own sake.
+      out.detail.textContent = detail;
+
       if (name !== lastVehicle) {
         out.vehicle.textContent = name;
-        out.detail.textContent = detail;
         // Restart the roll animation.
         out.vehicle.removeAttribute('data-rolling');
         void out.vehicle.offsetWidth;

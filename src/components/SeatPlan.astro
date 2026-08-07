@@ -12,14 +12,25 @@ interface Props {
 }
 
 const { vehicle } = Astro.props;
-const { rows, leftPerRow, rightPerRow } = vehicle.layout;
+
+/**
+ * A vehicle whose row arrangement was never supplied gets no plan. Deriving one
+ * from the passenger count would draw a specification nobody confirmed, which is
+ * exactly what this build refuses to do — callers render this only when there is
+ * something real to draw, and this guard is the backstop.
+ */
+const { rows, leftPerRow, rightPerRow } = vehicle.layout ?? {
+  rows: 0,
+  leftPerRow: 0,
+  rightPerRow: 0,
+};
 
 const SEAT = 13;
 const GAP = 4;
 const AISLE = 12;
 const NOSE = 26;
 
-const planWidth = (v: Vehicle) => NOSE + v.layout.rows * (SEAT + GAP) + 10;
+const planWidth = (v: Vehicle) => NOSE + (v.layout?.rows ?? 0) * (SEAT + GAP) + 10;
 
 const cols = leftPerRow + rightPerRow;
 const width = planWidth(vehicle);
@@ -31,7 +42,7 @@ const height = cols * (SEAT + GAP) + AISLE + 16;
  * its column would draw the smaller vehicle with the larger seats — the exact
  * opposite of what the diagram is for.
  */
-const widest = Math.max(...FLEET.map(planWidth));
+const widest = Math.max(...FLEET.filter((v) => v.layout).map(planWidth));
 
 /**
  * A px ceiling, not a percentage. A percentage width on an SVG inside an

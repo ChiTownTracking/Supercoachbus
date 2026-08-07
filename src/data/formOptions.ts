@@ -39,9 +39,9 @@ export const EVENT_TYPES = [
 export const HOURS = [...Array(12)].map((_, i) => (i === 11 ? '12+' : String(i + 1)));
 
 /**
- * Headcounts. The list runs to the real single-coach ceiling and then offers one
- * honest overflow option — it does not enumerate a fleet size nobody has
- * confirmed. See the open question at the top of data/fleet.ts.
+ * Headcounts. The list runs to the largest single vehicle in the fleet and then
+ * offers one honest overflow option — it does not enumerate a convoy size nobody
+ * has confirmed.
  */
 export const PASSENGER_OPTIONS = [
   ...[...Array(MAX_SINGLE_VEHICLE)].map((_, i) => String(i + 1)),
@@ -51,11 +51,11 @@ export const PASSENGER_OPTIONS = [
 /**
  * Vehicle, asked as a preference rather than a requirement.
  *
- * The fleet is one coach, so this cannot be a real choice between vehicles — the
- * default is deliberately "recommend one", which is the answer most groups
- * actually have. What the field is worth capturing for is the difference between
- * an organizer who has already decided and one who has not; the blade still
- * states the vehicle from the headcount either way.
+ * With four sizes this is now a real choice, but the default stays "Not sure
+ * yet" — it is the honest answer for most organizers, and it is the operator's
+ * job to size the vehicle, not the visitor's. The blade states the vehicle the
+ * headcount fits regardless of what is picked here, so a preference can never
+ * make the page promise a bus the group does not fit in.
  */
 export const VEHICLE_OPTIONS: { value: string; label: string }[] = [
   // Plain language, and short enough to survive a narrow select on a phone
@@ -65,5 +65,5 @@ export const VEHICLE_OPTIONS: { value: string; label: string }[] = [
     value: v.slug,
     label: `${v.name} (${v.capacityLabel} passengers)`,
   })),
-  { value: 'more-than-one', label: `More than one coach (over ${MAX_SINGLE_VEHICLE})` },
+  { value: 'more-than-one', label: `More than one vehicle (over ${MAX_SINGLE_VEHICLE})` },
 ];

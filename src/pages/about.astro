@@ -6,17 +6,21 @@ import Testimonials from '../components/Testimonials.astro';
 import Icon from '../components/Icon.astro';
 import { BUSINESS, TRUST_CLAIMS } from '../config/site';
 import { OPEN_ITEMS } from '../lib/placeholder';
+import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
+
+/** Read off the fleet data so this line cannot drift from the fleet page. */
+const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 ---
 
 <Layout
   path="/about"
   title="Charter Coach Bus Rental Services | About Us"
-  description="Chicago Super Coach is a Chicago charter bus operator running its own 54–57 passenger executive coach, with licensed, insured and drug-tested drivers. Based at 3717 W. Montrose Avenue."
+  description="Chicago Super Coach is a Chicago charter bus operator running its own coaches for 13 to 57 passengers, with licensed, insured and drug-tested drivers. Based at 3717 W. Montrose Avenue."
 >
   <PageHead
     coordinate="3717 W. Montrose Avenue · Chicago"
     title="We drive our own buses."
-    lede="Chicago Super Coach operates from 3717 W. Montrose Avenue with its own coach and drivers who work for us."
+    lede="Chicago Super Coach operates from 3717 W. Montrose Avenue with its own vehicles and drivers who work for us."
   />
 
   <div class="section">
@@ -29,10 +33,10 @@ import { OPEN_ITEMS } from '../lib/placeholder';
           with a driver nobody vetted.
         </p>
         <p class="about__p">
-          We are not that. The 54–57 passenger executive coach on our fleet page
-          is the vehicle you are quoted and the vehicle that turns up. Our
-          drivers are licensed and experienced, insured, and drug tested, and the
-          coach is maintained on a regular schedule.
+          We are not that. The vehicle on our fleet page is the vehicle you are
+          quoted and the vehicle that turns up. Our drivers are licensed and
+          experienced, insured, and drug tested, and the buses are maintained on
+          a regular schedule.
         </p>
         <p class="about__p">
           It also means the person you speak to can actually answer you. When a
@@ -63,7 +67,10 @@ import { OPEN_ITEMS } from '../lib/placeholder';
           </div>
           <div class="fact">
             <dt>Fleet</dt>
-            <dd>Executive coach bus, 54–57 passengers</dd>
+            <dd>
+              {FLEET.length} vehicles, {SMALLEST} to {MAX_SINGLE_VEHICLE} passengers —
+              <a href="/fleet">see the fleet</a>
+            </dd>
           </div>
         </dl>
       </aside>

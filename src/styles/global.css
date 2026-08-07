@@ -480,12 +480,18 @@ svg {
   color: var(--hivis-text);
 }
 
+/* Band rhythm. These were fluid — a clamp whose ceiling was the desktop value
+   and whose floor was the phone value — and the ceilings came down the ramp
+   twice. On the second pass each ceiling met its own floor, so the clamps are
+   written as the constants they had become: one number, the same at every width,
+   which is what a band's padding turned out to want to be. Phones never moved
+   through either pass; both reductions were spent entirely on desktop. */
 .section {
-  padding-block: clamp(var(--space-16), 9vw, var(--space-32));
+  padding-block: var(--space-16);
 }
 
 .section--tight {
-  padding-block: clamp(var(--space-12), 6vw, var(--space-24));
+  padding-block: var(--space-12);
 }
 
 .skip {
