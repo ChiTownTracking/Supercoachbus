@@ -1,0 +1,109 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import { BUSINESS, FOOTER_NAV } from '../config/site';
+---
+
+<Layout
+  path="/404"
+  title="Page not found | Chicago Super Coach"
+  description="That page has moved. Find the fleet, services, quotes and contact details for Chicago Super Coach."
+  noindex
+>
+  <section class="nf field">
+    <div class="shell">
+      <h1 class="display nf__head">This stop no longer exists.</h1>
+      <p class="lede nf__lede">
+        We rebuilt this site and some old addresses changed. Everything below is
+        still here — or call {BUSINESS.phone.display} and we will point you at it.
+      </p>
+
+      <ul class="nf__list">
+        {
+          FOOTER_NAV.map((i) => (
+            <li>
+              <a class="nf__link" href={i.href}>
+                {i.label}
+                <Icon name="arrow" size={16} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="nf__actions">
+        <a class="action" href="/#quote-form">
+          Get a quote
+          <Icon name="arrow" size={16} />
+        </a>
+        <a class="action action--ghost" href={BUSINESS.phone.href}>
+          <Icon name="phone" size={16} />
+          {BUSINESS.phone.display}
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .nf {
+    padding-block: clamp(var(--space-16), 10vw, var(--space-32));
+  }
+
+  .nf__head {
+    max-width: 16ch;
+    margin-bottom: var(--space-6);
+  }
+
+  .nf__lede {
+    max-width: 48ch;
+    margin-bottom: var(--space-12);
+  }
+
+  .nf__list {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-12);
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    max-width: 46rem;
+  }
+
+  .nf__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--enamel-line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--signal);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    transition:
+      border-color 200ms var(--ease-out),
+      background 200ms var(--ease-out);
+  }
+
+  .nf__link:hover {
+    border-color: var(--hivis);
+    background: rgb(255 255 255 / 0.06);
+  }
+
+  .nf__link :global(svg) {
+    color: var(--signal-dim);
+    flex: none;
+  }
+
+  .nf__link:hover :global(svg) {
+    color: var(--hivis);
+  }
+
+  .nf__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import Icon from '../../components/Icon.astro';
+import { SERVICES } from '../../data/services';
+---
+
+<Layout
+  path="/services"
+  title="Chicago Group Transportation | Charter & Shuttle Services"
+  description="Charter bus and shuttle services in Chicago: corporate transportation, school shuttles, sporting events, weddings and youth groups. Licensed, insured drivers. Call 630-624-3448."
+>
+  <PageHead
+    title="Five jobs, five different worries."
+    lede="A conference shuttle and a school field trip are not the same booking. Each of these pages answers what that particular buyer actually asks us."
+  />
+
+  <div class="section">
+    <div class="shell">
+      <ul class="svc__list">
+        {
+          SERVICES.map((s) => (
+            <li>
+              <a class="svc" href={`/services/${s.slug}`} id={s.slug}>
+                <span class="svc__dest mono">{s.destination}</span>
+                <span class="svc__name">{s.name}</span>
+                <span class="svc__prop">{s.proposition}</span>
+                <span class="svc__go">
+                  <Icon name="arrow" size={20} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // The old site put three services on anchors of one page rather than on their
+  // own URLs. A server-side 301 never sees a fragment, so those inbound links
+  // are resolved here instead — otherwise years of deep links land on a hub page
+  // with no idea which service the visitor wanted.
+  import { HASH_REDIRECTS } from '../../data/redirects';
+
+  const hash = window.location.hash.slice(1);
+  const target = HASH_REDIRECTS[hash];
+  if (target) {
+    window.location.replace(target);
+  }
+</script>
+
+<style>
+  .svc__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .svc {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-3) var(--space-8);
+    padding: var(--space-8) 0;
+    border-bottom: 1px solid var(--paper-line);
+    text-decoration: none;
+    color: var(--ink);
+    scroll-margin-top: 6rem;
+    transition:
+      padding-inline 240ms var(--ease-out),
+      background 240ms var(--ease-out);
+  }
+
+  .svc:hover {
+    padding-inline: var(--space-5);
+    background: var(--paper-lift);
+  }
+
+  .svc__dest {
+    grid-row: 1 / span 2;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    align-self: start;
+    padding-top: 0.4em;
+  }
+
+  .svc__name {
+    font-size: clamp(1.5rem, 3.4vw, 2.25rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .svc__prop {
+    grid-column: 2;
+    max-width: 56ch;
+    color: var(--ink-dim);
+    line-height: 1.55;
+  }
+
+  .svc__go {
+    grid-row: 1 / span 2;
+    grid-column: 3;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius);
+    background: var(--enamel);
+    color: var(--signal);
+    transition: background 200ms var(--ease-out);
+  }
+
+  .svc:hover .svc__go {
+    background: var(--hivis);
+    color: var(--hivis-ink);
+  }
+
+  @media (max-width: 52rem) {
+    .svc {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-2) var(--space-4);
+    }
+    .svc__dest {
+      grid-row: 1;
+      grid-column: 1 / -1;
+      padding-top: 0;
+    }
+    .svc__name {
+      grid-row: 2;
+      grid-column: 1;
+    }
+    .svc__prop {
+      grid-row: 3;
+      grid-column: 1 / -1;
+    }
+    .svc__go {
+      grid-row: 2;
+      grid-column: 2;
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+  }
+</style>

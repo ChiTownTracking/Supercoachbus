@@ -1,0 +1,640 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "title": "Design System: Chicago Super Coach",
+  "extensions": {
+    "colorMeta": {
+      "enamel": {
+        "role": "primary",
+        "displayName": "Porcelain Enamel Green",
+        "canonical": "#0e3b2a",
+        "tonalRamp": [
+          "oklch(15% 0.045 160)",
+          "oklch(25% 0.055 160)",
+          "oklch(33% 0.060 160)",
+          "oklch(45% 0.062 160)",
+          "oklch(58% 0.058 160)",
+          "oklch(72% 0.048 160)",
+          "oklch(85% 0.030 160)",
+          "oklch(95% 0.014 160)"
+        ]
+      },
+      "enamel-deep": {
+        "role": "primary",
+        "displayName": "Enamel Deep",
+        "canonical": "#07241a",
+        "tonalRamp": [
+          "oklch(12% 0.040 160)",
+          "oklch(20% 0.050 160)",
+          "oklch(30% 0.056 160)",
+          "oklch(42% 0.058 160)",
+          "oklch(55% 0.054 160)",
+          "oklch(70% 0.044 160)",
+          "oklch(84% 0.028 160)",
+          "oklch(95% 0.013 160)"
+        ]
+      },
+      "enamel-lift": {
+        "role": "primary",
+        "displayName": "Enamel Lift",
+        "canonical": "#17553c",
+        "tonalRamp": [
+          "oklch(16% 0.048 160)",
+          "oklch(26% 0.060 160)",
+          "oklch(36% 0.068 160)",
+          "oklch(48% 0.070 160)",
+          "oklch(60% 0.064 160)",
+          "oklch(73% 0.050 160)",
+          "oklch(86% 0.032 160)",
+          "oklch(95% 0.015 160)"
+        ]
+      },
+      "enamel-line": {
+        "role": "primary",
+        "displayName": "Enamel Line",
+        "canonical": "#2f6e52",
+        "tonalRamp": [
+          "oklch(18% 0.045 160)",
+          "oklch(28% 0.058 160)",
+          "oklch(40% 0.066 160)",
+          "oklch(51% 0.068 160)",
+          "oklch(63% 0.060 160)",
+          "oklch(75% 0.047 160)",
+          "oklch(87% 0.030 160)",
+          "oklch(96% 0.014 160)"
+        ]
+      },
+      "hivis": {
+        "role": "secondary",
+        "displayName": "High-Visibility Amber",
+        "canonical": "#ffb100",
+        "tonalRamp": [
+          "oklch(20% 0.070 75)",
+          "oklch(32% 0.100 75)",
+          "oklch(45% 0.130 75)",
+          "oklch(58% 0.155 75)",
+          "oklch(70% 0.170 75)",
+          "oklch(80% 0.160 75)",
+          "oklch(89% 0.110 75)",
+          "oklch(96% 0.045 75)"
+        ]
+      },
+      "hivis-lift": {
+        "role": "secondary",
+        "displayName": "Amber Lift",
+        "canonical": "#ffc233",
+        "tonalRamp": [
+          "oklch(20% 0.065 78)",
+          "oklch(33% 0.095 78)",
+          "oklch(46% 0.125 78)",
+          "oklch(59% 0.148 78)",
+          "oklch(72% 0.160 78)",
+          "oklch(82% 0.145 78)",
+          "oklch(90% 0.100 78)",
+          "oklch(97% 0.040 78)"
+        ]
+      },
+      "hivis-deep": {
+        "role": "secondary",
+        "displayName": "Amber Deep",
+        "canonical": "#d68f00",
+        "tonalRamp": [
+          "oklch(18% 0.065 72)",
+          "oklch(29% 0.092 72)",
+          "oklch(41% 0.120 72)",
+          "oklch(53% 0.140 72)",
+          "oklch(65% 0.148 72)",
+          "oklch(77% 0.135 72)",
+          "oklch(88% 0.095 72)",
+          "oklch(96% 0.040 72)"
+        ]
+      },
+      "hivis-ink": {
+        "role": "secondary",
+        "displayName": "Amber Ink",
+        "canonical": "#241800",
+        "tonalRamp": [
+          "oklch(12% 0.030 72)",
+          "oklch(20% 0.045 72)",
+          "oklch(32% 0.070 72)",
+          "oklch(45% 0.095 72)",
+          "oklch(58% 0.110 72)",
+          "oklch(72% 0.105 72)",
+          "oklch(85% 0.070 72)",
+          "oklch(95% 0.030 72)"
+        ]
+      },
+      "azure": {
+        "role": "tertiary",
+        "displayName": "Chicago Flag Azure",
+        "canonical": "#41b6e6",
+        "tonalRamp": [
+          "oklch(18% 0.045 232)",
+          "oklch(30% 0.070 232)",
+          "oklch(42% 0.090 232)",
+          "oklch(54% 0.105 232)",
+          "oklch(66% 0.110 232)",
+          "oklch(76% 0.095 232)",
+          "oklch(87% 0.060 232)",
+          "oklch(96% 0.024 232)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Concrete",
+        "canonical": "#edeee9",
+        "tonalRamp": [
+          "oklch(15% 0.005 120)",
+          "oklch(26% 0.005 120)",
+          "oklch(38% 0.005 120)",
+          "oklch(50% 0.005 120)",
+          "oklch(63% 0.005 120)",
+          "oklch(76% 0.005 120)",
+          "oklch(88% 0.005 120)",
+          "oklch(96% 0.005 120)"
+        ]
+      },
+      "paper-lift": {
+        "role": "neutral",
+        "displayName": "Concrete Lift",
+        "canonical": "#f7f8f5",
+        "tonalRamp": [
+          "oklch(15% 0.004 120)",
+          "oklch(26% 0.004 120)",
+          "oklch(38% 0.004 120)",
+          "oklch(50% 0.004 120)",
+          "oklch(63% 0.004 120)",
+          "oklch(77% 0.004 120)",
+          "oklch(89% 0.004 120)",
+          "oklch(98% 0.004 120)"
+        ]
+      },
+      "paper-line": {
+        "role": "neutral",
+        "displayName": "Concrete Line",
+        "canonical": "#d2d5cc",
+        "tonalRamp": [
+          "oklch(16% 0.008 120)",
+          "oklch(27% 0.009 120)",
+          "oklch(39% 0.010 120)",
+          "oklch(51% 0.011 120)",
+          "oklch(64% 0.012 120)",
+          "oklch(77% 0.011 120)",
+          "oklch(87% 0.009 120)",
+          "oklch(95% 0.005 120)"
+        ]
+      },
+      "signal": {
+        "role": "neutral",
+        "displayName": "Signal White",
+        "canonical": "#f6f7f4",
+        "tonalRamp": [
+          "oklch(15% 0.004 120)",
+          "oklch(26% 0.004 120)",
+          "oklch(38% 0.004 120)",
+          "oklch(50% 0.004 120)",
+          "oklch(63% 0.004 120)",
+          "oklch(77% 0.004 120)",
+          "oklch(89% 0.004 120)",
+          "oklch(97% 0.004 120)"
+        ]
+      },
+      "signal-dim": {
+        "role": "neutral",
+        "displayName": "Signal Dim",
+        "canonical": "#b9c9bf",
+        "tonalRamp": [
+          "oklch(16% 0.014 158)",
+          "oklch(27% 0.018 158)",
+          "oklch(39% 0.022 158)",
+          "oklch(51% 0.026 158)",
+          "oklch(64% 0.028 158)",
+          "oklch(78% 0.026 158)",
+          "oklch(89% 0.018 158)",
+          "oklch(96% 0.008 158)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#10201a",
+        "tonalRamp": [
+          "oklch(14% 0.018 160)",
+          "oklch(24% 0.022 160)",
+          "oklch(36% 0.026 160)",
+          "oklch(48% 0.028 160)",
+          "oklch(61% 0.026 160)",
+          "oklch(75% 0.022 160)",
+          "oklch(87% 0.014 160)",
+          "oklch(96% 0.006 160)"
+        ]
+      },
+      "ink-dim": {
+        "role": "neutral",
+        "displayName": "Ink Dim",
+        "canonical": "#46564e",
+        "tonalRamp": [
+          "oklch(15% 0.016 160)",
+          "oklch(26% 0.020 160)",
+          "oklch(38% 0.024 160)",
+          "oklch(50% 0.026 160)",
+          "oklch(63% 0.024 160)",
+          "oklch(76% 0.020 160)",
+          "oklch(88% 0.013 160)",
+          "oklch(96% 0.006 160)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The one oversized gothic line per page — hero headline and every PageHead title (narrowed to clamp(2.5rem, 6vw, 4.5rem), capped at 18ch)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section heads, always capped at 16ch–20ch so they break like a sign rather than a paragraph."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Vehicle names and sub-section heads inside a band."
+      },
+      "lede": {
+        "displayName": "Lede",
+        "purpose": "The single paragraph under a heading. Auto-switches to ink-dim on concrete and signal-dim on enamel."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text at a 68ch measure; 1.7 line-height in legal prose."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Mono uppercase field labels, footer column heads, figure captions, blade keys. Always tracked 0.14em–0.20em."
+      },
+      "coordinate": {
+        "displayName": "Coordinate",
+        "purpose": "The mono azure line above a heading, with a trailing 1px rule. Must carry real information — a grid coordinate, a section index, a destination."
+      },
+      "gothic": {
+        "displayName": "Gothic Caps",
+        "purpose": "The sign-lettering modifier: uppercase at +0.02em on wordmark, service names, vehicle names, capacity labels."
+      }
+    },
+    "fonts": [
+      {
+        "name": "Overpass Variable",
+        "package": "@fontsource-variable/overpass",
+        "role": "display + body",
+        "rationale": "Descends from Highway Gothic (the FHWA road-sign series). This is not a reference to signage lettering; it is the signage lettering."
+      },
+      {
+        "name": "Overpass Mono Variable",
+        "package": "@fontsource-variable/overpass-mono",
+        "role": "labels, coordinates, measurement",
+        "rationale": "The monospaced sibling of the same family. Carries only what is measured or indexed."
+      }
+    ],
+    "shadows": [
+      {
+        "name": "press-rest",
+        "value": "0 2px 0 rgb(0 0 0 / 0.22)",
+        "purpose": "The resting edge under .action. Zero blur — a fabricated part sitting on a surface."
+      },
+      {
+        "name": "press-hover",
+        "value": "0 4px 10px rgb(0 0 0 / 0.2)",
+        "purpose": "Paired with translateY(-1px) as the action lifts under the cursor."
+      },
+      {
+        "name": "press-active",
+        "value": "0 1px 0 rgb(0 0 0 / 0.22)",
+        "purpose": "Paired with translateY(1px) as the action is pressed home."
+      },
+      {
+        "name": "ghost-ring",
+        "value": "inset 0 0 0 1.5px rgb(255 255 255 / 0.4)",
+        "purpose": "The outlined action on enamel; goes to 0.75 opacity on hover. Inset so it never reads as cast."
+      },
+      {
+        "name": "focus-ring-input",
+        "value": "0 0 0 3px rgb(14 59 42 / 0.14)",
+        "purpose": "The only glow in the system, and it is a tint of enamel. Paired with border-color: var(--enamel)."
+      },
+      {
+        "name": "focus-ring-global",
+        "value": "outline: 3px solid var(--hivis); outline-offset: 3px; border-radius: 1px",
+        "purpose": "Focus is a safety marking, so focus is amber. Applied globally at :focus-visible."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The only easing curve in the system. Every transition and the roll animation use it."
+      },
+      {
+        "name": "duration-input",
+        "value": "160ms",
+        "purpose": "Input border-color and focus ring."
+      },
+      {
+        "name": "duration-action",
+        "value": "180ms",
+        "purpose": "Action background, transform and shadow."
+      },
+      {
+        "name": "duration-link",
+        "value": "200ms",
+        "purpose": "Nav underline scale, arrow translate, plate border and background."
+      },
+      {
+        "name": "duration-row",
+        "value": "240ms",
+        "purpose": "padding-inline growth on service and destination rows — the row slides toward you."
+      },
+      {
+        "name": "duration-roll",
+        "value": "420ms",
+        "purpose": "The destination blade's mechanical roll."
+      },
+      {
+        "name": "roll",
+        "value": "@keyframes roll { 0% { transform: translateY(-105%); filter: blur(2.5px); opacity: 0.4 } 100% { transform: translateY(0); filter: blur(0); opacity: 1 } }",
+        "purpose": "The vehicle line changes the way a destination blind changes — it rolls through, it does not cross-fade."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "@media (prefers-reduced-motion: reduce) { animation-duration: 0.01ms; transition-duration: 0.01ms; scroll-behavior: auto }",
+        "purpose": "Applied globally to *, ::before and ::after."
+      }
+    ],
+    "textures": [
+      {
+        "name": "enamel-pattern",
+        "value": "url(\"data:image/svg+xml,...\") — sheared-bar SVG, 96x60 tile, white fill at 0.05 opacity",
+        "purpose": "Retroreflective sign facing. Applied only to enamel surfaces (.field, .blade, .method--primary) and held at the threshold of visibility."
+      },
+      {
+        "name": "placeholder-hatch",
+        "value": "repeating-linear-gradient(-45deg, rgb(255 177 0 / 0.09) 0 12px, transparent 12px 24px)",
+        "purpose": "Amber hazard hatch behind unresolved content, under a 2px dashed hivis-deep border."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "restack",
+        "value": "34rem"
+      },
+      {
+        "name": "form",
+        "value": "46rem"
+      },
+      {
+        "name": "gutter",
+        "value": "48rem"
+      },
+      {
+        "name": "rows",
+        "value": "52rem"
+      },
+      {
+        "name": "nav",
+        "value": "60rem"
+      },
+      {
+        "name": "hero",
+        "value": "64rem and 80rem — hero measure, and the two steps of the hero photograph's mask ramp"
+      },
+      {
+        "name": "hero-hours",
+        "value": "@container 35rem on .hero__lead — the build's only container query"
+      }
+    ],
+    "containers": [
+      {
+        "name": "shell",
+        "value": "min(100% - 2.5rem, 78rem); gutter widens to 5rem at 48rem"
+      },
+      {
+        "name": "measure",
+        "value": "68ch"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "action-primary",
+      "description": "The pressable object of the system. Amber fill, hard 2px press edge, drawn arrow. The site's only unqualified call to action.",
+      "html": "<a class=\"ds-action\" href=\"/quote\">Get a quote<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-linejoin=\"miter\" aria-hidden=\"true\"><path d=\"M3 12h16\"/><path d=\"M13 6l6 6-6 6\"/></svg></a>",
+      "css": ".ds-action { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border: none; border-radius: var(--radius, 3px); background: var(--hivis, #ffb100); color: var(--hivis-ink, #241800); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 0.9375rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; box-shadow: 0 2px 0 rgb(0 0 0 / 0.22); transition: background 180ms cubic-bezier(0.16,1,0.3,1), transform 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1); } .ds-action svg { flex: none; } .ds-action:hover { background: #ffc233; transform: translateY(-1px); box-shadow: 0 4px 10px rgb(0 0 0 / 0.2); } .ds-action:active { transform: translateY(1px); box-shadow: 0 1px 0 rgb(0 0 0 / 0.22); } .ds-action:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 3px; border-radius: 1px; }"
+    },
+    {
+      "name": "Ghost Action",
+      "kind": "button",
+      "refersTo": "action-ghost",
+      "description": "The secondary action on an enamel ground. Inset white ring, no fill. Has no concrete counterpart — on concrete use the ink variant.",
+      "html": "<div class=\"ds-ghost-bed\"><a class=\"ds-action-ghost\" href=\"tel:+16306243448\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-linejoin=\"miter\" aria-hidden=\"true\"><path d=\"M6 3h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4h-3A15 15 0 0 1 3 6V3z\"/></svg>630-624-3448</a></div>",
+      "css": ".ds-ghost-bed { padding: 1.5rem; background: var(--enamel, #0e3b2a); } .ds-action-ghost { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border: none; border-radius: var(--radius, 3px); background: transparent; color: var(--signal, #f6f7f4); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 0.9375rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.4); transition: background 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1); } .ds-action-ghost svg { flex: none; } .ds-action-ghost:hover { background: rgb(255 255 255 / 0.1); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.75); } .ds-action-ghost:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 3px; }"
+    },
+    {
+      "name": "Blade",
+      "kind": "card",
+      "refersTo": "blade",
+      "description": "A porcelain enamel sign plate: green field with the logo chevron, signal-white gothic caps, and the inset keyline every fabricated blade carries a few millimetres from its edge.",
+      "html": "<div class=\"ds-blade\"><span class=\"ds-blade-coord\">1300 W</span><p class=\"ds-blade-name\">Chicago Super Coach</p></div>",
+      "css": ".ds-blade { position: relative; display: block; padding: 1rem 1.5rem; border-radius: var(--radius, 3px); background: var(--enamel, #0e3b2a); background-image: url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2776%27 height=%2756%27 viewBox=%270 0 76 56%27%3E%3Cg transform=%27translate(22 17)%27 fill=%27%2523ffffff%27 fill-opacity=%270.05%27%3E%3Cpath d=%27M4 0H32L28 5H0Z%27/%3E%3Cpath d=%27M0 8H28L32 13H4Z%27/%3E%3Cpath d=%27M4 16H32L28 21H0Z%27/%3E%3C/g%3E%3C/svg%3E\"); color: var(--signal, #f6f7f4); text-decoration: none; } .ds-blade::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgb(255 255 255 / 0.32); border-radius: 1px; pointer-events: none; } .ds-blade-coord { display: block; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--azure, #41b6e6); } .ds-blade-name { margin: 1px 0 0; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 1.375rem; font-weight: 900; line-height: 1.05; letter-spacing: 0.01em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Plate",
+      "kind": "card",
+      "refersTo": "plate",
+      "description": "The content container on concrete. One elevation signal only: a hairline, never a hairline plus a shadow.",
+      "html": "<div class=\"ds-plate\"><p class=\"ds-plate-key\">Passengers</p><p class=\"ds-plate-value\">Up to 57 seated, 2-2 configuration.</p></div>",
+      "css": ".ds-plate { padding: 1.5rem; border: 1px solid var(--paper-line, #d2d5cc); border-radius: var(--radius, 3px); background: var(--paper-lift, #f7f8f5); color: var(--ink, #10201a); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-plate-key { margin: 0 0 0.5rem; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-dim, #46564e); } .ds-plate-value { margin: 0; font-size: 0.9375rem; line-height: 1.5; }"
+    },
+    {
+      "name": "Square Plate",
+      "kind": "card",
+      "refersTo": "plate-square",
+      "description": "The alternative container: a 3px marked top edge in enamel or amber, and NO border-radius. Radius and a marked edge are mutually exclusive.",
+      "html": "<div class=\"ds-plate-square\"><blockquote class=\"ds-plate-square-quote\"><p>They were on time, the driver was professional, and the whole group arrived together.</p></blockquote><footer class=\"ds-plate-square-by\"><span class=\"ds-plate-square-name\">Marcus D.</span><span class=\"ds-plate-square-ctx\">Corporate shuttle</span></footer></div>",
+      "css": ".ds-plate-square { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.5rem; border-top: 3px solid var(--enamel, #0e3b2a); border-radius: 0; background: var(--paper-lift, #f7f8f5); color: var(--ink, #10201a); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-plate-square-quote { margin: 0; font-size: 1rem; line-height: 1.6; } .ds-plate-square-quote p { margin: 0; } .ds-plate-square-by { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin-top: auto; } .ds-plate-square-name { font-weight: 800; letter-spacing: -0.01em; } .ds-plate-square-ctx { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim, #46564e); }"
+    },
+    {
+      "name": "Control Field",
+      "kind": "input",
+      "refersTo": "control-input",
+      "description": "Mono uppercase label above a 3px-cornered field. Focus goes to an enamel border with an enamel-tinted ring; required is marked on the label, not in a legend.",
+      "html": "<label class=\"ds-control\" data-required><span>Pickup location</span><input name=\"pickup\" placeholder=\"Hotel, office, school or address\" /></label>",
+      "css": ".ds-control { display: flex; flex-direction: column; gap: 0.5rem; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-control > span { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-dim, #46564e); } .ds-control[data-required] > span::after { content: ' *'; color: var(--hivis-deep, #d68f00); } .ds-control input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--paper-line, #d2d5cc); border-radius: var(--radius, 3px); background: var(--paper-lift, #f7f8f5); color: var(--ink, #10201a); font-family: inherit; font-size: 1rem; line-height: 1.4; transition: border-color 160ms cubic-bezier(0.16,1,0.3,1), box-shadow 160ms cubic-bezier(0.16,1,0.3,1); } .ds-control input::placeholder { color: #6b7a72; } .ds-control input:hover { border-color: #b6bab0; } .ds-control input:focus { border-color: var(--enamel, #0e3b2a); box-shadow: 0 0 0 3px rgb(14 59 42 / 0.14); outline: none; }"
+    },
+    {
+      "name": "Coordinate Rule",
+      "kind": "custom",
+      "refersTo": "coordinate",
+      "description": "The mono line above a heading, with a trailing 1px rule that flexes to fill the remaining width. Carries real information — a grid coordinate, a section index, a destination — never a marketing kicker.",
+      "html": "<div class=\"ds-coord-bed\"><p class=\"ds-coordinate\">1300 W &middot; Chicago, Illinois</p><h2 class=\"ds-coord-head\">Your whole group, one arrival time.</h2></div>",
+      "css": ".ds-coord-bed { padding: 1.5rem; background: var(--enamel, #0e3b2a); } .ds-coordinate { display: flex; align-items: center; gap: 0.75rem; margin: 0 0 1rem; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--azure, #41b6e6); } .ds-coordinate::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.35; } .ds-coord-head { margin: 0; max-width: 16ch; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: clamp(2rem, 4.4vw, 3.25rem); font-weight: 800; line-height: 1.04; letter-spacing: -0.03em; color: var(--signal, #f6f7f4); }"
+    },
+    {
+      "name": "Navigation Link",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Tracked uppercase link on the sticky enamel masthead. A 2px amber underline scales in from the left on hover and stays scaled for the current page.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link\" href=\"/fleet\" aria-current=\"page\">Fleet</a><a class=\"ds-nav-link\" href=\"/services\">Services</a><a class=\"ds-nav-link\" href=\"/about\">About</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 1.5rem; padding: 1rem 1.5rem; background: var(--enamel, #0e3b2a); border-bottom: 1px solid var(--enamel-line, #2f6e52); } .ds-nav-link { position: relative; display: block; padding-block: 0.5rem; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--signal, #f6f7f4); opacity: 0.82; transition: opacity 160ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover, .ds-nav-link[aria-current='page'] { opacity: 1; } .ds-nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--hivis, #ffb100); transform: scaleX(0); transform-origin: left; transition: transform 200ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover::after, .ds-nav-link[aria-current='page']::after { transform: scaleX(1); } .ds-nav-link:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 3px; }"
+    },
+    {
+      "name": "Destination Blade",
+      "kind": "custom",
+      "refersTo": "blade",
+      "description": "The signature component. Sets itself from the booking form's route and headcount and names which of the two real vehicles fits; the vehicle line rolls on change the way a destination blind rolls.",
+      "html": "<div class=\"ds-rb\"><div class=\"ds-rb-strip\"><span class=\"ds-rb-coord\">1300 W</span><span class=\"ds-rb-service\">Quote</span></div><p class=\"ds-rb-route\"><span>Ogilvie Transportation Center</span><svg class=\"ds-rb-arrow\" width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-linejoin=\"miter\" aria-hidden=\"true\"><path d=\"M3 12h16\"/><path d=\"M13 6l6 6-6 6\"/></svg><span>Soldier Field</span></p><div class=\"ds-rb-meta\"><div class=\"ds-rb-cell\"><span class=\"ds-rb-key\">Passengers</span><span class=\"ds-rb-count\">38</span></div><div class=\"ds-rb-cell ds-rb-cell-wide\"><span class=\"ds-rb-key\">Vehicle</span><span class=\"ds-rb-roll\"><span class=\"ds-rb-vehicle\">54&ndash;57 Passenger Executive Coach</span></span><span class=\"ds-rb-detail\">One coach seats your whole group.</span></div></div></div>",
+      "css": ".ds-rb { position: relative; display: block; padding: 1.5rem 2rem; border-radius: var(--radius, 3px); background: var(--enamel, #0e3b2a); background-image: url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2776%27 height=%2756%27 viewBox=%270 0 76 56%27%3E%3Cg transform=%27translate(22 17)%27 fill=%27%2523ffffff%27 fill-opacity=%270.05%27%3E%3Cpath d=%27M4 0H32L28 5H0Z%27/%3E%3Cpath d=%27M0 8H28L32 13H4Z%27/%3E%3Cpath d=%27M4 16H32L28 21H0Z%27/%3E%3C/g%3E%3C/svg%3E\"); color: var(--signal, #f6f7f4); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-rb::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgb(255 255 255 / 0.32); border-radius: 1px; pointer-events: none; } .ds-rb-strip { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgb(255 255 255 / 0.22); font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; } .ds-rb-coord { color: var(--azure, #41b6e6); } .ds-rb-service { color: var(--signal-dim, #b9c9bf); } .ds-rb-route { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin: 1.25rem 0 1rem; font-size: clamp(1.25rem, 3.2vw, 2.125rem); font-weight: 900; line-height: 1.1; letter-spacing: 0.005em; text-transform: uppercase; } .ds-rb-arrow { flex: none; color: var(--hivis, #ffb100); } .ds-rb-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem; padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.22); font-size: 0.875rem; } .ds-rb-cell { display: grid; gap: 0.25rem; align-content: start; } .ds-rb-cell-wide { padding-left: 1.5rem; border-left: 1px solid rgb(255 255 255 / 0.22); } .ds-rb-key { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--azure, #41b6e6); } .ds-rb-count { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; } .ds-rb-roll { display: block; overflow: hidden; } .ds-rb-vehicle { display: block; font-size: 1.0625rem; font-weight: 800; line-height: 1.3; letter-spacing: 0.01em; text-transform: uppercase; color: var(--hivis, #ffb100); animation: ds-roll 420ms cubic-bezier(0.16,1,0.3,1); } .ds-rb-detail { display: block; color: var(--signal-dim, #b9c9bf); font-size: 0.8125rem; line-height: 1.4; } @keyframes ds-roll { 0% { transform: translateY(-105%); filter: blur(2.5px); opacity: 0.4; } 100% { transform: translateY(0); filter: blur(0); opacity: 1; } }"
+    },
+    {
+      "name": "Placeholder",
+      "kind": "custom",
+      "refersTo": "placeholder",
+      "description": "Unresolved content, marked so it can never pass as finished. Amber hazard hatch under a dashed amber-deep border — amber is correct here for the same reason it is correct on a button.",
+      "html": "<div class=\"ds-ph\"><p class=\"ds-ph-kind\">Awaiting endpoint</p><p class=\"ds-ph-label\">Quote form submission target</p><p class=\"ds-ph-needed\">Needs the form handler URL or inbox address before this form can send.</p></div>",
+      "css": ".ds-ph { display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; padding: 1.5rem; border: 2px dashed var(--hivis-deep, #d68f00); border-radius: var(--radius, 3px); background: repeating-linear-gradient(-45deg, rgb(255 177 0 / 0.09) 0 12px, transparent 12px 24px); color: var(--ink, #10201a); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-ph-kind { margin: 0; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--hivis-deep, #d68f00); } .ds-ph-label { margin: 0; font-weight: 800; font-size: 1.0625rem; letter-spacing: -0.01em; } .ds-ph-needed { margin: 0; max-width: 46ch; font-size: 0.875rem; line-height: 1.5; color: var(--ink-dim, #46564e); }"
+    },
+    {
+      "name": "Logo Plate",
+      "selector": ".mark__plate / .foot__plate",
+      "role": "Carries the supplied logo on any dark ground.",
+      "css": "display:block; padding:var(--space-2) var(--space-3); background:var(--signal); border-radius:var(--radius);",
+      "imageCss": "display:block; width:auto; height:3rem; (2.5rem below 30rem, 3.5rem in the footer with --space-3/--space-4 padding)",
+      "rule": "Logo-Plate Rule — the logo is never placed directly on an enamel field; its navy measures 1.35:1 on --enamel. Knocking it out to white is not the alternative, as that destroys the mark’s gradient.",
+      "notes": "World-correct as well as accessible: an enamel sign carries a maker’s plate."
+    }
+  ],
+  "narrative": {
+    "northStar": "The Public Way",
+    "overview": "This is Chicago's street-blade signage program rebuilt as a booking site. Every surface is a fabricated object: a porcelain enamel plate in deep green, faced with the logo chevron, lettered in Highway Gothic caps, punched with near-square corners, and marked in high-visibility amber only where something must be acted on. The system is built from six primitives — .field, .blade, .plate, .action, .coordinate, .control — and a page is assembled by alternating enamel bands against a concrete ground, not by stacking cards.\n\nThe density is civic rather than editorial: generous vertical bands (clamp(4rem, 9vw, 8rem)) around content that is itself tightly set, with headline tracking pulled in hard (-0.03em to -0.05em) and label tracking pushed out hard (0.10em to 0.20em). Nothing floats. Nothing glows. The one place the system moves mechanically is the destination blade on the quote and reservation forms, which rolls its vehicle line the way a coach's destination blind rolls.\n\nThe category anti-references are explicit and were refused by construction, not by taste: no stock highway photograph, no vehicle beauty shot, no translucent quote bar floating over a hero image. The build ships zero photographic assets. Proof is carried by numerals — two real capacities, 57 and 13, set at route-number scale — and by drawn geometry (the SeatPlan seating diagrams, the authored 24x24 icon set).",
+    "keyCharacteristics": [
+      "Two color grounds — enamel green and concrete — and every component works on both",
+      "3px corners on every UI surface; a fabricated sign plate, not a web card",
+      "Amber exclusively for action, state and safety marking, held under a few percent of any viewport",
+      "Highway Gothic lineage: Overpass Variable, descended from the FHWA road-sign series",
+      "One elevation signal per surface — hairline or marked top edge, never both, never a shadow",
+      "Drawn proof over photographed proof: numerals, seat plans, authored icons"
+    ],
+    "rules": [
+      {
+        "name": "The Amber-For-Action Rule",
+        "body": "Amber marks what a person must act on or attend to: actions, focus, the current location in nav, the system's own recommendation output, required-field marks, unresolved placeholders, and the hard top edge of a terminal band. It is held under a few percent of any viewport. Painting amber on a heading, a decorative rule, or a background field breaks the world.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two-Grounds Rule",
+        "body": "Enamel and concrete are both first-class grounds. A component ships one base treatment plus a .field descendant override (.field .plate, .field .lede, :global(.field) .plan), never two parallel variants. Any new component must be checked on both grounds before it is done.",
+        "section": "colors"
+      },
+      {
+        "name": "The Azure Reserve Rule",
+        "body": "Azure appears only on mono type that names a coordinate, a key, or a measurement. It is never a fill, never a border, never running prose.",
+        "section": "colors"
+      },
+      {
+        "name": "The One-Motif Rule",
+        "body": "One motif, two registers. --enamel-pattern is the logo's sheared bar broken into a run of dashes at eight lengths over three uneven rows (96x60 tile, white fill at 0.05), on every enamel surface: the masthead, .field, .blade, .method--primary. --concrete-pattern is the owner's artwork at a much larger stride on the body. Neither crosses to the other ground and no surface carries both. The hero is the one concrete band held clean of the pattern — it paints --paper itself rather than letting the body's ground through, because a repeating pattern showing through a dissolving photo edge reads as dirt on the lens.",
+        "section": "colors"
+      },
+      {
+        "name": "The Masked-Ground Rule",
+        "body": "The hero photograph is never darkened, tinted, scrimmed, or panelled to carry type. It covers the whole band and is masked back into the ground: the band paints flat --paper and the photograph's alpha ramps from a few percent under the copy to fully opaque at the cab, so contrast is a fact about --paper rather than a bet on a photograph. Four steps, --ramp-1 5% to --ramp-4 48%, built with color-mix(in srgb, currentColor N%, transparent) — only a mask stop's alpha is read, so currentColor means fully opaque and no colour literal enters the ramp. Vertical below 64rem where the copy fills the box; horizontal above it, closing one step further at 80rem. A second single-layer mask on the wrapper dissolves the last sixth downward, rather than mask-composite, which fails open if a browser misses it. Every stop is set by sampling the rendered band with the copy hidden and reading the worst pixel under each line, not by eye. Consequences: nothing translucent stands on it (the phone button became an opaque paper-lift fill with a full-strength enamel ring; the hours divider went from --paper-line to currentColor at 0.4), and the hero shares its ground with the quote form with no border between them.",
+        "section": "layout"
+      },
+      {
+        "name": "The Highway Gothic Rule",
+        "body": "Overpass is the only voice. Its descent from the FHWA series is the reason it is here, so a second display face — a serif, a geometric, a condensed — would put a different road on the same sign. There is no second family beyond the mono sibling.",
+        "section": "typography"
+      },
+      {
+        "name": "The Mono-Is-Measurement Rule",
+        "body": "Overpass Mono carries only what is measured or indexed: coordinates, keys, counts, capacities, captions, timestamps, service designations. It never carries running prose and never sets a heading.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tracking-Follows-Case Rule",
+        "body": "Uppercase always carries positive tracking (+0.02em on gothic display caps, 0.10em-0.20em on mono labels). Mixed-case display and headline always carry negative tracking (-0.02em to -0.05em). There is no uppercase run at neutral tracking anywhere in the build.",
+        "section": "typography"
+      },
+      {
+        "name": "The Coordinate-Carries-Information Rule",
+        "body": "The .coordinate line above a heading is a grid coordinate on a blade, not a marketing eyebrow. It must name a real location, a real section index, or a real destination. It must never restate the heading beneath it in softer words, and it must never be added purely to give a heading a hat. Its trailing rule is what makes it read as a sign's coordinate bar rather than a kicker.",
+        "section": "typography"
+      },
+      {
+        "name": "The One-Signal Rule",
+        "body": "A surface gets exactly one elevation signal. A .plate has a hairline border or a 3px marked top edge — never both, and never either plus a shadow.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Shadow-Is-Press Rule",
+        "body": "box-shadow belongs to the pressable and to focus. Plates, blades, the masthead, the mobile nav drawer, testimonial cards, and capacity plates all cast nothing.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Fabricated-Corner Rule",
+        "body": "3px, everywhere, via var(--radius). Never 8px, 12px, or 16px. If a surface needs to feel softer, it needs a different ground, not a different corner.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Square-Plate Rule",
+        "body": "Radius and a marked top edge are mutually exclusive. A plate carrying border-top: 3px solid takes border-radius: 0. A plate carrying a full 1px border takes var(--radius).",
+        "section": "shapes"
+      },
+      {
+        "name": "The Drawn-Proof Rule",
+        "body": "Evidence is drawn or set in type, never photographed. Capacity is a numeral at display scale, a layout is an SVG plan, an amenity is an authored icon. The build ships no photographic assets and no illustration library.",
+        "section": "components"
+      },
+      {
+        "name": "The Mechanical-Motion Rule",
+        "body": "Motion depicts a mechanism. Arrows translate along their axis (4-5px on hover), list rows grow their inside gutter (padding-inline, 240ms) so the row appears to slide toward you, and the destination blade rolls. Durations are 160ms for input state, 180ms for actions, 200ms for links and hovers, 240ms for row expansion, and 420ms for the roll — all on --ease-out. Nothing fades in on scroll and nothing bounces. prefers-reduced-motion: reduce collapses all animation and transition to 0.01ms globally.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do compose new surfaces from the six primitives — .field, .blade, .plate, .action, .coordinate, .control — before writing new component CSS.",
+      "Do open every interior page with a PageHead enamel band carrying a real coordinate line, a display title capped at 18ch, and an optional lede at 52ch.",
+      "Do alternate enamel and concrete bands down a page; a ground change is the section separator, not a border.",
+      "Do check every new component on both grounds and add a .field descendant override rather than a second class.",
+      "Do use var(--radius) (3px) for every UI corner, and drop to border-radius: 0 the moment a plate takes a 3px marked top edge.",
+      "Do set measured values — coordinates, counts, capacities, timings, captions — in Overpass Mono with .mono for tabular numerals.",
+      "Do draw new icons into Icon.astro's set at 24x24, stroke 2, square caps, miter joins, currentColor.",
+      "Do mark unresolved content with Placeholder.astro so it is impossible to mistake for shipped content."
+    ],
+    "donts": [
+      "Don't paint amber on anything that is not an action, a focus or current state, a required mark, a system recommendation, or an unresolved item. It stays under a few percent of any viewport; that restraint is what keeps this civic rather than municipal-works.",
+      "Don't use any radius other than 3px on a UI surface, and don't combine a radius with a marked top edge.",
+      "Don't put a box-shadow on a plate, a blade, the masthead, or a card. Only .action casts, and only as a press affordance.",
+      "Don't cross the two patterns: --enamel-pattern never touches a concrete surface, --concrete-pattern never touches enamel, and no surface carries both. Don't raise either above the opacity it ships at.",
+      "Don't introduce a second display family, a glyph or emoji icon, or a system display face. Overpass and Overpass Mono are the whole voice.",
+      "Don't ship a stock highway photograph, a vehicle beauty shot, or a translucent quote bar floating over a hero image — the three things this world was built to refuse.",
+      "Don't write a kicker above a heading. The .coordinate line is the only line permitted there and it must carry real information; a line that restates the heading in softer words is not a coordinate.",
+      "Don't reference a spacing step outside the defined ramp (1, 2, 3, 4, 5, 6, 8, 12, 16, 24, 32). Every step in that list is a real token in global.css; anything else resolves to nothing and is silently dropped at computed-value time.",
+      "Don't let a sticky element cover the thing it is confirming — the destination blade goes static below 46rem for exactly this reason."
+    ]
+  },
+  "brandMark": {
+    "file": "src/assets/images/logo.png",
+    "intrinsic": {
+      "width": 409,
+      "height": 202
+    },
+    "description": "Horizontal lockup: three-chevron mark with a navy-to-green gradient beside the name set in three lines of navy.",
+    "colors": {
+      "navy": "#204878",
+      "teal": "#087070",
+      "green": "#14945f"
+    },
+    "note": "Sampled from the file. Documentation of the mark, not page colours — nothing on the site is painted with them.",
+    "placement": "Never on a dark field directly: navy measures 1.35:1 on --enamel. Sits on a --signal plate at --radius. Heights: 3rem masthead, 2.5rem below 30rem, 3.5rem footer.",
+    "favicon": "public/favicon.svg — the mark cropped from this same file via an SVG viewBox, not a substitute glyph."
+  }
+}

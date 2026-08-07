@@ -1,0 +1,64 @@
+---
+/**
+ * Prose wrapper for the legal pages. These are Read surfaces inside a Persuade
+ * site: the world stays, the ornament goes, and comprehension wins every
+ * conflict.
+ */
+---
+
+<div class="legal">
+  <slot />
+</div>
+
+<style>
+  .legal {
+    max-width: var(--measure);
+  }
+
+  .legal :global(h2) {
+    margin: var(--space-12) 0 var(--space-4);
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .legal :global(h2:first-child) {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .legal :global(h3) {
+    margin: var(--space-8) 0 var(--space-3);
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .legal :global(p) {
+    margin-bottom: var(--space-4);
+    line-height: 1.7;
+  }
+
+  .legal :global(ul) {
+    margin: 0 0 var(--space-6);
+    padding-left: var(--space-6);
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .legal :global(li) {
+    line-height: 1.65;
+  }
+
+  .legal :global(a) {
+    font-weight: 700;
+    color: var(--enamel);
+  }
+
+  .legal :global(strong) {
+    font-weight: 800;
+  }
+</style>

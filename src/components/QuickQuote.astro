@@ -1,0 +1,797 @@
+---
+import Icon from './Icon.astro';
+import Placeholder from './Placeholder.astro';
+import { BUSINESS } from '../config/site';
+import { OPEN_ITEMS } from '../lib/placeholder';
+import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/formOptions';
+
+/**
+ * The quote form that sits under the hero.
+ *
+ * It asks the full set — trip, then group, then who to reply to — so what lands
+ * in the operator's inbox is a request they can price without calling back.
+ * Field names match BookingForm exactly and the option lists come from the
+ * shared data/formOptions.ts, so the two forms cannot ask different questions.
+ *
+ * The blade is the receipt, not a live preview: it stays hidden until the
+ * request is submitted, then sets itself with the route and the coach the way a
+ * destination sign is set into its bracket. After that first reveal it tracks
+ * the fields, so an edit is reflected rather than left stale.
+ *
+ * Submission: with JavaScript, submit is intercepted, the blade is revealed in
+ * place, and the payload is posted to `data-endpoint` — empty until the owner
+ * supplies one, which the blade reports plainly rather than claiming a delivery
+ * that never happened.
+ *
+ * Without JavaScript the form GETs to /reserve, which prefills from the query
+ * string so nothing is retyped. That used to be /quote; when the quote page was
+ * retired /reserve became the only page that can receive the handoff, so the
+ * no-JS path now lands on a reservation form rather than a quote form. It is a
+ * mismatch, and it is the better of two bad options — GETting back to a
+ * homepage that cannot prefill without JavaScript would drop everything typed.
+ */
+---
+
+<section class="qq" id="quote-form">
+  <div class="shell qq__inner">
+    <div class="qq__intro">
+      <h2 class="title qq__head">Tell us the trip. We'll price it.</h2>
+      <p class="qq__sub">
+        Everything we need in one pass — or call
+        <a href={BUSINESS.phone.href}>{BUSINESS.phone.display}</a>, office {BUSINESS.hours.officeSummary}.
+      </p>
+    </div>
+
+    <form class="qq__form" method="get" action="/reserve" data-quick-quote data-endpoint="">
+      <fieldset class="qq__set">
+        <legend class="coordinate coordinate--ink">Step 1 of 2 · The trip</legend>
+        <div class="qq__grid">
+          <label class="control qq__span" data-required>
+            <span>Pickup location</span>
+            <input name="pickup" data-qq-field="from" required placeholder="Hotel, office, school or address" autocomplete="off" />
+          </label>
+          <label class="control qq__span" data-required>
+            <span>Drop-off location</span>
+            <input name="dropoff" data-qq-field="to" required placeholder="Venue, stadium or address" autocomplete="off" />
+          </label>
+          <label class="control" data-required>
+            <span>Date of service</span>
+            <input name="date" data-qq-field="date" type="date" required />
+          </label>
+          <label class="control" data-required>
+            <span>Pickup time</span>
+            <input name="time" data-qq-field="time" type="time" required />
+          </label>
+          <label class="control" data-required>
+            <span>Hours needed</span>
+            <select name="hours" required>
+              <option value="">Select</option>
+              {HOURS.map((h) => <option value={h}>{h}</option>)}
+            </select>
+          </label>
+          <label class="control" data-required>
+            <span>Passengers</span>
+            <select name="passengers" data-qq-field="count" required>
+              <option value="">Select</option>
+              {PASSENGER_OPTIONS.map((p) => <option value={p}>{p}</option>)}
+            </select>
+          </label>
+          <label class="control" data-required>
+            <span>Event type</span>
+            <select name="eventType" required>
+              <option value="">Select</option>
+              {EVENT_TYPES.map((e) => <option value={e}>{e}</option>)}
+            </select>
+          </label>
+          <label class="control">
+            <span>Type of vehicle</span>
+            <select name="vehicle">
+              {VEHICLE_OPTIONS.map((v) => <option value={v.value}>{v.label}</option>)}
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      <!-- Step two is folded away so the homepage is not handed a wall of
+           twelve fields. <details> and not a scripted panel, so the second half
+           of the form is still reachable with JavaScript unavailable. -->
+      <details class="qq__next" data-qq-next>
+        <summary class="qq__bar">
+          <span class="qq__barnum mono">2</span>
+          <span class="qq__bartext">
+            <span class="qq__barlabel">Your contact details</span>
+            <span class="qq__barhint">Name, email and phone, so we can send the price back to you.</span>
+          </span>
+          <!-- Styled as a button, because for a lot of people a row that only
+               hints at being clickable is a row that never gets clicked. -->
+          <span class="action qq__cta">
+            Next step
+            <Icon name="arrow" size={16} />
+          </span>
+          <span class="qq__hide">
+            Hide
+            <Icon name="close" size={14} />
+          </span>
+        </summary>
+
+        <div class="qq__nextbody">
+          <div class="qq__grid">
+            <label class="control" data-required>
+              <span>Name</span>
+              <input name="name" required autocomplete="name" />
+            </label>
+            <label class="control" data-required>
+              <span>Email</span>
+              <input name="email" type="email" required autocomplete="email" />
+            </label>
+            <label class="control" data-required>
+              <span>Phone</span>
+              <input name="phone" type="tel" required autocomplete="tel" />
+            </label>
+            <label class="control qq__span--all">
+              <span>Special notes</span>
+              <textarea name="notes" placeholder="Multiple pickups, return timing, luggage, accessibility needs"></textarea>
+            </label>
+          </div>
+
+          <div class="qq__send">
+            <button class="action" type="submit">
+              Request my quote
+              <Icon name="arrow" size={16} />
+            </button>
+            <p class="qq__alt">
+              No obligation. Office replies {BUSINESS.hours.officeSummary} — <em>{BUSINESS.hours.charterNote}</em>.
+            </p>
+          </div>
+
+          <Placeholder item={OPEN_ITEMS.quoteEndpoint} />
+        </div>
+      </details>
+    </form>
+
+    <!-- The receipt. Hidden until the request is submitted. -->
+    <div class="qb blade" hidden data-qq-blade aria-live="polite">
+      <div class="qb__strip">
+        <span class="qb__coord mono">{BUSINESS.address.gridCoordinate}</span>
+        <span class="qb__service mono">Quote requested</span>
+      </div>
+
+      <p class="qb__route gothic">
+        <span data-qq-from>Pickup</span>
+        <Icon name="arrow" size={22} class="qb__arrow" />
+        <span data-qq-to>Destination</span>
+      </p>
+
+      <div class="qb__meta">
+        <div class="qb__cell">
+          <span class="qb__key mono">Passengers</span>
+          <span class="qb__count mono" data-qq-count>—</span>
+        </div>
+        <div class="qb__cell">
+          <span class="qb__key mono">Departs</span>
+          <span class="qb__when mono" data-qq-when>—</span>
+        </div>
+        <div class="qb__cell">
+          <span class="qb__key mono">Vehicle</span>
+          <span class="qb__roll">
+            <span class="qb__vehicle" data-qq-vehicle>Awaiting passenger count</span>
+          </span>
+          <span class="qb__detail" data-qq-detail></span>
+        </div>
+      </div>
+
+      <p class="qb__status">
+        <span data-qq-status></span>
+        <a class="qb__call" href={BUSINESS.phone.href} data-qq-call hidden>
+          <Icon name="phone" size={15} />
+          {BUSINESS.phone.display}
+        </a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .qq {
+    padding-block: clamp(var(--space-12), 6vw, var(--space-24));
+    border-bottom: 1px solid var(--paper-line);
+    /* Clears the fixed header when anything links to #quote-form. */
+    scroll-margin-top: 6rem;
+  }
+
+  .qq__inner {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .qq__intro {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 56rem) {
+    .qq__intro {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.75fr);
+      gap: var(--space-8);
+      align-items: end;
+    }
+
+    .qq__sub {
+      padding-bottom: 0.45em;
+      text-align: right;
+    }
+  }
+
+  .qq__head {
+    max-width: 20ch;
+  }
+
+  .qq__sub {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
+  }
+
+  .qq__sub a {
+    font-weight: 700;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  /* ---- Fields ---- */
+
+  .qq__form {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .qq__set {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .qq__set legend {
+    padding: 0;
+    width: 100%;
+  }
+
+  .qq__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  /* Two up as soon as a phone is wide enough to hold a date field twice, which
+     takes three rows out of the trip block before anyone has scrolled. */
+  @media (min-width: 24rem) {
+    .qq__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .qq__grid > .qq__span,
+    .qq__grid > .qq__span--all {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 40rem) {
+    .qq__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    /* Two short fields to a row; the long ones take the whole row. */
+    .qq__grid > * {
+      grid-column: span 2;
+    }
+
+    .qq__grid > .qq__span,
+    .qq__grid > .qq__span--all {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    /* Six tracks: three short fields to a row, two locations to a row. */
+    .qq__grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .qq__grid > .qq__span {
+      grid-column: span 3;
+    }
+  }
+
+  /* ---- Step two, folded ---- */
+
+  .qq__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    background: var(--paper-lift);
+    cursor: pointer;
+    /* Both are needed to drop the disclosure triangle across engines. */
+    list-style: none;
+    transition: border-color 160ms var(--ease-out);
+  }
+
+  .qq__bar::-webkit-details-marker {
+    display: none;
+  }
+
+  /* No shadow on the bar itself — see The Shadow-Is-Press Rule. The button
+     inside it is the pressable thing, and it carries the press. */
+  .qq__bar:hover {
+    border-color: var(--enamel);
+  }
+
+  .qq__barnum {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius);
+    background: var(--enamel);
+    color: var(--signal);
+    font-size: 1rem;
+    font-weight: 800;
+  }
+
+  .qq__bartext {
+    display: grid;
+    gap: 3px;
+    flex: 1 1 14rem;
+    min-width: 0;
+  }
+
+  .qq__barlabel {
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+
+  .qq__barhint {
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--ink-dim);
+  }
+
+  /* The summary is the control; this is the face it wears. It takes the global
+     .action outright rather than restating amber, so it cannot drift from every
+     other button on the site. */
+  .qq__cta {
+    flex: none;
+    margin-left: auto;
+    padding-block: var(--space-3);
+  }
+
+  /* Once step two is open the amber has done its job and the control goes quiet. */
+  .qq__hide {
+    display: none;
+    align-items: center;
+    gap: var(--space-3);
+    flex: none;
+    margin-left: auto;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius);
+    box-shadow: inset 0 0 0 1.5px var(--paper-line);
+    color: var(--ink-dim);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .qq__next[open] .qq__cta {
+    display: none;
+  }
+
+  .qq__next[open] .qq__hide {
+    display: inline-flex;
+  }
+
+  /* On a phone the button takes the full width — nothing to hunt for. */
+  @media (max-width: 34rem) {
+    .qq__cta,
+    .qq__hide {
+      width: 100%;
+      margin-left: 0;
+      justify-content: center;
+    }
+  }
+
+  .qq__nextbody {
+    display: grid;
+    gap: var(--space-6);
+    padding-top: var(--space-6);
+  }
+
+  .qq__next[open] .qq__nextbody {
+    animation: qopen 320ms var(--ease-out);
+  }
+
+  @keyframes qopen {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .qq__send {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+  }
+
+  .qq__alt {
+    font-size: 0.9375rem;
+    color: var(--ink-dim);
+  }
+
+  .qq__alt em {
+    font-style: normal;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  /* ---- The receipt blade ---- */
+
+  /* .blade sets display:block, which would otherwise beat the UA [hidden] rule. */
+  .qb[hidden] {
+    display: none;
+  }
+
+  .qb {
+    padding: var(--space-6) var(--space-8);
+    transform-origin: top center;
+  }
+
+  /* Set the way a blade is set into its bracket: down and square, no bounce. */
+  .qb[data-shown] {
+    animation: qset 460ms var(--ease-out);
+  }
+
+  @keyframes qset {
+    0% {
+      opacity: 0;
+      transform: translateY(-14px) scaleY(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .qb__strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--blade-divider);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .qb__coord {
+    color: var(--azure);
+  }
+
+  .qb__service {
+    color: var(--signal-dim);
+  }
+
+  .qb__route {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    margin: var(--space-5) 0 var(--space-4);
+    font-size: clamp(1.25rem, 3.2vw, 2.125rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 0.005em;
+  }
+
+  .qb__route span:not([data-set]) {
+    color: var(--signal-unset);
+  }
+
+  .qb__arrow {
+    flex: none;
+    color: var(--hivis);
+  }
+
+  .qb__meta {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--blade-divider);
+    font-size: 0.875rem;
+  }
+
+  .qb__cell {
+    display: grid;
+    gap: var(--space-1);
+    align-content: start;
+  }
+
+  .qb__cell + .qb__cell {
+    padding-left: var(--space-6);
+    border-left: 1px solid var(--blade-divider);
+  }
+
+  .qb__key {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--azure);
+  }
+
+  .qb__count {
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--signal);
+  }
+
+  .qb__when {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--signal);
+  }
+
+  /* The roll window: the vehicle line changes the way a destination blind
+     changes — it rolls through, it does not cross-fade. */
+  .qb__roll {
+    display: block;
+    overflow: hidden;
+  }
+
+  .qb__vehicle {
+    display: block;
+    font-size: 1.0625rem;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--hivis);
+  }
+
+  .qb__vehicle[data-rolling] {
+    animation: qroll 420ms var(--ease-out);
+  }
+
+  @keyframes qroll {
+    0% {
+      transform: translateY(-105%);
+      filter: blur(2.5px);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translateY(0);
+      filter: blur(0);
+      opacity: 1;
+    }
+  }
+
+  .qb__detail {
+    display: block;
+    color: var(--signal-dim);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .qb__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--blade-divider);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--signal-dim);
+  }
+
+  /* Anything the visitor has to act on takes high-vis, same as everywhere. */
+  .qb__status[data-tone='act'] {
+    color: var(--hivis);
+    font-weight: 700;
+  }
+
+  .qb__call {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--hivis);
+    white-space: nowrap;
+  }
+
+  .qb__call[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 46rem) {
+    .qb {
+      padding: var(--space-5) var(--space-6);
+    }
+
+    .qb__meta {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-4);
+    }
+
+    .qb__cell + .qb__cell {
+      padding-left: 0;
+      padding-top: var(--space-4);
+      border-left: 0;
+      border-top: 1px solid var(--blade-divider);
+    }
+  }
+</style>
+
+<script>
+  import { recommendVehicle } from '../data/fleet';
+
+  const form = document.querySelector<HTMLFormElement>('[data-quick-quote]');
+  const blade = document.querySelector<HTMLElement>('[data-qq-blade]');
+
+  if (form && blade) {
+    const out = {
+      from: blade.querySelector<HTMLElement>('[data-qq-from]')!,
+      to: blade.querySelector<HTMLElement>('[data-qq-to]')!,
+      count: blade.querySelector<HTMLElement>('[data-qq-count]')!,
+      when: blade.querySelector<HTMLElement>('[data-qq-when]')!,
+      vehicle: blade.querySelector<HTMLElement>('[data-qq-vehicle]')!,
+      detail: blade.querySelector<HTMLElement>('[data-qq-detail]')!,
+      status: blade.querySelector<HTMLElement>('[data-qq-status]')!,
+      call: blade.querySelector<HTMLElement>('[data-qq-call]')!,
+    };
+    const statusLine = out.status.parentElement!;
+
+    const field = (name: string) =>
+      form.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-qq-field="${name}"]`);
+
+    const setSlot = (el: HTMLElement, value: string, fallback: string) => {
+      const filled = value.trim().length > 0;
+      el.textContent = filled ? value.trim() : fallback;
+      el.toggleAttribute('data-set', filled);
+    };
+
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    /**
+     * Format the departure without constructing a Date: `yyyy-mm-dd` parses as
+     * UTC, which renders the day before in Chicago.
+     */
+    const departure = (date: string, time: string) => {
+      const [y, m, d] = date.split('-').map(Number);
+      if (!y || !m || !d || !MONTHS[m - 1]) return '—';
+      let text = `${d} ${MONTHS[m - 1]} ${y}`;
+      const [hh, mm] = time.split(':').map(Number);
+      if (Number.isFinite(hh) && Number.isFinite(mm)) {
+        text += ` · ${hh % 12 === 0 ? 12 : hh % 12}:${String(mm).padStart(2, '0')} ${hh >= 12 ? 'pm' : 'am'}`;
+      }
+      return text;
+    };
+
+    /** `withCall` reveals the phone link, for the states where calling is the fix. */
+    const setStatus = (text: string, tone: 'act' | 'plain', withCall = false) => {
+      out.status.textContent = text;
+      statusLine.setAttribute('data-tone', tone);
+      out.call.hidden = !withCall;
+    };
+
+    let lastVehicle = '';
+
+    const update = () => {
+      setSlot(out.from, field('from')?.value ?? '', 'Pickup');
+      setSlot(out.to, field('to')?.value ?? '', 'Destination');
+
+      const raw = field('count')?.value ?? '';
+      const count = Number.parseInt(raw, 10);
+      out.count.textContent = Number.isFinite(count) && count > 0 ? raw : '—';
+      out.when.textContent = departure(field('date')?.value ?? '', field('time')?.value ?? '');
+
+      const { name, detail } = recommendVehicle(count);
+      if (name !== lastVehicle) {
+        out.vehicle.textContent = name;
+        out.detail.textContent = detail;
+        // Restart the roll.
+        out.vehicle.removeAttribute('data-rolling');
+        void out.vehicle.offsetWidth;
+        out.vehicle.setAttribute('data-rolling', '');
+        lastVehicle = name;
+      }
+    };
+
+    let sent = false;
+
+    form.addEventListener('submit', (event) => {
+      // The submit event only fires once the browser's own validation passes.
+      event.preventDefault();
+      update();
+
+      const firstReveal = blade.hidden;
+      blade.hidden = false;
+      blade.setAttribute('data-shown', '');
+      sent = true;
+
+      const endpoint = form.dataset.endpoint?.trim();
+      if (!endpoint) {
+        // No delivery address yet. Say so, rather than implying it was sent.
+        setStatus('This form has no delivery address yet, so nothing was sent:', 'act', true);
+      } else {
+        setStatus('Sending…', 'plain');
+        fetch(endpoint, { method: 'POST', body: new FormData(form) })
+          .then((res) => {
+            if (!res.ok) throw new Error(String(res.status));
+            setStatus('Request received. We reply during office hours.', 'plain');
+          })
+          .catch(() => setStatus('That did not send. Reach us directly:', 'act', true));
+      }
+
+      if (firstReveal) {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        blade.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      }
+    });
+
+    // Once the blade is up it tracks the fields, so it is never left stale.
+    const onEdit = () => {
+      if (blade.hidden) return;
+      update();
+      if (sent) {
+        setStatus('Details changed. Send the request again to update it.', 'act');
+        sent = false;
+      }
+    };
+
+    form.addEventListener('input', onEdit);
+    form.addEventListener('change', onEdit);
+
+    /**
+     * Step two is folded away, and a required field inside a closed <details> is
+     * one the browser cannot focus to report. Unfold it first — this also covers
+     * pressing Enter in step one, which submits implicitly.
+     * `invalid` does not bubble, hence the capture phase.
+     */
+    const next = form.querySelector<HTMLDetailsElement>('[data-qq-next]');
+    form.addEventListener(
+      'invalid',
+      (event) => {
+        const owner = (event.target as HTMLElement).closest('details');
+        if (owner && !owner.open) owner.open = true;
+      },
+      true
+    );
+
+    // Opening step two puts the caret in it rather than leaving it to be hunted.
+    next?.addEventListener('toggle', () => {
+      if (next.open) {
+        next.querySelector<HTMLInputElement>('input[name="name"]')?.focus({ preventScroll: true });
+      }
+    });
+  }
+</script>

@@ -1,0 +1,202 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import Icon from '../../components/Icon.astro';
+import { SERVICES } from '../../data/services';
+import { BUSINESS } from '../../config/site';
+
+export function getStaticPaths() {
+  return SERVICES.map((service) => ({
+    params: { service: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+const others = SERVICES.filter((s) => s.slug !== service.slug);
+---
+
+<Layout
+  path={`/services/${service.slug}`}
+  title={service.meta.title}
+  description={service.meta.description}
+>
+  <PageHead coordinate={service.destination} title={service.headline} lede={service.proposition} />
+
+  <div class="section">
+    <div class="shell svc__grid">
+      <div class="svc__body stack">
+        {service.body.map((p) => <p class="svc__p">{p}</p>)}
+      </div>
+
+      <aside class="svc__aside">
+        <h2 class="coordinate coordinate--ink">What people ask us</h2>
+        <dl class="concerns">
+          {
+            service.concerns.map((c) => (
+              <div class="concern">
+                <dt class="concern__q">{c.label}</dt>
+                <dd class="concern__a">{c.answer}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </aside>
+    </div>
+  </div>
+
+  <section class="section--tight field cta">
+    <div class="shell cta__inner">
+      <div>
+        <h2 class="subtitle cta__head">Get this priced.</h2>
+        <p class="lede cta__body">
+          Send the date, the headcount and the route. Office {BUSINESS.hours.officeSummary}.
+        </p>
+      </div>
+      <div class="cta__actions">
+        <a class="action" href="/#quote-form">
+          Get a quote
+          <Icon name="arrow" size={16} />
+        </a>
+        <a class="action action--ghost" href={BUSINESS.phone.href}>
+          <Icon name="phone" size={16} />
+          {BUSINESS.phone.display}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="shell">
+      <h2 class="coordinate coordinate--ink">Other services</h2>
+      <ul class="others">
+        {
+          others.map((o) => (
+            <li>
+              <a class="other" href={`/services/${o.slug}`}>
+                <span class="other__name">{o.name}</span>
+                <Icon name="arrow" size={16} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .svc__grid {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  @media (min-width: 60rem) {
+    .svc__grid {
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: var(--space-16);
+      align-items: start;
+    }
+  }
+
+  .svc__body {
+    --flow: var(--space-6);
+    max-width: var(--measure);
+  }
+
+  .svc__p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  .svc__aside {
+    padding: var(--space-8);
+    border-top: 3px solid var(--enamel);
+    background: var(--paper-lift);
+  }
+
+  .concerns {
+    margin: 0;
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .concern__q {
+    margin-bottom: var(--space-2);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .concern__a {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+
+  .cta__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .cta__head {
+    margin-bottom: var(--space-2);
+  }
+
+  .cta__body {
+    max-width: 44ch;
+  }
+
+  .cta__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .others {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  }
+
+  .other {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    text-decoration: none;
+    color: var(--ink);
+    transition:
+      border-color 200ms var(--ease-out),
+      background 200ms var(--ease-out);
+  }
+
+  .other:hover {
+    border-color: var(--enamel);
+    background: var(--paper-lift);
+  }
+
+  .other__name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .other :global(svg) {
+    color: var(--ink-dim);
+    flex: none;
+  }
+
+  .other:hover :global(svg) {
+    color: var(--hivis-text);
+  }
+</style>

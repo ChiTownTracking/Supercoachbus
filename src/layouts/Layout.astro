@@ -1,23 +1,123 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { BUSINESS, SITE_ORIGIN } from '../config/site';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Path without origin, e.g. "/fleet". */
+  path: string;
+  /** Set on pages that should not be indexed. */
+  noindex?: boolean;
+}
+
+const { title, description, path, noindex = false } = Astro.props;
+const canonical = new URL(path, SITE_ORIGIN).href;
+
+const { address, geo, hours, phone } = BUSINESS;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${SITE_ORIGIN}/#business`,
+  name: BUSINESS.name,
+  url: SITE_ORIGIN,
+  telephone: phone.e164,
+  email: BUSINESS.email,
+  description:
+    'Charter bus and shuttle rental with professional drivers for corporate, school, wedding, sporting event and youth group transportation in Chicago.',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: address.street,
+    addressLocality: address.city,
+    addressRegion: address.region,
+    postalCode: address.postalCode,
+    addressCountry: address.country,
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: geo.latitude,
+    longitude: geo.longitude,
+  },
+  hasMap: BUSINESS.googleMapsUrl,
+  sameAs: [BUSINESS.googleMapsUrl],
+  areaServed: { '@type': 'City', name: 'Chicago' },
+  // Office hours only. Charters run outside these hours, but "we will drive at
+  // 4am" is not an opening hour and must not be modelled as one.
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ],
+      opens: hours.schemaOpens,
+      closes: hours.schemaCloses,
+    },
+  ],
+};
+---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Cropped from the real logo mark, not a substitute glyph. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={BUSINESS.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0e3b2a" />
+    <set:html
+      value={`<script type="application/ld+json">${JSON.stringify(schema)}</script>`}
+    />
+  </head>
+  <body>
+    <!--
+      DIRECTION CONTRACT — seed fbddba33
+      THESIS: A charter company is a wayfinding system with wheels. This site is built as
+      Chicago's public-way signage program, refusing the category's highway-photo hero with a
+      quote bar floating over it.
+      OWN-WORLD: Porcelain enamel blades in deep green over concrete, Highway Gothic in signal
+      white, a sheared-bar texture drawn from the logo on both grounds, near-square 3px plate
+      corners, and high-vis amber reserved exclusively for action.
+      STORY: An organizer with a date, a headcount and a route learns that the one real coach
+      fits, trusts the drivers, and requests a quote.
+      FIRST VIEWPORT: A concrete band — mono grid coordinate rule, one oversized gothic line in
+      enamel, the mark's gradient as a rule beneath it, amber action; the operator's own coach
+      covering the band and masked back into the concrete, carrying the proof.
+      FORM: Public Way, candidate 5 of the ordered grounded list, seed key fbddba33.
+      FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review,
+      the verdict, and DESIGN.md
+      AMENDED: the Sprinter was removed at the owner's direction (one coach, not two); the
+      honeycomb sheeting was replaced by the logo-derived sheared-bar texture; the hero's
+      capacity plate was removed, leaving the photograph to carry the proof (the numeral is
+      still set at scale in the fleet section and on /fleet); and the hero itself moved from an
+      enamel band with a scrimmed photograph to a concrete band whose photograph covers it
+      entirely and is masked back into the ground, sharing that ground with the quote form and
+      carrying no border between them. Seed unchanged.
+    -->
+    <a class="skip" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

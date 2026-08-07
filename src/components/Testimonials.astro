@@ -1,0 +1,91 @@
+---
+import { TESTIMONIALS } from '../data/testimonials';
+
+/**
+ * Real reviews, verbatim. Never edit the quote text — see src/data/testimonials.ts.
+ */
+interface Props {
+  heading?: string;
+}
+
+const { heading = 'What groups say afterward' } = Astro.props;
+---
+
+<section class="section reviews">
+  <div class="shell">
+    <h2 class="title reviews__head">{heading}</h2>
+
+    <ul class="reviews__list">
+      {
+        TESTIMONIALS.map((t) => (
+          <li class="review">
+            <blockquote class="review__quote">
+              <p>{t.quote}</p>
+            </blockquote>
+            <footer class="review__by">
+              <span class="review__name">{t.name}</span>
+              <span class="review__ctx mono">{t.context}</span>
+            </footer>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .reviews__head {
+    max-width: 20ch;
+    margin-bottom: var(--space-12);
+  }
+
+  .reviews__list {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    align-items: start;
+  }
+
+  .review {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    border-top: 3px solid var(--enamel);
+    background: var(--paper-lift);
+  }
+
+  .review__quote {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .review__quote p {
+    margin: 0;
+  }
+
+  .review__by {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-top: auto;
+  }
+
+  .review__name {
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .review__ctx {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+</style>

@@ -1,0 +1,46 @@
+---
+/**
+ * Interior page header. The enamel field carries the page's own destination
+ * line, so every route announces itself the way a blade does.
+ */
+/**
+ * The coordinate line is optional and must carry real information — an address,
+ * a capacity, a phone number, a destination. A line that merely restates the
+ * heading below it is a kicker, and the heading carries its own weight.
+ */
+interface Props {
+  coordinate?: string;
+  title: string;
+  lede?: string;
+}
+
+const { coordinate, title, lede } = Astro.props;
+---
+
+<section class="head field">
+  <div class="shell">
+    {coordinate && <p class="coordinate">{coordinate}</p>}
+    <h1 class="display head__title">{title}</h1>
+    {lede && <p class="lede head__lede">{lede}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  /* Held deliberately tighter than a section band. This is a page's nameplate,
+     not a hero — it should hand the reader down to the content, not occupy a
+     viewport doing it. */
+  .head {
+    padding-block: clamp(var(--space-8), 4.5vw, var(--space-16));
+  }
+
+  .head__title {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    max-width: 18ch;
+  }
+
+  .head__lede {
+    max-width: 52ch;
+    margin-top: var(--space-6);
+  }
+</style>

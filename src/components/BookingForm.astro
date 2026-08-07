@@ -1,0 +1,608 @@
+---
+import { BUSINESS } from '../config/site';
+import { OPEN_ITEMS } from '../lib/placeholder';
+import Placeholder from './Placeholder.astro';
+import Icon from './Icon.astro';
+import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/formOptions';
+
+/**
+ * The reservation form, with the destination blade below it as a receipt.
+ *
+ * The blade is the signature of this build. It stays hidden until the request is
+ * submitted, then sets itself the way a coach's destination sign is set and
+ * names how the group is carried — honest capacity arithmetic against
+ * src/data/fleet.ts, never a sales suggestion. It used to sit above the form as
+ * a live preview; it now confirms rather than predicts, matching QuickQuote.
+ *
+ * It never claims a delivery that did not happen. "Successfully submitted" is
+ * printed only when a real endpoint accepts the POST; while `data-endpoint` is
+ * empty the blade says plainly that nothing was sent and offers the phone.
+ *
+ * This asks the same questions in the same order as the homepage QuickQuote, off
+ * the same option lists in data/formOptions.ts. Fields may also arrive prefilled
+ * from a query string — the homepage form GETs here when JavaScript is
+ * unavailable, and the resulting URL is shareable (see the block in the script).
+ */
+interface Props {
+  mode: 'quote' | 'reserve';
+}
+
+const { mode } = Astro.props;
+const isReserve = mode === 'reserve';
+const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEndpoint;
+---
+
+<div class="booking">
+  <!-- The endpoint belongs in both `action` and `data-endpoint`: the first makes
+       the form work without JavaScript, the second lets the script post it and
+       keep the blade on screen. -->
+  <form class="booking__form" data-booking method="post" action="" data-endpoint="">
+    <Placeholder item={endpointItem} />
+
+    <fieldset class="booking__set">
+      <legend class="coordinate coordinate--ink">The trip</legend>
+      <div class="grid">
+        <label class="control half" data-required>
+          <span>Pickup location</span>
+          <input name="pickup" data-field="from" required placeholder="Hotel, office, school or address" />
+        </label>
+        <label class="control half" data-required>
+          <span>Drop-off location</span>
+          <input name="dropoff" data-field="to" required placeholder="Venue, stadium or address" />
+        </label>
+        <label class="control" data-required>
+          <span>Passengers</span>
+          <select name="passengers" data-field="count" required>
+            <option value="">Select</option>
+            {PASSENGER_OPTIONS.map((p) => <option value={p}>{p}</option>)}
+          </select>
+        </label>
+        <label class="control" data-required>
+          <span>Date of service</span>
+          <input name="date" type="date" required />
+        </label>
+        <label class="control" data-required>
+          <span>Pickup time</span>
+          <input name="time" type="time" required />
+        </label>
+        <label class="control" data-required>
+          <span>Hours needed</span>
+          <select name="hours" required>
+            <option value="">Select</option>
+            {HOURS.map((h) => <option value={h}>{h}</option>)}
+          </select>
+        </label>
+        <label class="control" data-required>
+          <span>Event type</span>
+          <select name="eventType" required>
+            <option value="">Select</option>
+            {EVENT_TYPES.map((e) => <option value={e}>{e}</option>)}
+          </select>
+        </label>
+        <!-- Vehicle is asked as a preference, not a requirement: the fleet is one
+             coach, so the default is "recommend one" and the blade above states
+             what actually carries the group from the headcount. -->
+        <label class="control">
+          <span>Type of vehicle</span>
+          <select name="vehicle">
+            {VEHICLE_OPTIONS.map((v) => <option value={v.value}>{v.label}</option>)}
+          </select>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="booking__set">
+      <legend class="coordinate coordinate--ink">You</legend>
+      <div class="grid">
+        <label class="control" data-required>
+          <span>Name</span>
+          <input name="name" required autocomplete="name" />
+        </label>
+        <label class="control" data-required>
+          <span>Email</span>
+          <input name="email" type="email" required autocomplete="email" />
+        </label>
+        <label class="control" data-required>
+          <span>Phone</span>
+          <input name="phone" type="tel" required autocomplete="tel" />
+        </label>
+        <label class="control full">
+          <span>Special notes</span>
+          <textarea name="notes" placeholder="Multiple pickups, return timing, luggage, accessibility needs"></textarea>
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="booking__submit">
+      <button class="action" type="submit">
+        {isReserve ? 'Send reservation request' : 'Request my quote'}
+        <Icon name="arrow" size={16} />
+      </button>
+      <p class="booking__alt">
+        Or call <a href={BUSINESS.phone.href}>{BUSINESS.phone.display}</a> — office {BUSINESS.hours.officeSummary}.
+      </p>
+    </div>
+  </form>
+
+  <!-- The receipt. Hidden until the request is submitted, then set the way a
+       destination sign is set — the same object, and the same rule, as the
+       homepage quote form. -->
+  <div class="rb blade" hidden data-route-blade aria-live="polite">
+    <div class="rb__strip">
+      <span class="rb__coord mono">{BUSINESS.address.gridCoordinate}</span>
+      <span class="rb__service mono">{isReserve ? 'Reservation requested' : 'Quote requested'}</span>
+    </div>
+
+    <p class="rb__route gothic">
+      <span data-blade-from>Pickup</span>
+      <Icon name="arrow" size={26} class="rb__arrow" />
+      <span data-blade-to>Destination</span>
+    </p>
+
+    <!-- Lower panel, read as keyed cells the way a sign's secondary panel is. -->
+    <div class="rb__meta">
+      <div class="rb__cell">
+        <span class="rb__key mono">Passengers</span>
+        <span class="rb__count mono" data-blade-count>—</span>
+      </div>
+      <div class="rb__cell">
+        <span class="rb__key mono">Departs</span>
+        <span class="rb__when mono" data-blade-when>—</span>
+      </div>
+      <div class="rb__cell">
+        <span class="rb__key mono">Vehicle</span>
+        <span class="rb__roll">
+          <span class="rb__vehicle" data-blade-vehicle>Awaiting passenger count</span>
+        </span>
+        <span class="rb__detail" data-blade-detail></span>
+      </div>
+    </div>
+
+    <p class="rb__status">
+      <span data-blade-status></span>
+      <a class="rb__call" href={BUSINESS.phone.href} data-blade-call hidden>
+        <Icon name="phone" size={15} />
+        {BUSINESS.phone.display}
+      </a>
+    </p>
+  </div>
+</div>
+
+<style>
+  .booking {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  /* ---- The receipt blade ---- */
+
+  /* .blade sets display:block, which would otherwise beat the UA [hidden] rule. */
+  .rb[hidden] {
+    display: none;
+  }
+
+  .rb {
+    padding: var(--space-6) var(--space-8);
+    transform-origin: top center;
+  }
+
+  /* Set the way a blade is set into its bracket: down and square, no bounce. */
+  .rb[data-shown] {
+    animation: rbset 460ms var(--ease-out);
+  }
+
+  @keyframes rbset {
+    0% {
+      opacity: 0;
+      transform: translateY(-14px) scaleY(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .rb__strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--blade-divider);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .rb__coord {
+    color: var(--azure);
+  }
+
+  .rb__service {
+    color: var(--signal-dim);
+  }
+
+  .rb__route {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-4);
+    margin: var(--space-5) 0 var(--space-4);
+    font-size: clamp(1.25rem, 3.2vw, 2.125rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: 0.005em;
+  }
+
+  .rb__route span {
+    transition: color 200ms var(--ease-out);
+  }
+
+  /* Unset slots read as empty without dropping below the contrast floor. */
+  .rb__route span:not([data-set]) {
+    color: var(--signal-unset);
+  }
+
+  .rb__arrow {
+    flex: none;
+    color: var(--hivis);
+  }
+
+  .rb__meta {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--blade-divider);
+    font-size: 0.875rem;
+  }
+
+  .rb__cell {
+    display: grid;
+    gap: var(--space-1);
+    align-content: start;
+  }
+
+  .rb__cell + .rb__cell {
+    padding-left: var(--space-6);
+    border-left: 1px solid var(--blade-divider);
+  }
+
+  .rb__key {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--azure);
+  }
+
+  .rb__count {
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--signal);
+  }
+
+  .rb__when {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--signal);
+  }
+
+  /* The roll window: the vehicle line changes the way a destination blind
+     changes — it rolls through, it does not cross-fade. */
+  /* No fixed height — the child is clipped by this box while it rolls in, so
+     the vehicle name is free to wrap on a narrow screen. */
+  .rb__roll {
+    display: block;
+    overflow: hidden;
+  }
+
+  .rb__vehicle {
+    display: block;
+    font-size: 1.0625rem;
+    font-weight: 800;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    color: var(--hivis);
+  }
+
+  .rb__vehicle[data-rolling] {
+    animation: roll 420ms var(--ease-out);
+  }
+
+  @keyframes roll {
+    0% {
+      transform: translateY(-105%);
+      filter: blur(2.5px);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translateY(0);
+      filter: blur(0);
+      opacity: 1;
+    }
+  }
+
+  .rb__detail {
+    display: block;
+    color: var(--signal-dim);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .rb__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-4);
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--blade-divider);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--signal-dim);
+  }
+
+  /* Anything the visitor has to act on takes high-vis, same as everywhere. */
+  .rb__status[data-tone='act'] {
+    color: var(--hivis);
+    font-weight: 700;
+  }
+
+  .rb__call {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: var(--hivis);
+    white-space: nowrap;
+  }
+
+  .rb__call[hidden] {
+    display: none;
+  }
+
+  @media (max-width: 46rem) {
+    .rb {
+      padding: var(--space-5) var(--space-6);
+    }
+
+    .rb__meta {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-4);
+    }
+
+    .rb__cell + .rb__cell {
+      padding-left: 0;
+      padding-top: var(--space-4);
+      border-left: 0;
+      border-top: 1px solid var(--blade-divider);
+    }
+  }
+
+  /* ---- The form ---- */
+
+  .booking__form {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .booking__set {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .booking__set legend {
+    padding: 0;
+    width: 100%;
+  }
+
+  /* Six tracks, so a row of three short fields and a row of two long ones both
+     come out flush. The same system runs in QuickQuote; the breakpoints differ
+     because this form sits in the narrower of two columns on /quote. */
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 40rem) {
+    .grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+
+    .grid > * {
+      grid-column: span 3;
+    }
+
+    .grid > .half,
+    .grid > .full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 72rem) {
+    .grid > * {
+      grid-column: span 2;
+    }
+
+    .grid > .half {
+      grid-column: span 3;
+    }
+
+    .grid > .full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .booking__submit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    padding-top: var(--space-2);
+  }
+
+  .booking__alt {
+    font-size: 0.9375rem;
+    color: var(--ink-dim);
+  }
+
+  .booking__alt a {
+    font-weight: 700;
+    color: var(--ink);
+  }
+</style>
+
+<script>
+  import { recommendVehicle } from '../data/fleet';
+
+  const blade = document.querySelector<HTMLElement>('[data-route-blade]');
+  const form = document.querySelector<HTMLFormElement>('[data-booking]');
+  if (blade && form) {
+    const out = {
+      from: blade.querySelector<HTMLElement>('[data-blade-from]')!,
+      to: blade.querySelector<HTMLElement>('[data-blade-to]')!,
+      count: blade.querySelector<HTMLElement>('[data-blade-count]')!,
+      when: blade.querySelector<HTMLElement>('[data-blade-when]')!,
+      vehicle: blade.querySelector<HTMLElement>('[data-blade-vehicle]')!,
+      detail: blade.querySelector<HTMLElement>('[data-blade-detail]')!,
+      status: blade.querySelector<HTMLElement>('[data-blade-status]')!,
+      call: blade.querySelector<HTMLElement>('[data-blade-call]')!,
+    };
+    const statusLine = out.status.parentElement!;
+
+    const field = (name: string) =>
+      form.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-field="${name}"]`);
+    const named = (name: string) => form.elements.namedItem(name) as HTMLInputElement | null;
+
+    const setSlot = (el: HTMLElement, value: string, fallback: string) => {
+      const filled = value.trim().length > 0;
+      el.textContent = filled ? value.trim() : fallback;
+      el.toggleAttribute('data-set', filled);
+    };
+
+    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    /**
+     * Format the departure without constructing a Date: `yyyy-mm-dd` parses as
+     * UTC, which renders the day before in Chicago.
+     */
+    const departure = (date: string, time: string) => {
+      const [y, m, d] = date.split('-').map(Number);
+      if (!y || !m || !d || !MONTHS[m - 1]) return '—';
+      let text = `${d} ${MONTHS[m - 1]} ${y}`;
+      const [hh, mm] = time.split(':').map(Number);
+      if (Number.isFinite(hh) && Number.isFinite(mm)) {
+        text += ` · ${hh % 12 === 0 ? 12 : hh % 12}:${String(mm).padStart(2, '0')} ${hh >= 12 ? 'pm' : 'am'}`;
+      }
+      return text;
+    };
+
+    /** `withCall` reveals the phone link, for the states where calling is the fix. */
+    const setStatus = (text: string, tone: 'act' | 'plain', withCall = false) => {
+      out.status.textContent = text;
+      statusLine.setAttribute('data-tone', tone);
+      out.call.hidden = !withCall;
+    };
+
+    let lastVehicle = '';
+
+    const update = () => {
+      setSlot(out.from, field('from')?.value ?? '', 'Pickup');
+      setSlot(out.to, field('to')?.value ?? '', 'Destination');
+
+      // Print the option's own label so the "58+" overflow reads as chosen.
+      const raw = field('count')?.value ?? '';
+      const count = Number.parseInt(raw, 10);
+      out.count.textContent = Number.isFinite(count) && count > 0 ? raw : '—';
+      out.when.textContent = departure(named('date')?.value ?? '', named('time')?.value ?? '');
+
+      const { name, detail } = recommendVehicle(count);
+
+      if (name !== lastVehicle) {
+        out.vehicle.textContent = name;
+        out.detail.textContent = detail;
+        // Restart the roll animation.
+        out.vehicle.removeAttribute('data-rolling');
+        void out.vehicle.offsetWidth;
+        out.vehicle.setAttribute('data-rolling', '');
+        lastVehicle = name;
+      }
+    };
+
+    /**
+     * Prefill from the homepage quote form's no-JavaScript handoff, which GETs
+     * here. Whatever the visitor already typed arrives in the query string and
+     * must never be asked for a second time. The resulting URL is also
+     * shareable, so this runs for anyone arriving on one.
+     */
+    const params = new URLSearchParams(window.location.search);
+    if ([...params.keys()].length > 0) {
+      for (const [key, value] of params) {
+        if (!value.trim()) continue;
+        const el = form.elements.namedItem(key);
+        if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
+          el.value = value;
+        }
+      }
+      // Send them to the first thing still unanswered rather than the top.
+      const firstEmpty = [...form.querySelectorAll<HTMLInputElement>('[required]')].find(
+        (el) => !el.value.trim()
+      );
+      firstEmpty?.focus({ preventScroll: true });
+    }
+
+    let sent = false;
+
+    form.addEventListener('submit', (event) => {
+      // The submit event only fires once the browser's own validation passes.
+      event.preventDefault();
+      update();
+
+      const firstReveal = blade.hidden;
+      blade.hidden = false;
+      blade.setAttribute('data-shown', '');
+      sent = true;
+
+      const endpoint = form.dataset.endpoint?.trim();
+      if (!endpoint) {
+        // No delivery address yet. Say so, rather than implying it was sent.
+        setStatus('This form has no delivery address yet, so nothing was sent:', 'act', true);
+      } else {
+        setStatus('Sending…', 'plain');
+        fetch(endpoint, { method: 'POST', body: new FormData(form) })
+          .then((res) => {
+            if (!res.ok) throw new Error(String(res.status));
+            setStatus('Successfully submitted. We reply during office hours.', 'plain');
+          })
+          .catch(() => setStatus('That did not send. Reach us directly:', 'act', true));
+      }
+
+      if (firstReveal) {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        blade.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      }
+    });
+
+    // Once the blade is up it tracks the fields, so it is never left stale.
+    const onEdit = () => {
+      if (blade.hidden) return;
+      update();
+      if (sent) {
+        setStatus('Details changed. Send the request again to update it.', 'act');
+        sent = false;
+      }
+    };
+
+    form.addEventListener('input', onEdit);
+    form.addEventListener('change', onEdit);
+  }
+</script>

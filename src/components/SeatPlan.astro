@@ -1,0 +1,110 @@
+---
+import { FLEET, type Vehicle } from '../data/fleet';
+
+/**
+ * Plan-view seating diagram, drawn as geometry from the vehicle's row data.
+ *
+ * Capacity is confirmed; the exact row arrangement is not, so the caption says
+ * "schematic" rather than implying a surveyed floor plan.
+ */
+interface Props {
+  vehicle: Vehicle;
+}
+
+const { vehicle } = Astro.props;
+const { rows, leftPerRow, rightPerRow } = vehicle.layout;
+
+const SEAT = 13;
+const GAP = 4;
+const AISLE = 12;
+const NOSE = 26;
+
+const planWidth = (v: Vehicle) => NOSE + v.layout.rows * (SEAT + GAP) + 10;
+
+const cols = leftPerRow + rightPerRow;
+const width = planWidth(vehicle);
+const height = cols * (SEAT + GAP) + AISLE + 16;
+
+/**
+ * Plans render at one shared scale across the whole fleet, so relative vehicle
+ * size stays true if a second coach is ever added. Sizing each SVG to 100% of
+ * its column would draw the smaller vehicle with the larger seats — the exact
+ * opposite of what the diagram is for.
+ */
+const widest = Math.max(...FLEET.map(planWidth));
+
+/**
+ * A px ceiling, not a percentage. A percentage width on an SVG inside an
+ * auto-sized grid track resolves against a track that is itself sized from the
+ * SVG — the circularity blew the /fleet page out to 1098px at a 390px viewport.
+ * A bounded max-width keeps the shared scale and lets the plan shrink normally.
+ */
+const WIDEST_PLAN_PX = 460;
+const maxWidth = `${Math.round((width / widest) * WIDEST_PLAN_PX)}px`;
+
+const seats: { x: number; y: number }[] = [];
+for (let r = 0; r < rows; r++) {
+  const x = NOSE + r * (SEAT + GAP);
+  for (let c = 0; c < cols; c++) {
+    const side = c < leftPerRow ? 0 : AISLE;
+    seats.push({ x, y: 8 + c * (SEAT + GAP) + side });
+  }
+}
+---
+
+<figure class="plan">
+  <svg
+    viewBox={`0 0 ${width} ${height}`}
+    style={`max-width:${maxWidth}`}
+    role="img"
+    aria-label={`Schematic seating plan, ${vehicle.capacityLabel} passengers`}
+  >
+    <rect
+      x="1" y="1" width={width - 2} height={height - 2}
+      rx="10" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.5"
+    />
+    <line
+      x1={NOSE - 9} y1="6" x2={NOSE - 9} y2={height - 6}
+      stroke="currentColor" stroke-opacity="0.28" stroke-width="1.5"
+    />
+    {
+      seats.map((s) => (
+        <rect x={s.x} y={s.y} width={SEAT} height={SEAT} rx="2" fill="currentColor" fill-opacity="0.62" />
+      ))
+    }
+  </svg>
+  <figcaption class="mono">
+    {vehicle.capacityLabel} passengers · seating shown schematically
+  </figcaption>
+</figure>
+
+<style>
+  .plan {
+    margin: 0;
+    min-width: 0;
+    color: var(--enamel);
+  }
+
+  .plan svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  figcaption {
+    margin-top: var(--space-3);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  :global(.field) .plan {
+    color: var(--signal);
+  }
+
+  :global(.field) figcaption {
+    color: var(--signal-dim);
+  }
+</style>

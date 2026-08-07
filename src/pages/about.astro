@@ -1,0 +1,214 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHead from '../components/PageHead.astro';
+import Placeholder from '../components/Placeholder.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Icon from '../components/Icon.astro';
+import { BUSINESS, TRUST_CLAIMS } from '../config/site';
+import { OPEN_ITEMS } from '../lib/placeholder';
+---
+
+<Layout
+  path="/about"
+  title="Charter Coach Bus Rental Services | About Us"
+  description="Chicago Super Coach is a Chicago charter bus operator running its own 54–57 passenger executive coach, with licensed, insured and drug-tested drivers. Based at 3717 W. Montrose Avenue."
+>
+  <PageHead
+    coordinate="3717 W. Montrose Avenue · Chicago"
+    title="We drive our own buses."
+    lede="Chicago Super Coach operates from 3717 W. Montrose Avenue with its own coach and drivers who work for us."
+  />
+
+  <div class="section">
+    <div class="shell about__grid">
+      <div class="about__body stack">
+        <p class="about__p">
+          Plenty of companies that will sell you a charter do not own a bus. They
+          take the booking, mark it up, and pass it to whoever is free that day —
+          which is how a group ends up on a vehicle nobody described to them,
+          with a driver nobody vetted.
+        </p>
+        <p class="about__p">
+          We are not that. The 54–57 passenger executive coach on our fleet page
+          is the vehicle you are quoted and the vehicle that turns up. Our
+          drivers are licensed and experienced, insured, and drug tested, and the
+          coach is maintained on a regular schedule.
+        </p>
+        <p class="about__p">
+          It also means the person you speak to can actually answer you. When a
+          timeline shifts, when a game runs long, or when a booking comes in with
+          three days' notice, you are talking to the operator rather than to a
+          call centre passing a message along.
+        </p>
+      </div>
+
+      <aside class="about__facts">
+        <h2 class="coordinate coordinate--ink">The details</h2>
+        <dl class="facts">
+          <div class="fact">
+            <dt>Based</dt>
+            <dd>{BUSINESS.address.street}<br />{BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}</dd>
+          </div>
+          <div class="fact">
+            <dt>Serving</dt>
+            <dd>{BUSINESS.serviceArea}</dd>
+          </div>
+          <div class="fact">
+            <dt>Office hours</dt>
+            <dd>{BUSINESS.hours.officeDays}, {BUSINESS.hours.officeTime}</dd>
+          </div>
+          <div class="fact">
+            <dt>Charters</dt>
+            <dd><strong>{BUSINESS.hours.charterNote}</strong> — the office keeps business hours, the buses do not.</dd>
+          </div>
+          <div class="fact">
+            <dt>Fleet</dt>
+            <dd>Executive coach bus, 54–57 passengers</dd>
+          </div>
+        </dl>
+      </aside>
+    </div>
+  </div>
+
+  <section class="section--tight standards">
+    <div class="shell">
+      <h2 class="title standards__head">What we hold to on every charter</h2>
+      <ul class="standards__list">
+        {
+          TRUST_CLAIMS.map((c) => (
+            <li class="standard">
+              <Icon name="check" size={18} />
+              <span>{c}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="standards__gap">
+        <Placeholder item={OPEN_ITEMS.credentials} />
+      </div>
+    </div>
+  </section>
+
+  <Testimonials heading="Groups we have already moved" />
+
+  <section class="section--tight field field--deep">
+    <div class="shell about__cta">
+      <h2 class="subtitle">Tell us where your group needs to be.</h2>
+      <div class="about__actions">
+        <a class="action" href="/#quote-form">
+          Get a quote
+          <Icon name="arrow" size={16} />
+        </a>
+        <a class="action action--ghost" href="/contact">Contact us</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about__grid {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  @media (min-width: 60rem) {
+    .about__grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--space-16);
+      align-items: start;
+    }
+  }
+
+  .about__body {
+    --flow: var(--space-6);
+    max-width: var(--measure);
+  }
+
+  .about__p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+  }
+
+  /* Square plate with a marked top edge — one elevation signal, and the corner
+     language the rest of the signage system uses. */
+  .about__facts {
+    padding: var(--space-8);
+    border-top: 3px solid var(--enamel);
+    background: var(--paper-lift);
+  }
+
+  .facts {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+  }
+
+  .fact dt {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: var(--space-2);
+  }
+
+  .fact dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .standards {
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .standards__head {
+    max-width: 20ch;
+    margin-bottom: var(--space-8);
+  }
+
+  .standards__list {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0 0 var(--space-12);
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  .standard {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .standard :global(svg) {
+    flex: none;
+    color: var(--enamel);
+  }
+
+  .standards__gap {
+    max-width: 46rem;
+  }
+
+  .about__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .about__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+</style>

@@ -1,11 +1,753 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
+import Icon from '../components/Icon.astro';
+import SeatPlan from '../components/SeatPlan.astro';
+import QuickQuote from '../components/QuickQuote.astro';
+import Testimonials from '../components/Testimonials.astro';
+import { BUSINESS, TRUST_CLAIMS } from '../config/site';
+import { FLEET } from '../data/fleet';
+import { SERVICES } from '../data/services';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import heroCoach from '../assets/images/hero-caoch-bus.png';
+import coachExterior from '../assets/images/coach-exterior.jpg';
+import coachInterior from '../assets/images/coach-interior.png';
+import coachInteriorWide from '../assets/images/coach-interior-wide.jpg';
+import chicagoSkyline from '../assets/images/chicago-skyline.png';
+import svcCorporate from '../assets/images/svc-corporate.jpg';
+import svcSchool from '../assets/images/svc-school.jpg';
+import svcSporting from '../assets/images/svc-sporting-events.jpg';
+import svcWeddings from '../assets/images/svc-weddings.jpg';
+import svcYouth from '../assets/images/svc-youth-groups.jpg';
+
+/** Every photograph here is the business's own, recovered from the live site. */
+const SERVICE_IMAGES: Record<string, { src: ImageMetadata; alt: string }> = {
+  corporate: { src: svcCorporate, alt: 'A business traveller in a suit at a city office building' },
+  school: { src: svcSchool, alt: 'A school group on a museum field trip with their teachers' },
+  'sporting-events': { src: svcSporting, alt: 'Spectators watching a ballgame from the stands at Wrigley Field' },
+  weddings: { src: svcWeddings, alt: 'A wedding party lined up outdoors before the ceremony' },
+  'youth-groups': { src: svcYouth, alt: 'A youth group on an outing at a park' },
+};
+
+// The fleet is one coach. The old two-vehicle framing is gone rather than
+// backfilled with an invented second option — see the note in data/fleet.ts.
+const coach = FLEET[0];
 ---
 
-<Layout>
-	<Welcome />
+<Layout
+  path="/"
+  title="Shuttle Bus Service | Charter Bus Service in Chicago IL"
+  description="Chicago Super Coach — charter bus rental for group transportation. Get a free quote on a 54–57 passenger executive coach with licensed, insured drivers. Call 630-624-3448."
+>
+  <!-- Thesis viewport: the coach carries the proof, the offer runs in one line
+       beside it, and the action is in high-vis. The photograph is the ground of
+       the whole band; the copy comes first in source and the photograph last,
+       so a screen reader reaches the offer before the description of it. -->
+  <section class="hero">
+    <div class="shell hero__inner">
+      <div class="hero__lead">
+        <p class="coordinate hero__coord">
+          <Icon name="pin" size={15} class="hero__ico" />
+          {BUSINESS.address.gridCoordinate} · Chicago, Illinois
+        </p>
+        <h1 class="display hero__head">Your whole group, one arrival time.</h1>
+        <span class="hero__rule" aria-hidden="true"></span>
+        <p class="lede hero__lede">
+          Charter bus rental with professional drivers, across{' '}
+          {BUSINESS.serviceArea}. Tell us the date, the headcount and the route —
+          we will confirm the coach and what it costs.
+        </p>
+        <div class="hero__actions">
+          <a class="action" href="#quote-form">
+            Get a quote
+            <Icon name="arrow" size={16} />
+          </a>
+          <a class="action action--outline" href={BUSINESS.phone.href}>
+            <Icon name="phone" size={16} />
+            {BUSINESS.phone.display}
+          </a>
+        </div>
+        <p class="hero__hours mono">
+          <Icon name="clock" size={15} class="hero__ico" />
+          Office {BUSINESS.hours.officeSummary}
+          <span class="hero__bar" aria-hidden="true"></span>
+          <em>{BUSINESS.hours.charterNote}</em>
+        </p>
+      </div>
+    </div>
+
+    <!-- A portrait box cropping a 2.33:1 frame renders it far wider than the
+         viewport, so `sizes="100vw"` would hand a phone a source it then has to
+         upscale. It sits under a 90% wash there, where softness does not read —
+         200vw buys back most of the detail without the full-size file. -->
+    <div class="hero__media">
+      <Image
+        src={heroCoach}
+        alt="The Chicago Super Coach executive coach bus parked with its luggage bays open, the Chicago skyline across the water behind it"
+        widths={[720, 1100, 1600, 1916]}
+        sizes="(min-width: 64rem) 100vw, 200vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  </section>
+
+  <QuickQuote />
+
+  <!-- Trust: the answers a school district and a corporate buyer both ask for. -->
+  <section class="section--tight trust">
+    <div class="shell">
+      <ul class="trust__list">
+        {
+          TRUST_CLAIMS.map((c) => (
+            <li class="trust__item">
+              <Icon name="check" size={16} />
+              {c}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- Fleet -->
+  <section class="section" id="fleet">
+    <div class="shell">
+      <h2 class="title fleet__head">One coach. Every seat accounted for.</h2>
+      <p class="lede measure fleet__lede">
+        We are not a broker reselling somebody else's bus. This is the vehicle
+        you are quoted and the vehicle that turns up.
+      </p>
+
+      <div class="fleet__grid">
+        <figure class="shot shot--tall">
+          <Image
+            src={coachInterior}
+            alt="Interior of the coach: high back leather reclining seats down both sides of the aisle"
+            widths={[520, 840, 1200]}
+            sizes="(min-width: 60rem) 52vw, 92vw"
+          />
+        </figure>
+
+        <div class="fleet__spec">
+          <h3 class="subtitle fleet__name">
+            {coach.capacityLabel} Passenger {coach.name}
+          </h3>
+          <p class="fleet__role">{coach.role}</p>
+          <SeatPlan vehicle={coach} />
+          <ul class="fleet__amenities">
+            {
+              coach.amenities.slice(0, 5).map((a) => (
+                <li>
+                  <Icon name="check" size={15} />
+                  {a}
+                </li>
+              ))
+            }
+          </ul>
+          <a class="direction" href="/fleet">
+            Full specification
+            <Icon name="arrow" size={15} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services: each row carries its own photograph. -->
+  <section class="section field services">
+    <div class="shell">
+      <h2 class="title services__head">Five things we are booked for</h2>
+
+      <ul class="services__list">
+        {
+          SERVICES.map((s) => {
+            const img = SERVICE_IMAGES[s.slug];
+            return (
+              <li>
+                <a class="dest" href={`/services/${s.slug}`}>
+                  <figure class="dest__shot">
+                    <Image src={img.src} alt={img.alt} widths={[280, 460]} sizes="(min-width: 52rem) 17rem, 92vw" />
+                  </figure>
+                  <span class="dest__text">
+                    <span class="dest__to mono">{s.destination}</span>
+                    <span class="dest__name gothic">{s.name}</span>
+                    <span class="dest__prop">{s.proposition}</span>
+                  </span>
+                  <Icon name="arrow" size={18} class="dest__arrow" />
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Testimonials />
+
+  <!-- Photo strip: the coach, the cabin, the city it runs in. -->
+  <section class="strip">
+    <h2 class="sr-only">The coach</h2>
+    <figure class="strip__cell">
+      <Image src={coachExterior} alt="The coach parked with its luggage bays open" widths={[420, 720]} sizes="(min-width: 46rem) 33vw, 100vw" />
+    </figure>
+    <figure class="strip__cell">
+      <Image src={coachInteriorWide} alt="Rows of reclining seats along the coach aisle" widths={[420, 720]} sizes="(min-width: 46rem) 33vw, 100vw" />
+    </figure>
+    <figure class="strip__cell strip__cell--skyline">
+      <Image src={chicagoSkyline} alt="The Chicago skyline from Grant Park" widths={[420, 720]} sizes="(min-width: 46rem) 33vw, 100vw" />
+    </figure>
+  </section>
+
+  <!-- Close -->
+  <section class="close field field--deep">
+    <div class="shell close__inner">
+      <div>
+        <h2 class="title close__head">Give us a date and a headcount.</h2>
+        <p class="lede close__lede">
+          Most quotes need nothing more than that, the route, and a return time.
+        </p>
+      </div>
+      <div class="close__actions">
+        <a class="action" href="#quote-form">
+          Get a quote
+          <Icon name="arrow" size={16} />
+        </a>
+        <a class="action action--ghost" href="/reserve">Reserve online</a>
+      </div>
+    </div>
+  </section>
 </Layout>
+
+<style>
+  /* ---- Hero ----
+     The photograph covers the whole band and is masked back into the ground,
+     rather than laid over the band with a wash on top. Same result where the
+     coach is, but where the type sits it is flat concrete in the same colour the
+     quote form stands on, with no border between them — one sheet with a coach
+     coming up out of it.
+     The band paints that colour itself rather than letting the body's ground
+     through, which is what holds the pattern out of the hero: the photograph is
+     the texture here, and a repeating pattern under a dissolving photo edge
+     reads as dirt on the lens. */
+  .hero {
+    /* The mask ramp, in ascending opacity. Only the alpha of a mask stop is
+       read, so `currentColor` stands in for "fully opaque" and color-mix
+       supplies the fractions — no colour literal enters the ramp, and none of
+       these can drift from a palette entry because none of them names one. */
+    /* Every step is set by measurement, not by eye: the ramp came down when the
+       ground moved from `paper-lift` to the darker `paper`, and back up when the
+       pattern came out from under it. Retune it the same way — sample the band
+       with the copy hidden and read the worst pixel under each line. */
+    --ramp-1: color-mix(in srgb, currentColor 5%, transparent);
+    --ramp-2: color-mix(in srgb, currentColor 11%, transparent);
+    --ramp-3: color-mix(in srgb, currentColor 18%, transparent);
+    --ramp-4: color-mix(in srgb, currentColor 48%, transparent);
+
+    /* Narrow: the copy fills the box, so the photograph stays faint everywhere.
+       It comes up only as far as the last line of type will carry — past the
+       buttons the coach surfaces out of the paper instead of sitting under a
+       flat sheet of it. */
+    --ramp: linear-gradient(
+      180deg,
+      var(--ramp-1) 0%,
+      var(--ramp-2) 58%,
+      var(--ramp-3) 100%
+    );
+
+    --ramp-foot: linear-gradient(
+      180deg,
+      currentColor 0%,
+      currentColor 84%,
+      transparent 100%
+    );
+
+    position: relative;
+    isolation: isolate;
+    padding-block: clamp(var(--space-12), 6vw, var(--space-24));
+    background-color: var(--paper);
+    overflow: hidden;
+  }
+
+  .hero__inner {
+    position: relative;
+  }
+
+  /* Queried by the hours divider below. */
+  .hero__lead {
+    container-type: inline-size;
+  }
+
+  .hero__coord {
+    margin-bottom: var(--space-5);
+    color: var(--enamel);
+  }
+
+  .hero__ico {
+    flex: none;
+    color: var(--enamel);
+  }
+
+  .hero__head {
+    /* Narrower than the base display step so the line holds beside the
+       photograph instead of running under it. "Your whole group," needs roughly
+       8× its own font size to keep one line. */
+    font-size: clamp(2.5rem, 5.4vw, 4.75rem);
+    color: var(--enamel);
+  }
+
+  /* The mark's own gradient, and the only place it appears outside the logo. It
+     is a brand rule, not an underline: it sits between the claim and the
+     explanation and carries no text of its own. */
+  .hero__rule {
+    display: block;
+    width: 11rem;
+    max-width: 40%;
+    height: 4px;
+    margin: var(--space-6) 0;
+    background: linear-gradient(
+      90deg,
+      var(--brand-navy),
+      var(--brand-teal),
+      var(--brand-green)
+    );
+  }
+
+  .hero__lede {
+    max-width: 46ch;
+    margin-bottom: var(--space-8);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .hero__hours {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .hero__hours em {
+    font-style: normal;
+    font-weight: 700;
+    color: var(--enamel);
+  }
+
+  /* A scribed divider rather than a middot: the two halves of the hours truth
+     are separate statements, not a list. Drawn from the line's own colour at low
+     opacity, the way the coordinate rule is — the hairline token was tuned for
+     flat paper and vanishes over a washed photograph. */
+  .hero__bar {
+    width: 1px;
+    height: 1.1em;
+    background: currentColor;
+    opacity: 0.4;
+  }
+
+  /* Once the line wraps the divider is stranded at the end of the first row,
+     dividing nothing. The wrap itself separates the two statements.
+     Asked of the copy column rather than the viewport, because the column is
+     what the line has to fit inside — a viewport rule got this right on a phone
+     and stranded the divider again at 1024, where the column is capped to half
+     the band and the hours line is 8px too long for it. */
+  @container (max-width: 35rem) {
+    .hero__bar {
+      display: none;
+    }
+  }
+
+  /* ---- The photograph ----
+     Covers the band edge to edge at every width. It is 2.33:1 against a box
+     that is never that wide, so `cover` always crops: on a narrow screen only
+     about a fifth of the frame fits, and the crop is pulled to the cab so what
+     survives still reads as a coach. */
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    /* The band carries no bottom border any more, so the photograph must not
+       stop at one. Its last sixth dissolves into the ground, below the coach's
+       wheels, and the coach reads as standing on the page rather than being cut
+       off by the edge of it. Applied to the wrapper rather than composited onto
+       the image's own mask, because two single-layer masks multiply the same way
+       and need no `mask-composite` — which fails open, not closed, if a browser
+       misses it. */
+    -webkit-mask-image: var(--ramp-foot);
+    mask-image: var(--ramp-foot);
+  }
+
+  .hero__media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Held near the front. A portrait box takes about a quarter of this frame,
+       and a quarter taken from the middle is white flank — from here it is
+       windshield, mirror, headlight and grille, which still reads as a coach. */
+    object-position: 90% 50%;
+    -webkit-mask-image: var(--ramp);
+    mask-image: var(--ramp);
+  }
+
+  @media (min-width: 64rem) {
+    /* Held to half the band so the copy column ends in the same place at every
+       desktop width — the wash below is pinned to percentages, and a column that
+       slid right at narrow widths would slide out from under it. */
+    .hero__lead {
+      max-width: min(40rem, 50vw);
+    }
+
+    /* Now the ramp runs across instead of down: the photograph is barely there
+       through the copy and fully itself by the cab. Nothing small reaches past
+       55% — only the headline, which is 4rem of 900-weight enamel and carries
+       itself over far more photograph than a 12px line can. */
+    .hero {
+      --ramp: linear-gradient(
+        90deg,
+        var(--ramp-1) 0%,
+        var(--ramp-1) 40%,
+        var(--ramp-2) 56%,
+        var(--ramp-3) 64%,
+        var(--ramp-4) 72%,
+        currentColor 84%
+      );
+    }
+
+    /* Pinned right rather than centred: the crop has to come off something, and
+       the left of the frame is sky and skyline the ramp mutes anyway. Off the
+       right it would take the front bumper. */
+    .hero__media :global(img) {
+      object-position: 100% 50%;
+    }
+  }
+
+  /* Past this width the copy column stops growing, so the ramp can close in and
+     hand back another eighth of the frame to the coach. */
+  @media (min-width: 80rem) {
+    .hero {
+      --ramp: linear-gradient(
+        90deg,
+        var(--ramp-1) 0%,
+        var(--ramp-1) 32%,
+        var(--ramp-2) 46%,
+        var(--ramp-3) 54%,
+        var(--ramp-4) 62%,
+        currentColor 74%
+      );
+    }
+  }
+
+
+  /* ---- Trust strip ---- */
+
+  .trust {
+    padding-block: var(--space-8);
+    border-bottom: 1px solid var(--paper-line);
+  }
+
+  .trust__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4) var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .trust__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .trust__item :global(svg) {
+    color: var(--enamel);
+    flex: none;
+  }
+
+  /* ---- Photographs are mounted like sign plates ---- */
+
+  .shot {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .shot::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .shot--tall :global(img) {
+    aspect-ratio: 4 / 3;
+  }
+
+  /* ---- Fleet ---- */
+
+  .fleet__head {
+    max-width: 20ch;
+    margin-bottom: var(--space-4);
+  }
+
+  .fleet__lede {
+    margin-bottom: var(--space-12);
+  }
+
+  .fleet__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  @media (min-width: 60rem) {
+    .fleet__grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: var(--space-16);
+    }
+  }
+
+  .fleet__name {
+    margin-bottom: var(--space-3);
+  }
+
+  .fleet__role {
+    max-width: 42ch;
+    margin-bottom: var(--space-8);
+    color: var(--ink-dim);
+  }
+
+  .fleet__amenities {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-8) 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+
+  .fleet__amenities li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .fleet__amenities :global(svg) {
+    flex: none;
+    margin-top: 4px;
+    color: var(--enamel);
+  }
+
+  /* ---- Services ---- */
+
+  .services__head {
+    max-width: 18ch;
+    margin-bottom: var(--space-12);
+  }
+
+  .services__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--enamel-line);
+  }
+
+  .dest {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-8);
+    padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--enamel-line);
+    text-decoration: none;
+    color: var(--signal);
+    transition:
+      padding-inline 240ms var(--ease-out),
+      background 240ms var(--ease-out);
+  }
+
+  .dest:hover {
+    padding-inline: var(--space-4);
+    background: rgb(255 255 255 / 0.05);
+  }
+
+  .dest__shot {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .dest__shot::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .dest__shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .dest:hover .dest__shot :global(img) {
+    transform: scale(1.04);
+  }
+
+  .dest__text {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .dest__to {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--azure);
+  }
+
+  .dest__name {
+    font-size: clamp(1.25rem, 2.6vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .dest__prop {
+    max-width: 52ch;
+    font-size: 0.9375rem;
+    color: var(--signal-dim);
+  }
+
+  .dest__arrow {
+    color: var(--signal-dim);
+    transition: transform 200ms var(--ease-out);
+  }
+
+  .dest:hover .dest__arrow {
+    transform: translateX(5px);
+    color: var(--hivis);
+  }
+
+  @media (max-width: 52rem) {
+    .dest {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: var(--space-4);
+      padding-block: var(--space-8);
+    }
+    .dest__shot {
+      grid-column: 1 / -1;
+    }
+    .dest__text {
+      grid-column: 1;
+    }
+    .dest__arrow {
+      grid-column: 2;
+      align-self: center;
+    }
+  }
+
+  /* ---- Photo strip ---- */
+
+  .strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+    background: var(--enamel-deep);
+  }
+
+  @media (min-width: 46rem) {
+    .strip {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .strip__cell {
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .strip__cell :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+
+  /* The source is a banner that fades to white on its right half. Crop to the
+     dense side or the cell reads as half empty. */
+  .strip__cell--skyline :global(img) {
+    object-position: 22% 50%;
+  }
+
+  @media (min-width: 46rem) {
+    .strip__cell :global(img) {
+      aspect-ratio: 3 / 2;
+    }
+  }
+
+  /* ---- Close ---- */
+
+  .close {
+    padding-block: clamp(var(--space-16), 8vw, var(--space-24));
+  }
+
+  .close__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .close__head {
+    max-width: 18ch;
+    margin-bottom: var(--space-3);
+  }
+
+  .close__lede {
+    max-width: 44ch;
+  }
+
+  .close__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+</style>

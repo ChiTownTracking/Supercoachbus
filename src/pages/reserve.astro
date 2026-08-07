@@ -1,0 +1,241 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHead from '../components/PageHead.astro';
+import BookingForm from '../components/BookingForm.astro';
+import Icon from '../components/Icon.astro';
+import { BUSINESS } from '../config/site';
+
+/**
+ * These sit below the form rather than above it. Read before submitting they
+ * are instructions; read after, they answer the question the visitor actually
+ * has — what happens now. The third one is the load-bearing one and is worded
+ * to leave no room for assuming a date is held.
+ */
+const STEPS = [
+  {
+    label: 'The details reach the office',
+    body: 'Route, date, times, headcount and the vehicle you asked for, in one message.',
+  },
+  {
+    label: 'We confirm availability',
+    body: 'We check the date against the vehicle and come back to you with a written confirmation and price.',
+  },
+  {
+    label: 'Only then is the date held',
+    body: 'Nothing is reserved until we confirm it with you directly. Submitting this form does not itself hold a date.',
+  },
+];
+---
+
+<Layout
+  path="/reserve"
+  title="Chicago Coach Bus Rentals | Shuttle Bus Services | Reserve"
+  description="Reserve a coach bus or shuttle rental in Chicago. Send your confirmed route, date and vehicle and we will confirm availability in writing. Or call 630-624-3448."
+>
+  <PageHead
+    title="Already know the trip? Book it."
+    lede="This is the form for a settled plan. If the date or the vehicle is still moving, a quote request is the better starting point."
+  />
+
+  <div class="section">
+    <div class="shell reserve__body">
+      <BookingForm mode="reserve" />
+
+      <p class="reserve__alt">
+        Not ready to commit?
+        <a class="direction" href="/#quote-form">
+          Request a quote instead
+          <Icon name="arrow" size={15} />
+        </a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Distinct from the homepage quote form: this page's job is to set
+       expectations about what a submission does and does not do, so nobody
+       assumes a date is held. Drawn as a route — three stops on a line — because
+       that is what a sequence looks like in this system. -->
+  <section class="section--tight steps">
+    <div class="shell">
+      <h2 class="coordinate coordinate--ink steps__coord">What happens after you send this</h2>
+      <ol class="steps__list">
+        {
+          STEPS.map((s, i) => (
+            <li class="step">
+              <span class="step__stop" aria-hidden="true" />
+              <span class="step__n mono">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="step__label">{s.label}</h3>
+              <p class="step__body">{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section--tight field field--deep">
+    <div class="shell call">
+      <div>
+        <h2 class="subtitle call__head">Booking inside 48 hours?</h2>
+        <p class="lede call__body">
+          Call rather than submit. We have taken plenty of last-minute charters,
+          but the phone is faster than a form when the date is close.
+        </p>
+      </div>
+      <a class="action" href={BUSINESS.phone.href}>
+        <Icon name="phone" size={16} />
+        {BUSINESS.phone.display}
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .steps {
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .steps__coord {
+    margin-bottom: var(--space-8);
+  }
+
+  .steps__list {
+    position: relative;
+    display: grid;
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .step {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'stop n'
+      '.    label'
+      '.    body';
+    column-gap: var(--space-4);
+    align-items: start;
+  }
+
+  /* ---- The route ----
+     Three stops on a line: the line is the sequence, the stops are where
+     something happens. Each segment is drawn from its own stop to the next
+     rather than as one rule across the list, so the geometry never has to know
+     how many stops there are, and it flips from a column to a row with one
+     rule. The stop boxes are opaque and paint after, so the line passes behind
+     them rather than through. */
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 7px;
+    width: 1px;
+    height: calc(100% + var(--space-8));
+    background: var(--paper-line);
+  }
+
+  .step__stop {
+    grid-area: stop;
+    width: 15px;
+    height: 15px;
+    margin-top: 1px;
+    border: 3px solid var(--enamel);
+    border-radius: var(--radius);
+    /* Opaque, so the route line passes behind rather than through. */
+    background: var(--paper);
+  }
+
+  /* The end of the line is filled — the last stop is the destination. */
+  .step:last-child .step__stop {
+    background: var(--enamel);
+  }
+
+  /* The sequence matters here — a reader needs to know what happens after
+     submitting — so the numbers carry information rather than decoration. */
+  .step__n {
+    grid-area: n;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--hivis-text);
+  }
+
+  .step__label {
+    grid-area: label;
+    margin: var(--space-2) 0 var(--space-2);
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .step__body {
+    grid-area: body;
+    max-width: 34ch;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
+  }
+
+  @media (min-width: 52rem) {
+    .steps__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: var(--space-12);
+    }
+
+    /* The same segment, turned on its side: from this stop across the gutter to
+       the next one. It stops at the last stop rather than running off the edge. */
+    .step:not(:last-child)::before {
+      width: calc(100% + var(--space-12));
+      height: 1px;
+    }
+
+    .step {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        'stop'
+        'n'
+        'label'
+        'body';
+      row-gap: 0;
+    }
+
+    .step__n {
+      margin-top: var(--space-4);
+    }
+  }
+
+  .reserve__body {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .reserve__alt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--paper-line);
+    font-size: 0.9375rem;
+    color: var(--ink-dim);
+  }
+
+  .call {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .call__head {
+    margin-bottom: var(--space-3);
+  }
+
+  .call__body {
+    max-width: 48ch;
+  }
+</style>

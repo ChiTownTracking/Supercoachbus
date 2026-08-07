@@ -1,0 +1,215 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHead from '../components/PageHead.astro';
+import SeatPlan from '../components/SeatPlan.astro';
+import Icon from '../components/Icon.astro';
+import { Image } from 'astro:assets';
+import { FLEET } from '../data/fleet';
+import { BUSINESS } from '../config/site';
+import coachExterior from '../assets/images/coach-exterior.jpg';
+import coachInterior from '../assets/images/coach-interior.png';
+---
+
+<Layout
+  path="/fleet"
+  title="Charter Coach, Shuttle Bus Rentals Chicago | Fleet"
+  description="The Chicago Super Coach fleet: a 54–57 passenger executive coach bus with high back leather reclining seats, USB charging at every seat and seatbelts on all seats."
+>
+  <PageHead
+    coordinate="54–57 passengers"
+    title="One coach, specified in full."
+    lede="Capacity is the number that decides a charter, so it leads. Everything below is what is actually in the vehicle you would be quoted."
+  />
+
+  <div class="section">
+    <div class="shell vehicles">
+      {
+        FLEET.map((v) => (
+          <article class="v" id={v.slug}>
+            <div class="v__figure">
+              <figure class="v__shot">
+                <Image src={coachExterior} alt="The Chicago Super Coach executive coach bus, luggage bays open" widths={[420, 720, 1028]} sizes="(min-width: 60rem) 44vw, 92vw" />
+              </figure>
+              <figure class="v__shot">
+                <Image src={coachInterior} alt="Interior of the executive coach: high back leather reclining seats down both sides of the aisle" widths={[420, 720, 1028]} sizes="(min-width: 60rem) 44vw, 92vw" />
+              </figure>
+              <SeatPlan vehicle={v} />
+            </div>
+
+            <div class="v__body">
+              <h2 class="title v__name">{v.name}</h2>
+              <p class="v__cap mono">
+                <span class="v__capnum">{v.capacityLabel}</span> passengers
+              </p>
+              <p class="lede v__role">{v.role}</p>
+
+              <h3 class="v__subhead mono">On board</h3>
+              <ul class="v__amenities">
+                {v.amenities.map((a) => (
+                  <li>
+                    <Icon name="check" size={15} />
+                    {a}
+                  </li>
+                ))}
+              </ul>
+
+              <div class="v__actions">
+                <a class="action" href="/#quote-form">
+                  Quote this vehicle
+                  <Icon name="arrow" size={16} />
+                </a>
+                <a class="action action--ink" href={BUSINESS.phone.href}>
+                  <Icon name="phone" size={16} />
+                  {BUSINESS.phone.display}
+                </a>
+              </div>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+
+  <section class="section--tight field field--deep note">
+    <div class="shell">
+      <h2 class="subtitle note__head">More than 57 passengers?</h2>
+      <p class="lede note__body">
+        Groups above a single coach are handled case by case. Call us with the
+        headcount and date and we will confirm what we can run — we would rather
+        tell you plainly than promise a fleet size we have not committed to you.
+      </p>
+      <a class="action" href="/#quote-form">
+        Start a quote
+        <Icon name="arrow" size={16} />
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .vehicles {
+    display: grid;
+    gap: clamp(var(--space-16), 10vw, var(--space-32));
+  }
+
+  .v {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-8);
+    scroll-margin-top: 6rem;
+  }
+
+  @media (min-width: 60rem) {
+    .v {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-16);
+      align-items: start;
+    }
+  }
+
+  .v__figure {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  /* Photographs are mounted like sign plates: square corners, a scribed
+     keyline, no shadow. */
+  .v__shot {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .v__shot::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .v__shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  .v__name {
+    margin-bottom: var(--space-3);
+  }
+
+  .v__cap {
+    margin-bottom: var(--space-5);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .v__capnum {
+    display: inline-block;
+    margin-right: var(--space-2);
+    font-size: 2.25rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--enamel);
+    vertical-align: -0.15em;
+  }
+
+  .v__role {
+    max-width: 44ch;
+    margin-bottom: var(--space-8);
+  }
+
+  .v__subhead {
+    margin: 0 0 var(--space-4);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .v__amenities {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0 0 var(--space-8);
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+
+  .v__amenities li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .v__amenities :global(svg) {
+    flex: none;
+    margin-top: 4px;
+    color: var(--enamel);
+  }
+
+  .v__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  .note__head {
+    margin-bottom: var(--space-4);
+  }
+
+  .note__body {
+    max-width: 56ch;
+    margin-bottom: var(--space-8);
+  }
+</style>

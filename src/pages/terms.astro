@@ -1,0 +1,84 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageHead from '../components/PageHead.astro';
+import LegalBody from '../components/LegalBody.astro';
+import { BUSINESS } from '../config/site';
+
+/**
+ * Carried over from /terms-and-conditions on the live site, with one class of
+ * correction applied per the owner's decision:
+ *
+ *   The published page named the WRONG COMPANY. It referred to "ChiTown Limo
+ *   Bus" and gave info@chitownlimobus.com as the SMS opt-out address — an
+ *   agency copy-paste error from a sister property. The page title was also
+ *   misspelled ("Terms an Conditions - Chicago Super Cosch").
+ *
+ * Entity names and the opt-out address are corrected here and now resolve from
+ * config. The substantive consent language is otherwise unchanged — and has NOT
+ * had legal review. A TCPA/SMS consent clause is worth a lawyer's eye before
+ * launch; see the open items in the handoff summary.
+ */
+---
+
+<Layout
+  path="/terms"
+  title="Terms and Conditions | Chicago Super Coach"
+  description="Terms and conditions for communications from Chicago Super Coach, including SMS consent, message frequency and how to opt out."
+>
+  <PageHead title="Terms and Conditions" />
+
+  <div class="section">
+    <div class="shell">
+      <LegalBody>
+        <p>By opting into our communications, you agree to the following terms:</p>
+
+        <h2>Consent to Communications</h2>
+        <p>
+          You hereby consent to receive communication from our company through
+          emails, autodialed and/or pre-recorded telemarketing calls, AI calls, and
+          text messages (including SMS and MMS) from or on behalf of {BUSINESS.name}
+          and our affiliated partners at the telephone number provided, including
+          your wireless number, if applicable. You understand that consent is not a
+          condition of purchase.
+        </p>
+
+        <h2>Frequency of Messages</h2>
+        <p>
+          You acknowledge that the frequency of messages from {BUSINESS.name} may
+          vary. Standard message and data rates may apply to text messages.
+        </p>
+
+        <h2>Third-Party Communication</h2>
+        <p>
+          You agree that {BUSINESS.name} and its trusted partners may contact you for
+          marketing, promotional, and other purposes related to the services or
+          products you have expressed interest in or that we believe may be of
+          interest to you.
+        </p>
+
+        <h2>Opt-Out Option</h2>
+        <p>
+          You understand that you can withdraw your consent at any time by replying
+          STOP to any text message or by contacting us at
+          <a href={`mailto:${BUSINESS.email}`}>{BUSINESS.email}</a>. For assistance,
+          you can reply HELP.
+        </p>
+
+        <h2>Privacy Policy</h2>
+        <p>
+          Your information will be used in accordance with our
+          <a href="/privacy-policy">Privacy Policy</a>, which explains how we
+          collect, use, and protect your data, as well as how we share it with
+          trusted third parties. Please review our Privacy Policy for more
+          information.
+        </p>
+
+        <h2>Changes to Terms</h2>
+        <p>
+          We reserve the right to amend these terms at any time. Your continued
+          participation signals acceptance of modifications.
+        </p>
+      </LegalBody>
+    </div>
+  </div>
+</Layout>

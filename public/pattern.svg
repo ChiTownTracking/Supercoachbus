@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="180" viewBox="0 0 480 180" fill="none">
+  <defs>
+    <linearGradient id="brandStroke" x1="0" y1="0" x2="160" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2366A8"/>
+      <stop offset="0.52" stop-color="#0E8C86"/>
+      <stop offset="1" stop-color="#35B56B"/>
+    </linearGradient>
+
+    <linearGradient id="brandFill" x1="0" y1="0" x2="160" y2="0" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2366A8" stop-opacity="0.10"/>
+      <stop offset="0.52" stop-color="#0E8C86" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#35B56B" stop-opacity="0.06"/>
+    </linearGradient>
+
+    <!-- Reusable logo-inspired three-band mark -->
+    <g id="coachMark">
+      <path d="M0 0H72L52 18H-20L0 0Z" fill="url(#brandFill)" stroke="url(#brandStroke)" stroke-width="1.25"/>
+      <path d="M-20 26H52L72 44H0L-20 26Z" fill="url(#brandFill)" stroke="url(#brandStroke)" stroke-width="1.25"/>
+      <path d="M0 52H72L52 70H-20L0 52Z" fill="url(#brandFill)" stroke="url(#brandStroke)" stroke-width="1.25"/>
+    </g>
+  </defs>
+
+  <!-- Large directional bands -->
+  <g opacity="0.10">
+    <path d="M36 18H148L124 40H12L36 18Z" stroke="url(#brandStroke)" stroke-width="1.2"/>
+    <path d="M230 22H350L326 44H206L230 22Z" stroke="url(#brandStroke)" stroke-width="1.2"/>
+    <path d="M420 10H500L476 32H396L420 10Z" stroke="url(#brandStroke)" stroke-width="1.2"/>
+    <!-- Tile seam: the band above runs past x=480, so this is the same band
+         shifted one tile left, letting it continue instead of being cut.
+         Stroked flat green because past x=160 the gradient is clamped there. -->
+    <path d="M-60 10H20L-4 32H-84L-60 10Z" stroke="#35B56B" stroke-width="1.2"/>
+  </g>
+
+  <!-- Repeating logo-inspired marks -->
+  <g opacity="0.11">
+    <g transform="translate(38 84) scale(0.82)">
+      <use href="#coachMark"/>
+    </g>
+    <g transform="translate(222 92) scale(0.68)">
+      <use href="#coachMark"/>
+    </g>
+    <g transform="translate(390 78) scale(0.74)">
+      <use href="#coachMark"/>
+    </g>
+  </g>
+
+  <!-- Fine connector lines for movement -->
+  <g stroke="#78C7B0" stroke-opacity="0.07" stroke-width="1">
+    <path d="M0 68H118"/>
+    <path d="M154 68H280"/>
+    <path d="M312 68H480"/>
+    <path d="M102 154H214"/>
+    <path d="M256 154H404"/>
+  </g>
+</svg>

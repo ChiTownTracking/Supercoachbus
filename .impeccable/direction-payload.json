@@ -1,0 +1,53 @@
+{
+  "title": "Chicago Super Coach — choose the visual world",
+  "question": "The roll assigned Public Way. Keep it, take an alternate, or re-roll.",
+  "options": [
+    {
+      "id": "assigned",
+      "label": "Public Way",
+      "kicker": "THE ROLL",
+      "lineage": "Chicago street blades, the numbered grid, and public-way wayfinding",
+      "thesis": "A charter company is a wayfinding system with wheels — so the site is built as one, not as a highway photo with a quote bar on top.",
+      "palette": ["#0E3B2A", "#F4F6F3", "#FFB100", "#41B6E6"],
+      "materials": ["porcelain enamel sign blade", "honeycomb retroreflective sheeting", "Highway Gothic lettering", "engine-turned aluminum"],
+      "viewport": "Full-bleed enamel-green field. A mono grid coordinate rules the top. One oversized white gothic line states the offer. The only proof shown is the two real numbers we own — 57 and 13 — set at display scale. The primary action is a high-vis amber blade, not a button.",
+      "risk": "Green plus high-vis drifts toward municipal DOT or construction yard if the amber spreads past the action. Held by type discipline and keeping amber under 5% of the surface."
+    },
+    {
+      "id": "challenger-brick",
+      "label": "Build Instructions",
+      "lineage": "numbered brick build-instruction booklets on sky-blue pages",
+      "thesis": "The charter assembles in numbered steps, with 1:1 seat call-outs and wordless arrows.",
+      "case": "The only challenger that competes: numbered steps map cleanly onto the quote flow, and an exploded seat map is genuinely on-message. Loses on register — it reads juvenile to exactly the corporate and school-district buyers this brand is for.",
+      "hero": "https://impeccable.style/worlds/cards/games-toys-physics-play-brick-build-instructions-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/games-toys-physics-play-brick-build-instructions.webp"
+    },
+    {
+      "id": "challenger-terminal",
+      "label": "Dispatch Terminal",
+      "lineage": "green-phosphor terminal in a midnight machine room",
+      "thesis": "The booking as a live typed transcript glowing on curved glass.",
+      "case": "Fuses poorly: a monospace transcript hides the fleet and the offer, and the school secretary booking a field trip does not identify with a machine room.",
+      "hero": "https://impeccable.style/worlds/cards/signals-instruments-phosphor-terminal-midnight-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/signals-instruments-phosphor-terminal-midnight.webp"
+    },
+    {
+      "id": "challenger-datamatics",
+      "label": "Datamatics Field",
+      "lineage": "black-and-white data-sublime barcode fields and sine lattices",
+      "thesis": "Schedules and capacities rendered as a strobing barcode lattice.",
+      "case": "Fuses poorly: gallery-grade abstraction with nowhere to put a capacity, a phone number, or a call button. Strobing also fights the accessibility floor this audience needs.",
+      "hero": "https://impeccable.style/worlds/cards/ikeda-datamatics-hero.webp",
+      "board": "https://impeccable.style/worlds/cards/ikeda-datamatics.webp"
+    }
+  ],
+  "reroll": true,
+  "canon": true,
+  "canonCard": {
+    "label": "The category standard",
+    "thesis": "What every charter-bus site ships, executed impeccably.",
+    "viewport": "Full-bleed motorcoach on a highway at golden hour, navy-and-gold overlay, a 'Travel in Style' headline, and a three-step quote bar floating over the photo.",
+    "risk": "Indistinguishable from the twelve competitors the organizer has open in other tabs — and it needs real fleet photography you do not have yet."
+  },
+  "steer": true
+}
