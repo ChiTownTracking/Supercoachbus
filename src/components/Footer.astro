@@ -25,6 +25,20 @@ const { address, hours, phone } = BUSINESS;
           Get a quote
           <Icon name="arrow" size={16} />
         </a>
+
+        <!-- Sister property. Followed on purpose: no rel="nofollow", because a
+             company linking to its own other company is an editorial link, not
+             an advertisement. `noopener` is a security attribute and carries no
+             ranking signal, so it does not make this a nofollow. -->
+        <p class="foot__sister">
+          {/* Explicit: the anchor is inline-flex, and the source newline before
+              it collapses to nothing rather than to a word space. */}
+          Need a trolley instead?{' '}
+          <a href="https://chitowntrolley.com/" target="_blank" rel="noopener">
+            ChiTown Trolley
+            <Icon name="arrow" size={14} />
+          </a>
+        </p>
       </div>
 
       <div class="foot__cols">
@@ -126,6 +140,27 @@ const { address, hours, phone } = BUSINESS;
     margin-bottom: var(--space-6);
     color: var(--signal-dim);
     font-size: 0.9375rem;
+  }
+
+  .foot__sister {
+    margin-top: var(--space-6);
+    max-width: 34ch;
+    font-size: 0.9375rem;
+    color: var(--signal-dim);
+  }
+
+  .foot__sister a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 700;
+    color: var(--signal);
+    text-decoration-color: var(--enamel-line);
+    text-underline-offset: 4px;
+  }
+
+  .foot__sister a:hover {
+    text-decoration-color: currentColor;
   }
 
   .foot__cols {

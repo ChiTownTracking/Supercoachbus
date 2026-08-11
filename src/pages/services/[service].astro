@@ -27,6 +27,18 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
     <div class="shell svc__grid">
       <div class="svc__body stack">
         {service.body.map((p) => <p class="svc__p">{p}</p>)}
+
+        {
+          service.sister && (
+            <p class="svc__sister">
+              {service.sister.note}{' '}
+              <a href={service.sister.href} target="_blank" rel="noopener">
+                {service.sister.label}
+                <Icon name="arrow" size={15} />
+              </a>
+            </p>
+          )
+        }
       </div>
 
       <aside class="svc__aside">
@@ -107,6 +119,26 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
   .svc__p {
     font-size: 1.0625rem;
     line-height: 1.7;
+  }
+
+  /* A handoff, not a footnote: set apart by a rule so it reads as a different
+     kind of statement from the body copy above it, without becoming a card. */
+  .svc__sister {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--paper-line);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+
+  .svc__sister a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 800;
+    color: var(--enamel);
+    white-space: nowrap;
+    text-underline-offset: 4px;
   }
 
   .svc__aside {

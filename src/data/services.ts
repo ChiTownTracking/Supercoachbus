@@ -23,6 +23,16 @@ export interface Service {
   /** The specific worry this buyer has, and how it is answered. */
   concerns: { label: string; answer: string }[];
   meta: { title: string; description: string };
+  /**
+   * An outbound pointer to the sister property, where that brand answers the
+   * question better than this one can. Optional, and deliberately data rather
+   * than a slug check in the page template: which services hand off is a fact
+   * about the business, not about the layout.
+   *
+   * Followed on purpose — no rel="nofollow". Two companies under one owner
+   * linking to each other is editorial, not paid placement.
+   */
+  sister?: { note: string; label: string; href: string };
 }
 
 export const SERVICES: Service[] = [
@@ -164,6 +174,13 @@ export const SERVICES: Service[] = [
       title: 'Wedding Shuttle & Party Bus Service Chicago | Chicago Super Coach',
       description:
         'Wedding transportation in Chicago — guest shuttles from hotel blocks, wedding party transfers between ceremony, photos and reception, and safe late-night returns. Call 630-624-3448.',
+    },
+    // The one service where the sister brand is the better answer to a question
+    // this fleet cannot answer: there is no trolley in it.
+    sister: {
+      note: 'A trolley is a different kind of arrival, and it is not in this fleet. Our sister company runs them:',
+      label: 'ChiTown Trolley',
+      href: 'https://chitowntrolley.com/',
     },
   },
   {
