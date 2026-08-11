@@ -187,7 +187,7 @@ A two-ground palette — deep porcelain green and cool concrete — punctuated b
 - **Porcelain Enamel Green** (`enamel`): The identity field. Carries roughly half the surface of the site — the masthead, the services band, interior `PageHead` bands, the footer, and every `.blade` — and, since the hero moved to the concrete ground, it is also the ink of the hero headline, its coordinate, and its icons. Also the ink color of drawn diagrams and inline icons when they sit on concrete.
 - **Enamel Deep** (`enamel-deep`): The band-within-a-band. Used for the page-closing call band and the footer, and as the mobile nav drawer fill, so a second enamel surface can sit against the first without a border.
 - **Enamel Lift** (`enamel-lift`): Hover fill for enamel-backed actions and the primary contact method plate.
-- **Enamel Line** (`enamel-line`): The hairline on enamel — masthead underline, plate borders inside a field, the services list rules, footer dividers, and the resting color of footer icons.
+- **Enamel Line** (`enamel-line`): The hairline on enamel — plate borders inside a field, the services list rules, footer dividers, and the resting color of footer icons. Not the masthead: that band carries no underbar.
 
 ### Secondary
 - **High-Visibility Amber** (`hivis`): The action color and nothing else. Primary button fill, the focus ring, the current-page nav underline, the arrow inside the destination blade, the recommended vehicle name, arrow tips on hover, the after-hours charter note, and the 3px marked top edge on the footer and the map. It is never a heading color, never a background field, never decoration.
@@ -196,7 +196,7 @@ A two-ground palette — deep porcelain green and cool concrete — punctuated b
 - **Amber Ink** (`hivis-ink`): Near-black brown, the text color on every amber fill. Never used on any other ground.
 
 ### Tertiary
-- **Chicago Flag Azure** (`azure`): Coordinates and measurement marks only. The mono grid coordinate above a heading, the wordmark's coordinate line, the blade's coordinate strip, footer column heads, and destination keys. It never carries body text and is never a fill.
+- **Chicago Flag Azure** (`azure`): Coordinates and measurement marks only. The mono grid coordinate above a heading, the hero's coordinate line, the blade's coordinate strip, footer column heads, and destination keys. It never carries body text and is never a fill. It no longer appears in the masthead.
 
 ### Neutral
 - **Concrete** (`paper`): The reading ground. The body background under every non-enamel band.
@@ -227,7 +227,11 @@ The supplied logo (`src/assets/images/logo.png`, 409×202) carries its own palet
 - **Nothing translucent stands on it.** The phone button was a transparent hairline-ringed control and had to become an opaque `paper-lift` fill with a full-strength `enamel` ring. The hours divider went from the `paper-line` token to `currentColor` at 0.4 for the same reason — the hairline was tuned for flat paper and vanished over a photograph.
 - **No pattern under a dissolving photo edge.** The hero is the one concrete band held clean of `--concrete-pattern`; it paints `paper` itself rather than letting the body's ground through. The photograph is the texture here, and a repeating pattern showing through a fading photograph reads as dirt on the lens.
 
-**The Logo-Plate Rule.** The logo is never placed directly on an enamel field. Its navy wordmark measures 1.35:1 against `--enamel`, so on any dark ground it sits on a `--signal` plate at `--radius` with `--space-2`/`--space-3` padding (`--space-3`/`--space-4` in the footer). Knocking the mark out to white is not the alternative — that would destroy its navy-to-green gradient, which is the only gradient anywhere in this system. The plate is also world-correct: an enamel sign carries a maker's plate. Logo height is `3rem` in the masthead, `2.5rem` below 30rem, `3.5rem` in the footer.
+**The Logo-Plate Rule.** The logo is never placed directly on an enamel field. Its navy wordmark measures 1.35:1 against `--enamel`, so on any dark ground it sits on a `--signal` plate. Knocking the mark out to white is not the alternative — that would destroy its navy-to-green gradient, which is the only gradient anywhere in this system. The plate is also world-correct: an enamel sign carries a maker's plate.
+
+The plate takes one of two forms, and which one depends on whether the plate has an edge to meet:
+- **Bolted** (masthead): full-bleed to the top and bottom of the band, `padding-inline` only, square corners, mark at `4rem` (`3rem` below 30rem).
+- **Mounted** (footer): floating inside the band at `--radius` with `--space-3`/`--space-4` padding, mark at `3.5rem`.
 
 **The Amber-For-Action Rule.** Amber marks what a person must act on or attend to: actions, focus, the current location in nav, the system's own recommendation output, required-field marks, unresolved placeholders, and the hard top edge of a terminal band. It is held under a few percent of any viewport. Painting amber on a heading, a decorative rule, or a background field breaks the world.
 
@@ -368,7 +372,13 @@ The non-button wayfinding link: uppercase 700 at 0.9375rem, 0.04em tracking, a 2
 - **Textarea:** `min-height: 7rem`, `resize: vertical` only.
 
 ### Navigation — masthead
-Sticky enamel band with an `enamel-line` underbar, `min-height: 5rem`. The mark is a sign assembly read left to right: the logo on a signal-white plate (see the Logo-Plate Rule), then a 1px `enamel-line` divider, then the azure mono grid coordinate at 0.625rem/0.20em. Below 30rem the coordinate is dropped — it still appears in the hero and the footer, and the phone needs the width more. Nav links are 0.8125rem 700 at 0.10em tracking, held at `opacity: 0.82` and going to 1 on hover, with a 2px amber underline that scales in from the left (`transform-origin: left`, 200ms) and stays scaled for `[aria-current="page"]`. Below 60rem the nav becomes a checkbox-driven drawer on `enamel-deep`, positioned at `inset: 100% 0 auto` under the masthead, with links restacked as full-width rows separated by `enamel-line` and the primary action stretched to full width. The toggle's focus ring is carried on the sibling label via `.nav-toggle:focus-visible ~ .nav-button`.
+Sticky enamel band, `min-height: 5rem`, resolving to 80–81px at every width. No underbar: the ground change from enamel to whatever the page opens on is the separation, which is the same rule every other band follows.
+
+The mark is the logo on a signal-white plate and nothing else. The plate is **full-bleed vertically** — it meets the top and bottom of the band rather than floating inside it, so it reads as a panel bolted across the sign rather than a card resting on one. It is the only element permitted to cancel the masthead's own padding, and it does so honestly: `align-self: stretch` takes it to the flex line, a negative block margin equal to the inner padding takes it the rest of the way. Corners are square, not `--radius`: a radius on a panel meeting both edges can only render on the corners that remain, which reads as a mistake rather than a detail. The mark itself is `4rem` (`3rem` below 30rem), sized so the plate fills the band at its existing height.
+
+The azure grid coordinate that used to sit beside the plate behind an `enamel-line` divider has been removed. It is still set in the hero and the footer. Removing it also fixed a defect: at 1024px it was consuming just enough width to force the band to 107px where every other width sat at 81px.
+
+Nav links are 0.8125rem 700 at 0.10em tracking, held at `opacity: 0.82` and going to 1 on hover, with a 2px amber underline that scales in from the left (`transform-origin: left`, 200ms) and stays scaled for `[aria-current="page"]`. Below 60rem the nav becomes a checkbox-driven drawer on `enamel-deep`, positioned at `inset: 100% 0 auto` under the masthead, with links restacked as full-width rows separated by `enamel-line` and the primary action stretched to full width. The toggle's focus ring is carried on the sibling label via `.nav-toggle:focus-visible ~ .nav-button`.
 
 ### Coordinate rule — `.coordinate`
 The mono line above a heading. Flex row, azure (or `ink-dim` via `.coordinate--ink`), with a `::after` pseudo-element that flexes to fill the remaining width as a 1px `currentColor` line at 0.35 opacity. This trailing rule is mandatory — it is what makes the line a coordinate bar.

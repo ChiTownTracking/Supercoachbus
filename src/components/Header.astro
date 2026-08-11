@@ -18,7 +18,6 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       <span class="mark__plate">
         <Image src={logo} alt="Chicago Super Coach" loading="eager" densities={[1, 2]} />
       </span>
-      <span class="mark__coord mono">{BUSINESS.address.gridCoordinate}</span>
     </a>
 
     <!-- A checkbox so the menu still opens with JavaScript unavailable; the
@@ -73,7 +72,6 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     position: sticky;
     top: 0;
     z-index: 50;
-    border-bottom: 1px solid var(--enamel-line);
   }
 
   .masthead__inner {
@@ -85,8 +83,16 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     padding-block: var(--space-3);
   }
 
-  /* Sign assembly: the maker's plate, then the grid coordinate on a tab. */
+  /* Sign assembly: the maker's plate, alone. The grid coordinate that used to
+     sit beside it is still set in the hero and the footer.
+     The plate runs the full depth of the band rather than floating inside it —
+     a fabricated panel bolted across the sign, not a card resting on one. It is
+     the only element allowed to cancel the masthead's own padding: `stretch`
+     takes it to the flex line, and the negative block margin takes it the rest
+     of the way through the padding to both edges. */
   .mark {
+    align-self: stretch;
+    margin-block: calc(var(--space-3) * -1);
     display: flex;
     align-items: center;
     gap: var(--space-4);
@@ -95,36 +101,31 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   }
 
   .mark__plate {
-    display: block;
-    padding: var(--space-2) var(--space-3);
-    background: var(--signal);
-    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    padding-inline: var(--space-5);
+    background: var(--paper);
+    /* Square, because a radius on a panel that meets both edges can only show
+       on the corners that are left — which reads as a mistake, not a detail. */
+    border-radius: 0;
   }
 
   .mark__plate :global(img) {
     display: block;
     width: auto;
-    height: 3rem;
-  }
-
-  .mark__coord {
-    padding-left: var(--space-4);
-    border-left: 1px solid var(--enamel-line);
-    font-size: 0.625rem;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: var(--azure);
+    /* Sized so the plate fills the band at its existing height: 4rem of mark
+       plus the padding this rule just cancelled comes back to the same 88px. */
+    height: 4rem;
   }
 
   @media (max-width: 30rem) {
     .mark__plate :global(img) {
-      height: 2.5rem;
+      height: 3rem;
     }
 
-    /* The coordinate is in the hero and the footer; the phone screen needs the
-       width more than it needs a third copy. */
-    .mark__coord {
-      display: none;
+    .mark__plate {
+      padding-inline: var(--space-4);
     }
   }
 
