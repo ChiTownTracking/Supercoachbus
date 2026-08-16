@@ -7,7 +7,7 @@
       "enamel": {
         "role": "primary",
         "displayName": "Porcelain Enamel Green",
-        "canonical": "#0e3b2a",
+        "canonical": "#0d5637",
         "tonalRamp": [
           "oklch(15% 0.045 160)",
           "oklch(25% 0.055 160)",
@@ -22,7 +22,7 @@
       "enamel-deep": {
         "role": "primary",
         "displayName": "Enamel Deep",
-        "canonical": "#07241a",
+        "canonical": "#0a3f2a",
         "tonalRamp": [
           "oklch(12% 0.040 160)",
           "oklch(20% 0.050 160)",
@@ -37,7 +37,7 @@
       "enamel-lift": {
         "role": "primary",
         "displayName": "Enamel Lift",
-        "canonical": "#17553c",
+        "canonical": "#137047",
         "tonalRamp": [
           "oklch(16% 0.048 160)",
           "oklch(26% 0.060 160)",
@@ -52,7 +52,7 @@
       "enamel-line": {
         "role": "primary",
         "displayName": "Enamel Line",
-        "canonical": "#2f6e52",
+        "canonical": "#3f8a60",
         "tonalRamp": [
           "oklch(18% 0.045 160)",
           "oklch(28% 0.058 160)",
@@ -62,6 +62,21 @@
           "oklch(75% 0.047 160)",
           "oklch(87% 0.030 160)",
           "oklch(96% 0.014 160)"
+        ]
+      },
+      "enamel-ink": {
+        "role": "primary",
+        "displayName": "Enamel Ink",
+        "canonical": "#0b4029",
+        "tonalRamp": [
+          "oklch(12% 0.040 160)",
+          "oklch(20% 0.050 160)",
+          "oklch(30% 0.056 160)",
+          "oklch(42% 0.058 160)",
+          "oklch(55% 0.054 160)",
+          "oklch(70% 0.044 160)",
+          "oklch(84% 0.028 160)",
+          "oklch(95% 0.013 160)"
         ]
       },
       "hivis": {
@@ -127,7 +142,7 @@
       "azure": {
         "role": "tertiary",
         "displayName": "Chicago Flag Azure",
-        "canonical": "#41b6e6",
+        "canonical": "#6ac9ee",
         "tonalRamp": [
           "oklch(18% 0.045 232)",
           "oklch(30% 0.070 232)",
@@ -435,7 +450,7 @@
       "refersTo": "action-ghost",
       "description": "The secondary action on an enamel ground. Inset white ring, no fill. Has no concrete counterpart — on concrete use the ink variant.",
       "html": "<div class=\"ds-ghost-bed\"><a class=\"ds-action-ghost\" href=\"tel:+16306243448\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-linejoin=\"miter\" aria-hidden=\"true\"><path d=\"M6 3h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4h-3A15 15 0 0 1 3 6V3z\"/></svg>630-624-3448</a></div>",
-      "css": ".ds-ghost-bed { padding: 1.5rem; background: var(--enamel, #0e3b2a); } .ds-action-ghost { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border: none; border-radius: var(--radius, 3px); background: transparent; color: var(--signal, #f6f7f4); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 0.9375rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.4); transition: background 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1); } .ds-action-ghost svg { flex: none; } .ds-action-ghost:hover { background: rgb(255 255 255 / 0.1); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.75); } .ds-action-ghost:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 3px; }"
+      "css": ".ds-ghost-bed { padding: 1.5rem; background: var(--enamel, #0d5637); } .ds-action-ghost { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 1.5rem; border: none; border-radius: var(--radius, 3px); background: transparent; color: var(--signal, #f6f7f4); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 0.9375rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; cursor: pointer; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.4); transition: background 180ms cubic-bezier(0.16,1,0.3,1), box-shadow 180ms cubic-bezier(0.16,1,0.3,1); } .ds-action-ghost svg { flex: none; } .ds-action-ghost:hover { background: rgb(255 255 255 / 0.1); box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 0.75); } .ds-action-ghost:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 3px; }"
     },
     {
       "name": "Blade",
@@ -443,7 +458,7 @@
       "refersTo": "blade",
       "description": "A porcelain enamel sign plate: green field with the logo chevron, signal-white gothic caps, and the inset keyline every fabricated blade carries a few millimetres from its edge.",
       "html": "<div class=\"ds-blade\"><span class=\"ds-blade-coord\">1300 W</span><p class=\"ds-blade-name\">Chicago Super Coach</p></div>",
-      "css": ".ds-blade { position: relative; display: block; padding: 1rem 1.5rem; border-radius: var(--radius, 3px); background: var(--enamel, #0e3b2a); background-image: url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2776%27 height=%2756%27 viewBox=%270 0 76 56%27%3E%3Cg transform=%27translate(22 17)%27 fill=%27%2523ffffff%27 fill-opacity=%270.05%27%3E%3Cpath d=%27M4 0H32L28 5H0Z%27/%3E%3Cpath d=%27M0 8H28L32 13H4Z%27/%3E%3Cpath d=%27M4 16H32L28 21H0Z%27/%3E%3C/g%3E%3C/svg%3E\"); color: var(--signal, #f6f7f4); text-decoration: none; } .ds-blade::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgb(255 255 255 / 0.32); border-radius: 1px; pointer-events: none; } .ds-blade-coord { display: block; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--azure, #41b6e6); } .ds-blade-name { margin: 1px 0 0; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 1.375rem; font-weight: 900; line-height: 1.05; letter-spacing: 0.01em; text-transform: uppercase; }"
+      "css": ".ds-blade { position: relative; display: block; padding: 1rem 1.5rem; border-radius: var(--radius, 3px); background: var(--enamel, #0d5637); background-image: url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2776%27 height=%2756%27 viewBox=%270 0 76 56%27%3E%3Cg transform=%27translate(22 17)%27 fill=%27%2523ffffff%27 fill-opacity=%270.05%27%3E%3Cpath d=%27M4 0H32L28 5H0Z%27/%3E%3Cpath d=%27M0 8H28L32 13H4Z%27/%3E%3Cpath d=%27M4 16H32L28 21H0Z%27/%3E%3C/g%3E%3C/svg%3E\"); color: var(--signal, #f6f7f4); text-decoration: none; } .ds-blade::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgb(255 255 255 / 0.32); border-radius: 1px; pointer-events: none; } .ds-blade-coord { display: block; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--azure, #6ac9ee); } .ds-blade-name { margin: 1px 0 0; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 1.375rem; font-weight: 900; line-height: 1.05; letter-spacing: 0.01em; text-transform: uppercase; }"
     },
     {
       "name": "Plate",
@@ -457,9 +472,9 @@
       "name": "Square Plate",
       "kind": "card",
       "refersTo": "plate-square",
-      "description": "The alternative container: a 3px marked top edge in enamel or amber, and NO border-radius. Radius and a marked edge are mutually exclusive.",
+      "description": "The alternative container: a 3px marked top edge in enamel-ink or amber, and NO border-radius. Radius and a marked edge are mutually exclusive. Shown as the review plate — quote at lede scale, attribution dropped to the foot behind a scribed paper-line rule.",
       "html": "<div class=\"ds-plate-square\"><blockquote class=\"ds-plate-square-quote\"><p>They were on time, the driver was professional, and the whole group arrived together.</p></blockquote><footer class=\"ds-plate-square-by\"><span class=\"ds-plate-square-name\">Marcus D.</span><span class=\"ds-plate-square-ctx\">Corporate shuttle</span></footer></div>",
-      "css": ".ds-plate-square { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.5rem; border-top: 3px solid var(--enamel, #0e3b2a); border-radius: 0; background: var(--paper-lift, #f7f8f5); color: var(--ink, #10201a); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-plate-square-quote { margin: 0; font-size: 1rem; line-height: 1.6; } .ds-plate-square-quote p { margin: 0; } .ds-plate-square-by { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin-top: auto; } .ds-plate-square-name { font-weight: 800; letter-spacing: -0.01em; } .ds-plate-square-ctx { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim, #46564e); }"
+      "css": ".ds-plate-square { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; border-top: 3px solid var(--enamel-ink, #0b4029); border-radius: 0; background: var(--paper-lift, #f7f8f5); color: var(--ink, #10201a); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-plate-square-quote { margin: 0; max-width: 52ch; font-size: clamp(1.125rem, 1.6vw, 1.3125rem); line-height: 1.55; } .ds-plate-square-quote p { margin: 0; } .ds-plate-square-by { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; margin-top: auto; padding-top: 1.25rem; border-top: 1px solid var(--paper-line, #d2d5cc); } .ds-plate-square-name { font-size: 1.125rem; font-weight: 800; letter-spacing: -0.01em; } .ds-plate-square-ctx { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim, #46564e); }"
     },
     {
       "name": "Control Field",
@@ -467,7 +482,7 @@
       "refersTo": "control-input",
       "description": "Mono uppercase label above a 3px-cornered field. Focus goes to an enamel border with an enamel-tinted ring; required is marked on the label, not in a legend.",
       "html": "<label class=\"ds-control\" data-required><span>Pickup location</span><input name=\"pickup\" placeholder=\"Hotel, office, school or address\" /></label>",
-      "css": ".ds-control { display: flex; flex-direction: column; gap: 0.5rem; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-control > span { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-dim, #46564e); } .ds-control[data-required] > span::after { content: ' *'; color: var(--hivis-deep, #d68f00); } .ds-control input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--paper-line, #d2d5cc); border-radius: var(--radius, 3px); background: var(--paper-lift, #f7f8f5); color: var(--ink, #10201a); font-family: inherit; font-size: 1rem; line-height: 1.4; transition: border-color 160ms cubic-bezier(0.16,1,0.3,1), box-shadow 160ms cubic-bezier(0.16,1,0.3,1); } .ds-control input::placeholder { color: #6b7a72; } .ds-control input:hover { border-color: #b6bab0; } .ds-control input:focus { border-color: var(--enamel, #0e3b2a); box-shadow: 0 0 0 3px rgb(14 59 42 / 0.14); outline: none; }"
+      "css": ".ds-control { display: flex; flex-direction: column; gap: 0.5rem; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-control > span { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-dim, #46564e); } .ds-control[data-required] > span::after { content: ' *'; color: var(--hivis-deep, #d68f00); } .ds-control input { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--paper-line, #d2d5cc); border-radius: var(--radius, 3px); background: var(--paper-lift, #f7f8f5); color: var(--ink, #10201a); font-family: inherit; font-size: 1rem; line-height: 1.4; transition: border-color 160ms cubic-bezier(0.16,1,0.3,1), box-shadow 160ms cubic-bezier(0.16,1,0.3,1); } .ds-control input::placeholder { color: #6b7a72; } .ds-control input:hover { border-color: #b6bab0; } .ds-control input:focus { border-color: var(--enamel, #0d5637); box-shadow: 0 0 0 3px rgb(14 59 42 / 0.14); outline: none; }"
     },
     {
       "name": "Coordinate Rule",
@@ -475,7 +490,7 @@
       "refersTo": "coordinate",
       "description": "The mono line above a heading, with a trailing 1px rule that flexes to fill the remaining width. Carries real information — a grid coordinate, a section index, a destination — never a marketing kicker.",
       "html": "<div class=\"ds-coord-bed\"><p class=\"ds-coordinate\">1300 W &middot; Chicago, Illinois</p><h2 class=\"ds-coord-head\">Your whole group, one arrival time.</h2></div>",
-      "css": ".ds-coord-bed { padding: 1.5rem; background: var(--enamel, #0e3b2a); } .ds-coordinate { display: flex; align-items: center; gap: 0.75rem; margin: 0 0 1rem; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--azure, #41b6e6); } .ds-coordinate::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.35; } .ds-coord-head { margin: 0; max-width: 16ch; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: clamp(2rem, 4.4vw, 3.25rem); font-weight: 800; line-height: 1.04; letter-spacing: -0.03em; color: var(--signal, #f6f7f4); }"
+      "css": ".ds-coord-bed { padding: 1.5rem; background: var(--enamel, #0d5637); } .ds-coordinate { display: flex; align-items: center; gap: 0.75rem; margin: 0 0 1rem; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--azure, #6ac9ee); } .ds-coordinate::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.35; } .ds-coord-head { margin: 0; max-width: 16ch; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: clamp(2rem, 4.4vw, 3.25rem); font-weight: 800; line-height: 1.04; letter-spacing: -0.03em; color: var(--signal, #f6f7f4); }"
     },
     {
       "name": "Navigation Link",
@@ -483,7 +498,7 @@
       "refersTo": "nav-link",
       "description": "Tracked uppercase link on the sticky enamel masthead. A 2px amber underline scales in from the left on hover and stays scaled for the current page.",
       "html": "<nav class=\"ds-nav\"><a class=\"ds-nav-link\" href=\"/fleet\" aria-current=\"page\">Fleet</a><a class=\"ds-nav-link\" href=\"/services\">Services</a><a class=\"ds-nav-link\" href=\"/about\">About</a></nav>",
-      "css": ".ds-nav { display: flex; align-items: center; gap: 1.5rem; padding: 1rem 1.5rem; background: var(--enamel, #0e3b2a); border-bottom: 1px solid var(--enamel-line, #2f6e52); } .ds-nav-link { position: relative; display: block; padding-block: 0.5rem; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--signal, #f6f7f4); opacity: 0.82; transition: opacity 160ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover, .ds-nav-link[aria-current='page'] { opacity: 1; } .ds-nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--hivis, #ffb100); transform: scaleX(0); transform-origin: left; transition: transform 200ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover::after, .ds-nav-link[aria-current='page']::after { transform: scaleX(1); } .ds-nav-link:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 3px; }"
+      "css": ".ds-nav { display: flex; align-items: center; gap: 1.5rem; padding: 1rem 1.5rem; background: var(--enamel, #0d5637); border-bottom: 1px solid var(--enamel-line, #3f8a60); } .ds-nav-link { position: relative; display: block; padding-block: 0.5rem; font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: var(--signal, #f6f7f4); opacity: 0.82; transition: opacity 160ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover, .ds-nav-link[aria-current='page'] { opacity: 1; } .ds-nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--hivis, #ffb100); transform: scaleX(0); transform-origin: left; transition: transform 200ms cubic-bezier(0.16,1,0.3,1); } .ds-nav-link:hover::after, .ds-nav-link[aria-current='page']::after { transform: scaleX(1); } .ds-nav-link:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 3px; }"
     },
     {
       "name": "Destination Blade",
@@ -491,7 +506,15 @@
       "refersTo": "blade",
       "description": "The signature component. Sets itself from the booking form's route and headcount and names which of the four real vehicles fits — the smallest whose top-of-range seats the group; the vehicle line rolls on change the way a destination blind rolls, while the detail beneath it updates every recalculation because it answers to the headcount rather than the vehicle.",
       "html": "<div class=\"ds-rb\"><div class=\"ds-rb-strip\"><span class=\"ds-rb-coord\">1300 W</span><span class=\"ds-rb-service\">Quote</span></div><p class=\"ds-rb-route\"><span>Ogilvie Transportation Center</span><svg class=\"ds-rb-arrow\" width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-linejoin=\"miter\" aria-hidden=\"true\"><path d=\"M3 12h16\"/><path d=\"M13 6l6 6-6 6\"/></svg><span>Soldier Field</span></p><div class=\"ds-rb-meta\"><div class=\"ds-rb-cell\"><span class=\"ds-rb-key\">Passengers</span><span class=\"ds-rb-count\">38</span></div><div class=\"ds-rb-cell ds-rb-cell-wide\"><span class=\"ds-rb-key\">Vehicle</span><span class=\"ds-rb-roll\"><span class=\"ds-rb-vehicle\">39&ndash;44 Passenger Coach Bus</span></span><span class=\"ds-rb-detail\">Seats your group in one vehicle.</span></div></div></div>",
-      "css": ".ds-rb { position: relative; display: block; padding: 1.5rem 2rem; border-radius: var(--radius, 3px); background: var(--enamel, #0e3b2a); background-image: url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2776%27 height=%2756%27 viewBox=%270 0 76 56%27%3E%3Cg transform=%27translate(22 17)%27 fill=%27%2523ffffff%27 fill-opacity=%270.05%27%3E%3Cpath d=%27M4 0H32L28 5H0Z%27/%3E%3Cpath d=%27M0 8H28L32 13H4Z%27/%3E%3Cpath d=%27M4 16H32L28 21H0Z%27/%3E%3C/g%3E%3C/svg%3E\"); color: var(--signal, #f6f7f4); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-rb::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgb(255 255 255 / 0.32); border-radius: 1px; pointer-events: none; } .ds-rb-strip { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgb(255 255 255 / 0.22); font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; } .ds-rb-coord { color: var(--azure, #41b6e6); } .ds-rb-service { color: var(--signal-dim, #b9c9bf); } .ds-rb-route { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin: 1.25rem 0 1rem; font-size: clamp(1.25rem, 3.2vw, 2.125rem); font-weight: 900; line-height: 1.1; letter-spacing: 0.005em; text-transform: uppercase; } .ds-rb-arrow { flex: none; color: var(--hivis, #ffb100); } .ds-rb-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem; padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.22); font-size: 0.875rem; } .ds-rb-cell { display: grid; gap: 0.25rem; align-content: start; } .ds-rb-cell-wide { padding-left: 1.5rem; border-left: 1px solid rgb(255 255 255 / 0.22); } .ds-rb-key { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--azure, #41b6e6); } .ds-rb-count { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; } .ds-rb-roll { display: block; overflow: hidden; } .ds-rb-vehicle { display: block; font-size: 1.0625rem; font-weight: 800; line-height: 1.3; letter-spacing: 0.01em; text-transform: uppercase; color: var(--hivis, #ffb100); animation: ds-roll 420ms cubic-bezier(0.16,1,0.3,1); } .ds-rb-detail { display: block; color: var(--signal-dim, #b9c9bf); font-size: 0.8125rem; line-height: 1.4; } @keyframes ds-roll { 0% { transform: translateY(-105%); filter: blur(2.5px); opacity: 0.4; } 100% { transform: translateY(0); filter: blur(0); opacity: 1; } }"
+      "css": ".ds-rb { position: relative; display: block; padding: 1.5rem 2rem; border-radius: var(--radius, 3px); background: var(--enamel, #0d5637); background-image: url(\"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2776%27 height=%2756%27 viewBox=%270 0 76 56%27%3E%3Cg transform=%27translate(22 17)%27 fill=%27%2523ffffff%27 fill-opacity=%270.05%27%3E%3Cpath d=%27M4 0H32L28 5H0Z%27/%3E%3Cpath d=%27M0 8H28L32 13H4Z%27/%3E%3Cpath d=%27M4 16H32L28 21H0Z%27/%3E%3C/g%3E%3C/svg%3E\"); color: var(--signal, #f6f7f4); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); } .ds-rb::before { content: ''; position: absolute; inset: 5px; border: 1px solid rgb(255 255 255 / 0.32); border-radius: 1px; pointer-events: none; } .ds-rb-strip { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid rgb(255 255 255 / 0.22); font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; } .ds-rb-coord { color: var(--azure, #6ac9ee); } .ds-rb-service { color: var(--signal-dim, #b9c9bf); } .ds-rb-route { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1rem; margin: 1.25rem 0 1rem; font-size: clamp(1.25rem, 3.2vw, 2.125rem); font-weight: 900; line-height: 1.1; letter-spacing: 0.005em; text-transform: uppercase; } .ds-rb-arrow { flex: none; color: var(--hivis, #ffb100); } .ds-rb-meta { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1.5rem; padding-top: 1rem; border-top: 1px solid rgb(255 255 255 / 0.22); font-size: 0.875rem; } .ds-rb-cell { display: grid; gap: 0.25rem; align-content: start; } .ds-rb-cell-wide { padding-left: 1.5rem; border-left: 1px solid rgb(255 255 255 / 0.22); } .ds-rb-key { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--azure, #6ac9ee); } .ds-rb-count { font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-variant-numeric: tabular-nums; font-size: 1.5rem; font-weight: 900; line-height: 1.1; letter-spacing: -0.02em; } .ds-rb-roll { display: block; overflow: hidden; } .ds-rb-vehicle { display: block; font-size: 1.0625rem; font-weight: 800; line-height: 1.3; letter-spacing: 0.01em; text-transform: uppercase; color: var(--hivis, #ffb100); animation: ds-roll 420ms cubic-bezier(0.16,1,0.3,1); } .ds-rb-detail { display: block; color: var(--signal-dim, #b9c9bf); font-size: 0.8125rem; line-height: 1.4; } @keyframes ds-roll { 0% { transform: translateY(-105%); filter: blur(2.5px); opacity: 0.4; } 100% { transform: translateY(0); filter: blur(0); opacity: 1; } }"
+    },
+    {
+      "name": "Guide Card",
+      "kind": "card",
+      "refersTo": "guide-card",
+      "description": "The guides object, used unchanged on the homepage, on /guides and as a related card at the foot of an article. A mounted 3:2 photograph over type set directly on the ground — no panel, no border, no radius on the text block. The eyebrow carries the category and a reading time derived from the article word count, so it is a coordinate rather than a kicker.",
+      "html": "<a class=\"ds-gcard\" href=\"/guides/what-size-charter-bus-do-i-need\"><span class=\"ds-gcard-frame\"><img src=\"\" alt=\"The aisle of a motorcoach, looking down rows of high-back reclining seats\" /></span><span class=\"ds-gcard-kind\"><span class=\"ds-gcard-tag\">Guide</span><span class=\"ds-gcard-dot\">·</span>6 min read</span><h3 class=\"ds-gcard-title\">What Size Charter Bus Does Your Group Need?</h3><span class=\"ds-gcard-sum\">From a 13-person executive van to a full-size coach, how to choose a vehicle without paying for space you do not need.</span><span class=\"ds-gcard-go\">Read guide<svg width=\"15\" height=\"15\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"square\" stroke-linejoin=\"miter\" aria-hidden=\"true\"><path d=\"M3 12h16\"/><path d=\"M13 6l6 6-6 6\"/></svg></span></a>",
+      "css": ".ds-gcard { display: grid; grid-template-rows: auto auto auto 1fr auto; gap: 1rem; text-decoration: none; color: var(--ink, #10201a); font-family: var(--font-sans, 'Overpass Variable', system-ui, sans-serif); max-width: 23rem; } .ds-gcard-frame { position: relative; display: block; overflow: hidden; border-radius: var(--radius, 3px); background: var(--enamel-deep, #0a3f2a); } .ds-gcard-frame::after { content: \"\"; position: absolute; inset: 4px; border: 1px solid rgb(255 255 255 / 0.3); border-radius: 1px; pointer-events: none; } .ds-gcard-frame img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; transition: transform 320ms cubic-bezier(0.16,1,0.3,1); } .ds-gcard:hover .ds-gcard-frame img { transform: scale(1.03); } .ds-gcard-kind { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.25rem; font-family: var(--font-mono, 'Overpass Mono Variable', ui-monospace, monospace); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-dim, #46564e); } .ds-gcard-tag { font-weight: 700; color: var(--enamel-ink, #0b4029); } .ds-gcard-dot { color: var(--paper-line, #d2d5cc); } .ds-gcard-title { margin: 0; font-size: clamp(1.375rem, 2.4vw, 1.75rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; text-wrap: balance; } .ds-gcard-sum { max-width: 42ch; font-size: 0.9375rem; line-height: 1.6; color: var(--ink-dim, #46564e); } .ds-gcard-go { display: inline-flex; align-items: center; align-self: start; gap: 0.5rem; padding-bottom: 2px; border-bottom: 2px solid currentColor; font-size: 0.8125rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--enamel-ink, #0b4029); transition: gap 200ms cubic-bezier(0.16,1,0.3,1); } .ds-gcard:hover .ds-gcard-go { gap: 0.75rem; color: var(--hivis-text, #8a5a00); } .ds-gcard-go svg { flex: none; } .ds-gcard:focus-visible { outline: 3px solid var(--hivis, #ffb100); outline-offset: 4px; border-radius: 1px; }"
     },
     {
       "name": "Placeholder",

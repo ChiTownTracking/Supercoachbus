@@ -72,9 +72,16 @@ export const TRUST_CLAIMS = [
   'Seatbelts on every seat',
 ] as const;
 
+/**
+ * Guides sit after Services because that is the order of the decision: what we
+ * run, what we run it for, then how to plan it. They are a navigation item and
+ * never an action — `Reserve now` in the masthead and `Get a quote` everywhere
+ * else stay the only conversion targets, and nothing here displaces them.
+ */
 export const NAV = [
   { label: 'Fleet', href: '/fleet' },
   { label: 'Services', href: '/services' },
+  { label: 'Guides', href: '/guides' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ] as const;
@@ -83,6 +90,7 @@ export const FOOTER_NAV = [
   { label: 'Home', href: '/' },
   { label: 'Fleet', href: '/fleet' },
   { label: 'Services', href: '/services' },
+  { label: 'Guides', href: '/guides' },
   { label: 'Get a Quote', href: '/#quote-form' },
   { label: 'Reserve Online', href: '/reserve' },
   { label: 'About', href: '/about' },

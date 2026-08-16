@@ -1,0 +1,84 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import GuideCard from '../../components/GuideCard.astro';
+import CloseBand from '../../components/CloseBand.astro';
+import { GUIDES } from '../../data/guides';
+import { SITE_ORIGIN } from '../../config/site';
+
+/**
+ * The guides index. Every card, every title and every description comes from
+ * data/guides.ts — adding a fourth guide is one entry in that file and it
+ * appears here, on the homepage, and in the other articles' related cards.
+ */
+
+/** A real ItemList, so the set is legible to a crawler as a set. */
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Chicago Super Coach guides',
+  itemListElement: GUIDES.map((g, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    url: `${SITE_ORIGIN}/guides/${g.slug}`,
+    name: g.title,
+  })),
+};
+---
+
+<Layout
+  path="/guides"
+  title="Charter Bus Planning Guides for Chicago Groups | Chicago Super Coach"
+  description="Practical guides to planning group transportation in Chicago — what moves a charter quote, how to choose a vehicle for your headcount, and when to book."
+  jsonLd={[itemList]}
+>
+  <PageHead
+    coordinate={`${GUIDES.length} guides · Trip planning`}
+    title="Guides for getting your group there."
+    lede="Practical answers for planning group transportation in Chicago—from choosing a vehicle to figuring out when to book."
+  />
+
+  <div class="section">
+    <div class="shell">
+      <ul class="guides__grid">
+        {
+          GUIDES.map((guide) => (
+            <li>
+              <GuideCard
+                guide={guide}
+                level={2}
+                sizes="(min-width: 64rem) 23rem, (min-width: 44rem) 45vw, 90vw"
+              />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <CloseBand />
+</Layout>
+
+<style>
+  .guides__grid {
+    display: grid;
+    gap: var(--space-12) var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Two up before three, so a fourth guide lands in a grid that already knows
+     what to do with it rather than stranding one card on its own line. */
+  @media (min-width: 44rem) {
+    .guides__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .guides__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

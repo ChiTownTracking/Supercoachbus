@@ -204,6 +204,40 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     color: var(--hivis);
   }
 
+  /* The masthead's width budget.
+     A fifth nav item put the bar over its limit at 1024: the action wrapped to
+     two lines and the whole band grew by 25px. Three rules keep it on one line
+     without moving the drawer breakpoint up onto laptop widths.
+
+     1. The action never wraps. A call to action broken across two lines is not
+        a button, it is a paragraph with a background.
+     2. Between the drawer and 72rem the gaps close up.
+     3. In that same band the phone number stands down. It is the one item here
+        that is repeated verbatim in the footer of every page and in the drawer
+        below 60rem, so it is the only thing that can leave without taking a
+        route with it. It comes back the moment there is room. */
+  .nav__actions .action {
+    white-space: nowrap;
+  }
+
+  @media (min-width: 60.0625rem) and (max-width: 72rem) {
+    .masthead__inner {
+      gap: var(--space-4);
+    }
+
+    .nav {
+      gap: var(--space-5);
+    }
+
+    .nav__list {
+      gap: var(--space-4);
+    }
+
+    .nav__phone {
+      display: none;
+    }
+  }
+
   .nav-button {
     display: none;
   }

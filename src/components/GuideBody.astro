@@ -1,0 +1,588 @@
+---
+import Icon from './Icon.astro';
+import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
+import type { GuideBlock, GuideLink } from '../data/guides';
+
+/**
+ * Renders a guide's block list.
+ *
+ * This is the only place a guide's structure is turned into markup, which is
+ * what keeps every article inside the sign system: there is no path by which an
+ * author can introduce a heading level, a table treatment or an inline style the
+ * design has no answer for. The union in data/guides.ts is the whole vocabulary.
+ */
+interface Props {
+  blocks: GuideBlock[];
+}
+
+const { blocks } = Astro.props;
+
+/** Heading ids, so any section of a guide can be linked to directly. */
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+/**
+ * Split a string on its linked phrases.
+ *
+ * A missing phrase throws rather than silently rendering an unlinked sentence:
+ * this runs at build time, so an internal link that stops matching its copy
+ * fails the build instead of quietly disappearing from the page.
+ */
+function withLinks(text: string, links?: GuideLink[]): (string | GuideLink)[] {
+  if (!links || links.length === 0) return [text];
+
+  let parts: (string | GuideLink)[] = [text];
+
+  for (const link of links) {
+    const next: (string | GuideLink)[] = [];
+    let placed = false;
+
+    for (const part of parts) {
+      if (typeof part !== 'string' || placed) {
+        next.push(part);
+        continue;
+      }
+      const at = part.indexOf(link.phrase);
+      if (at === -1) {
+        next.push(part);
+        continue;
+      }
+      if (at > 0) next.push(part.slice(0, at));
+      next.push(link);
+      const rest = part.slice(at + link.phrase.length);
+      if (rest) next.push(rest);
+      placed = true;
+    }
+
+    if (!placed) {
+      throw new Error(
+        `Guide link phrase not found in its own block: "${link.phrase}" → ${link.href}\n` +
+          `Block text was: ${text}`
+      );
+    }
+    parts = next;
+  }
+
+  return parts;
+}
+
+/** Bars are drawn against the largest vehicle, so the four read as one scale. */
+const scaleOf = (seats: number) => `${Math.round((seats / MAX_SINGLE_VEHICLE) * 100)}%`;
+
+const FLEET_NOTE =
+  'Every vehicle we run. The bar under each range is drawn against the largest, so the four sizes read as one scale rather than four numbers.';
+---
+
+<div class="ga">
+  {
+    blocks.map((block) => {
+      switch (block.type) {
+        case 'h2':
+          return (
+            <h2 class="ga__h2" id={slugify(block.text)}>
+              {block.text}
+            </h2>
+          );
+
+        case 'h3':
+          return (
+            <h3 class="ga__h3" id={slugify(block.text)}>
+              {block.text}
+            </h3>
+          );
+
+        case 'p':
+          return (
+            <p class="ga__p">
+              {withLinks(block.text, block.links).map((part) =>
+                typeof part === 'string' ? part : <a href={part.href}>{part.phrase}</a>
+              )}
+            </p>
+          );
+
+        case 'list': {
+          const List = block.ordered ? 'ol' : 'ul';
+          // A list block's links belong to the block, not to a particular item,
+          // so each item takes only the links whose phrase is actually in it.
+          // Passing the whole set to every item would throw on the first item
+          // that does not happen to contain the third item's phrase.
+          return (
+            <List class="ga__list">
+              {block.items.map((item) => (
+                <li>
+                  {withLinks(
+                    item,
+                    block.links?.filter((l) => item.includes(l.phrase))
+                  ).map((part) =>
+                    typeof part === 'string' ? part : <a href={part.href}>{part.phrase}</a>
+                  )}
+                </li>
+              ))}
+            </List>
+          );
+        }
+
+        case 'checklist':
+          return (
+            <div class="ga__check">
+              {block.title && <p class="ga__check-head mono">{block.title}</p>}
+              <ul class="ga__check-list">
+                {block.items.map((item) => (
+                  <li>
+                    <Icon name="check" size={16} />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+
+        /*
+         * Two columns fit a phone once the table's min-width comes down, so they
+         * stay a table at every size. Three or more cannot, and take the same
+         * treatment as the fleet comparison: a real table above 40rem and the
+         * rows as labelled blocks below it, with `display: none` keeping exactly
+         * one of the pair in the accessibility tree.
+         */
+        case 'table': {
+          const wide = block.columns.length > 2;
+          return (
+            <div class={wide ? 'ga__tablewrap' : ''}>
+              <div class="ga__scroll">
+                <table class="ga__table">
+                  {block.caption && <caption>{block.caption}</caption>}
+                  <thead>
+                    <tr>
+                      {block.columns.map((c) => (
+                        <th scope="col">{c}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {block.rows.map((row) => (
+                      <tr>
+                        {row.map((cell, i) =>
+                          i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {wide && (
+                <div class="ga__stack">
+                  {block.caption && <p class="ga__stack-note">{block.caption}</p>}
+                  <ul class="ga__stack-list">
+                    {block.rows.map((row) => (
+                      <li>
+                        <p class="ga__stack-name">{row[0]}</p>
+                        <dl class="ga__stack-pairs">
+                          {row.slice(1).map((cell, i) => (
+                            <div>
+                              <dt class="mono">{block.columns[i + 1]}</dt>
+                              <dd>{cell}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        case 'callout':
+          return (
+            <aside class="ga__callout field">
+              <h3 class="ga__callout-head">{block.title}</h3>
+              <p>
+                {withLinks(block.text, block.links).map((part) =>
+                  typeof part === 'string' ? part : <a href={part.href}>{part.phrase}</a>
+                )}
+              </p>
+            </aside>
+          );
+
+        /*
+         * Two renderings of one dataset, and only ever one of them in the
+         * accessibility tree, because `display: none` takes the other out of it.
+         * A three-column comparison cannot be read on a 390px screen: it either
+         * scrolls sideways, which hides the column that answers the question, or
+         * it is restructured. Restructuring in CSS by setting `display: block`
+         * on table elements silently strips the table semantics and needs a full
+         * set of ARIA roles bolted back on to survive; rendering the small
+         * version as the list it actually is costs four extra rows of markup and
+         * no correctness at all.
+         */
+        case 'fleetTable':
+          return (
+            <div class="ga__fleetwrap">
+              <div class="ga__scroll">
+                <table class="ga__table ga__fleet">
+                  <caption>{FLEET_NOTE}</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Vehicle</th>
+                      <th scope="col">Passengers</th>
+                      <th scope="col">Best for</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {FLEET.map((v) => (
+                      <tr>
+                        <th scope="row">
+                          <a href={`/fleet#${v.slug}`}>{v.name}</a>
+                        </th>
+                        <td>
+                          <span class="ga__seats mono">{v.capacityLabel}</span>
+                          <span class="ga__bar" style={`width: ${scaleOf(v.seatsMax)}`} />
+                        </td>
+                        <td>{v.bestFor.join(', ')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="ga__stack">
+                <p class="ga__stack-note">{FLEET_NOTE}</p>
+                <ul class="ga__stack-list">
+                  {FLEET.map((v) => (
+                    <li>
+                      <p class="ga__stack-name">
+                        <a href={`/fleet#${v.slug}`}>{v.name}</a>
+                      </p>
+                      <p class="ga__stack-seats mono">{v.capacityLabel} passengers</p>
+                      <span class="ga__bar" style={`width: ${scaleOf(v.seatsMax)}`} />
+                      <p class="ga__stack-for">{v.bestFor.join(', ')}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          );
+      }
+    })
+  }
+</div>
+
+<style>
+  .ga {
+    max-width: var(--measure);
+  }
+
+  /* Sections are separated by a scribed rule, the way a blade carries rules
+     rather than by stacking panels. */
+  .ga__h2 {
+    margin: var(--space-12) 0 var(--space-5);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--paper-line);
+    /* The Title step. A guide's h2 is a sub-section head inside a band, which
+       is exactly what that step is for — it needed no new size of its own. */
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+    scroll-margin-top: 6rem;
+  }
+
+  .ga > .ga__h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .ga__h3 {
+    margin: var(--space-8) 0 var(--space-3);
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    scroll-margin-top: 6rem;
+  }
+
+  .ga__p {
+    margin-bottom: var(--space-5);
+    line-height: 1.75;
+  }
+
+  .ga__list {
+    margin: 0 0 var(--space-6);
+    padding-left: var(--space-6);
+    display: grid;
+    gap: var(--space-3);
+    line-height: 1.65;
+  }
+
+  .ga__list ::marker {
+    color: var(--enamel-ink);
+  }
+
+  .ga :global(a) {
+    font-weight: 700;
+    color: var(--enamel-ink);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+  }
+
+  .ga :global(a:hover) {
+    color: var(--hivis-text);
+  }
+
+  /* ---- Checklist: the one thing on the page you are meant to go and gather. ---- */
+
+  .ga__check {
+    margin: 0 0 var(--space-8);
+    padding: var(--space-6) var(--space-8) var(--space-8);
+    border-top: 3px solid var(--enamel-ink);
+    background: var(--paper-lift);
+  }
+
+  .ga__check-head {
+    margin-bottom: var(--space-5);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .ga__check-list {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ga__check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+  }
+
+  .ga__check-list :global(svg) {
+    flex: none;
+    margin-top: 2px;
+    color: var(--enamel-ink);
+  }
+
+  /* ---- Tables ---- */
+
+  .ga__scroll {
+    margin: 0 0 var(--space-8);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  /* The floor is 20rem, not 30: the fleet comparison has its own stacked
+     rendering below 40rem, so this only governs the two-column tables in the
+     prose — and those fit a 390px phone at 20rem without anyone swiping. The
+     scroll container stays as the backstop for anything genuinely wider. */
+  .ga__table {
+    width: 100%;
+    min-width: 20rem;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  .ga__table caption {
+    margin-bottom: var(--space-4);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-dim);
+    text-align: left;
+  }
+
+  .ga__table th[scope='col'] {
+    padding: var(--space-3) var(--space-4);
+    background: var(--enamel);
+    color: var(--signal);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .ga__table th[scope='col']:first-child {
+    border-top-left-radius: var(--radius);
+  }
+
+  .ga__table th[scope='col']:last-child {
+    border-top-right-radius: var(--radius);
+  }
+
+  .ga__table th[scope='row'],
+  .ga__table td {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--paper-line);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    vertical-align: top;
+  }
+
+  .ga__table th[scope='row'] {
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  .ga__table tbody tr:hover {
+    background: var(--paper-lift);
+  }
+
+  /* Capacity twice: once as a number, once as a length. The bars share one
+     scale across the four rows, which is the thing four ranges side by side do
+     not tell you at a glance. */
+  .ga__seats {
+    display: block;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .ga__bar {
+    display: block;
+    height: 3px;
+    margin-top: var(--space-2);
+    background: var(--enamel-ink);
+  }
+
+  /* The same four vehicles as a list, for widths where three columns cannot be
+     read without a sideways swipe. Exactly one of the pair is ever displayed. */
+  .ga__stack {
+    display: none;
+  }
+
+  @media (max-width: 40rem) {
+    .ga__fleetwrap > .ga__scroll,
+    .ga__tablewrap > .ga__scroll {
+      display: none;
+    }
+
+    .ga__stack {
+      display: block;
+      margin-bottom: var(--space-8);
+    }
+  }
+
+  .ga__stack-pairs {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-4) 0 0;
+  }
+
+  .ga__stack-pairs dt {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .ga__stack-pairs dd {
+    margin: var(--space-1) 0 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .ga__stack-note {
+    margin-bottom: var(--space-5);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--ink-dim);
+  }
+
+  .ga__stack-list {
+    display: grid;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ga__stack-list li {
+    padding: var(--space-5);
+    border-top: 3px solid var(--enamel-ink);
+    background: var(--paper-lift);
+  }
+
+  .ga__stack-name {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .ga__stack-seats {
+    margin-top: var(--space-2);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ga__stack-for {
+    margin-top: var(--space-4);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--ink-dim);
+  }
+
+  /* ---- Callout: an enamel plate inside the reading ground. Used once. ---- */
+
+  .ga__callout {
+    position: relative;
+    margin: var(--space-8) 0;
+    padding: var(--space-6) var(--space-8);
+    border-radius: var(--radius);
+  }
+
+  .ga__callout::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .ga__callout-head {
+    margin-bottom: var(--space-3);
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .ga__callout p {
+    color: var(--signal-dim);
+    line-height: 1.7;
+  }
+
+  .ga__callout :global(a) {
+    color: var(--signal);
+    text-decoration-color: var(--enamel-line);
+  }
+
+  .ga__callout :global(a:hover) {
+    color: var(--hivis);
+    text-decoration-color: currentColor;
+  }
+
+  @media (max-width: 40rem) {
+    .ga__check {
+      padding: var(--space-5) var(--space-5) var(--space-6);
+    }
+
+    .ga__callout {
+      padding: var(--space-5) var(--space-6);
+    }
+  }
+</style>

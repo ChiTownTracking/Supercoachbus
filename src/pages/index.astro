@@ -4,9 +4,12 @@ import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import QuickQuote from '../components/QuickQuote.astro';
 import Testimonials from '../components/Testimonials.astro';
+import GuideCard from '../components/GuideCard.astro';
+import CloseBand from '../components/CloseBand.astro';
 import { BUSINESS, TRUST_CLAIMS } from '../config/site';
 import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
 import { SERVICES } from '../data/services';
+import { GUIDES } from '../data/guides';
 
 import heroCoach from '../assets/images/hero-caoch-bus.png';
 import coachExterior from '../assets/images/coach-exterior.jpg';
@@ -134,7 +137,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
   <section class="section fleet" id="fleet">
     <div class="shell">
       <p class="coordinate coordinate--ink fleet__coord">
-        {FLEET.length} vehicles · {SMALLEST}–{MAX_SINGLE_VEHICLE} passengers
+        {SMALLEST}–{MAX_SINGLE_VEHICLE} passengers
       </p>
       <h2 class="title fleet__head">Four sizes, so the group fits the vehicle.</h2>
       <p class="lede measure fleet__lede">
@@ -239,24 +242,36 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
 
   <Testimonials />
 
-  <!-- Close -->
-  <section class="close field field--deep">
-    <div class="shell close__inner">
-      <div>
-        <h2 class="title close__head">Give us a date and a headcount.</h2>
-        <p class="lede close__lede">
-          Most quotes need nothing more than that, the route, and a return time.
-        </p>
-      </div>
-      <div class="close__actions">
-        <a class="action" href="#quote-form">
-          Get a quote
-          <Icon name="arrow" size={16} />
-        </a>
-        <a class="action action--ghost" href="/reserve">Reserve online</a>
-      </div>
+  <!-- Guides. Held tight, and separated from the reviews by a hairline rather
+       than a ground change: two concrete bands in a row need a rule between
+       them, and this page has no room for another green one before the close. -->
+  <section class="section--tight guides">
+    <div class="shell">
+      <p class="coordinate coordinate--ink">Trip planning</p>
+      <h2 class="title guides__head">A little planning goes a long way.</h2>
+      <p class="lede measure guides__lede">
+        Straightforward guides to help you choose the right vehicle, understand
+        pricing, and know when to book.
+      </p>
+
+      <ul class="guides__grid">
+        {
+          GUIDES.map((guide) => (
+            <li>
+              <GuideCard guide={guide} sizes="(min-width: 64rem) 22rem, (min-width: 44rem) 44vw, 88vw" />
+            </li>
+          ))
+        }
+      </ul>
+
+      <a class="guides__all" href="/guides">
+        View all guides
+        <Icon name="arrow" size={15} />
+      </a>
     </div>
   </section>
+
+  <CloseBand />
 </Layout>
 
 <style>
@@ -320,12 +335,12 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
 
   .hero__coord {
     margin-bottom: var(--space-5);
-    color: var(--enamel);
+    color: var(--enamel-ink);
   }
 
   .hero__ico {
     flex: none;
-    color: var(--enamel);
+    color: var(--enamel-ink);
   }
 
   .hero__head {
@@ -333,7 +348,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
        photograph instead of running under it. "Your whole group," needs roughly
        8× its own font size to keep one line. */
     font-size: clamp(2.5rem, 5.4vw, 4.75rem);
-    color: var(--enamel);
+    color: var(--enamel-ink);
   }
 
   /* The mark's own gradient, and the only place it appears outside the logo. It
@@ -380,7 +395,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
   .hero__hours em {
     font-style: normal;
     font-weight: 700;
-    color: var(--enamel);
+    color: var(--enamel-ink);
   }
 
   /* A scribed divider rather than a middot: the two halves of the hours truth
@@ -514,7 +529,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
   }
 
   .trust__item :global(svg) {
-    color: var(--enamel);
+    color: var(--enamel-ink);
     flex: none;
   }
 
@@ -639,7 +654,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     width: var(--of);
     height: 3px;
     margin-top: var(--space-4);
-    background: var(--enamel);
+    background: var(--enamel-ink);
   }
 
   .vcard__cap {
@@ -655,7 +670,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     font-size: 0.9375rem;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
-    color: var(--enamel);
+    color: var(--enamel-ink);
   }
 
   .vcard__name {
@@ -811,32 +826,63 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     }
   }
 
-  /* ---- Close ---- */
+  /* ---- Guides ----
+     The closing band's styles used to live here; it is CloseBand.astro now,
+     because the guide pages end on the same ask in the same words. */
 
-  .close {
-    padding-block: var(--space-12);
+  .guides {
+    border-top: 1px solid var(--paper-line);
   }
 
-  .close__inner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-8);
-  }
-
-  .close__head {
+  .guides__head {
     max-width: 18ch;
-    margin-bottom: var(--space-3);
   }
 
-  .close__lede {
-    max-width: 44ch;
+  .guides__lede {
+    max-width: 54ch;
+    margin-top: var(--space-4);
   }
 
-  .close__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-4);
+  .guides__grid {
+    display: grid;
+    gap: var(--space-8);
+    margin: var(--space-12) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Two before three, so a fourth guide has somewhere to land. */
+  @media (min-width: 44rem) {
+    .guides__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-12) var(--space-8);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .guides__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .guides__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-8);
+    padding-bottom: 2px;
+    border-bottom: 2px solid currentColor;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--enamel-ink);
+    transition: gap 200ms var(--ease-out);
+  }
+
+  .guides__all:hover {
+    gap: var(--space-3);
+    color: var(--hivis-text);
   }
 </style>

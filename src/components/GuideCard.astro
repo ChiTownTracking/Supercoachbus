@@ -1,0 +1,172 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { guideHref, readingMinutes, type Guide } from '../data/guides';
+
+/**
+ * One guide, as a card. The same object on the homepage, on /guides and at the
+ * foot of an article — a guide card is a guide card, and there is one of it.
+ *
+ * Editorial rather than a blog tile: the photograph is mounted as a sign plate
+ * under the Mounted-Photograph Rule, the type sits directly on the ground with
+ * no panel behind it, and the only chrome is the scribed keyline inside the
+ * frame. A filled card with a border and a radius would be the generic template
+ * this section is specifically not.
+ */
+interface Props {
+  guide: Guide;
+  /** Sizes hint — the card runs three across, two across and full width. */
+  sizes?: string;
+  /** h2 where the card is the page's content, h3 where it sits under one. */
+  level?: 2 | 3;
+}
+
+const {
+  guide,
+  sizes = '(min-width: 64rem) 23rem, (min-width: 44rem) 45vw, 90vw',
+  level = 3,
+} = Astro.props;
+
+const Title = level === 2 ? 'h2' : 'h3';
+const minutes = readingMinutes(guide);
+---
+
+<a class="gcard" href={guideHref(guide)}>
+  <span class="gcard__frame">
+    <Image
+      src={guide.image.src}
+      alt={guide.image.alt}
+      widths={[420, 640, 900]}
+      sizes={sizes}
+      loading="lazy"
+      style={`object-position: ${guide.image.position ?? 'center'}`}
+    />
+  </span>
+
+  <span class="gcard__kind mono">
+    <span class="gcard__tag">Guide</span>
+    <span class="gcard__dot" aria-hidden="true">·</span>
+    {minutes} min read
+  </span>
+
+  <Title class="gcard__title">{guide.title}</Title>
+
+  <span class="gcard__sum">{guide.summary}</span>
+
+  <span class="gcard__go">
+    Read guide
+    <Icon name="arrow" size={15} />
+  </span>
+</a>
+
+<style>
+  .gcard {
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
+    gap: var(--space-4);
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  /* Mounted-Photograph Rule: radius, clipped, enamel backing, scribed keyline.
+     3:2 because all three guide photographs are 3:2 — the frame answers to the
+     assets rather than cropping them to a number chosen first. */
+  .gcard__frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .gcard__frame::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .gcard__frame :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    transition: transform 320ms var(--ease-out);
+  }
+
+  .gcard:hover .gcard__frame :global(img) {
+    transform: scale(1.03);
+  }
+
+  .gcard__kind {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .gcard__tag {
+    font-weight: 700;
+    color: var(--enamel-ink);
+  }
+
+  /* The separator takes the row's own colour rather than a lighter one. At
+     `paper-line` it measured 1.27:1 on concrete — a mark that quiet is not
+     quiet, it is absent, and an absent separator makes "GUIDE 6 MIN READ" one
+     run of words. */
+  .gcard__title {
+    font-size: clamp(1.375rem, 2.4vw, 1.75rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+
+  .gcard__sum {
+    max-width: 42ch;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+
+  /* The wayfinding arrow, drawn not typed — and it travels on the card's hover
+     rather than its own, because the card is the target. */
+  .gcard__go {
+    display: inline-flex;
+    align-items: center;
+    align-self: start;
+    gap: var(--space-2);
+    padding-bottom: 2px;
+    border-bottom: 2px solid currentColor;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--enamel-ink);
+    transition: gap 200ms var(--ease-out);
+  }
+
+  .gcard:hover .gcard__go {
+    gap: var(--space-3);
+    color: var(--hivis-text);
+  }
+
+  .gcard__go :global(svg) {
+    flex: none;
+  }
+
+  /* The card is one link, so the ring belongs to the card. */
+  .gcard:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 4px;
+    border-radius: 1px;
+  }
+</style>

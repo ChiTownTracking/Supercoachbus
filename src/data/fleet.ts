@@ -34,6 +34,17 @@ export interface Vehicle {
   seatsMax: number;
   /** One line on what this vehicle is for, in the organizer's terms. */
   role: string;
+  /**
+   * The groups this vehicle actually suits, supplied by the owner on
+   * 15 Aug 2026 alongside the guides brief. Editorial positioning rather than a
+   * specification — it says who books this size, not what is bolted to it, so
+   * it is safe to publish while `amenities` stays empty for three of the four.
+   *
+   * It lives here rather than in the guide that uses it because the vehicle
+   * comparison has to read from one place: a capacity and its audience must
+   * never be able to disagree between /fleet and a guide.
+   */
+  bestFor: string[];
   amenities: string[];
   /**
    * Rows x seats-per-row for the plan-view seat diagram. Optional: a schematic
@@ -53,6 +64,12 @@ export const FLEET: Vehicle[] = [
     seatsMin: 50,
     seatsMax: 57,
     role: 'Full-size motorcoach for staff shuttles, school groups, wedding guests, and stadium runs.',
+    bestFor: [
+      'Large school groups',
+      'Sporting events',
+      'Large weddings',
+      'Major group outings',
+    ],
     amenities: [
       'High back leather reclining seats',
       'Laminate wood floors',
@@ -72,6 +89,12 @@ export const FLEET: Vehicle[] = [
     seatsMin: 39,
     seatsMax: 44,
     role: 'A coach for a group that is past a small bus but does not fill a Supercoach.',
+    bestFor: [
+      'Larger corporate groups',
+      'School trips',
+      'Sports groups',
+      'Wedding transportation',
+    ],
     amenities: [],
   },
   {
@@ -81,6 +104,12 @@ export const FLEET: Vehicle[] = [
     seatsMin: 22,
     seatsMax: 28,
     role: 'A full coach at the smaller end, so a mid-size group still travels in one vehicle.',
+    bestFor: [
+      'Smaller school groups',
+      'Wedding parties',
+      'Corporate outings',
+      'Medium-sized private groups',
+    ],
     amenities: [],
   },
   {
@@ -90,6 +119,12 @@ export const FLEET: Vehicle[] = [
     seatsMin: 13,
     seatsMax: 16,
     role: 'A van rather than a bus — the smallest vehicle we run, for a group that fits in one.',
+    bestFor: [
+      'Executive groups',
+      'Airport transportation',
+      'Small wedding parties',
+      'Small private groups',
+    ],
     amenities: [],
   },
 ];

@@ -1,91 +1,493 @@
 ---
 import { TESTIMONIALS } from '../data/testimonials';
+import Icon from './Icon.astro';
 
 /**
  * Real reviews, verbatim. Never edit the quote text — see src/data/testimonials.ts.
+ *
+ * Presented as a carousel rather than a grid. The grid put three reviews of very
+ * different lengths side by side, which produced three cards with ragged bottom
+ * edges and shrank the longest review to the smallest type on the page. One at a
+ * time is the trade: the words get room, and the strip's height is set once by
+ * the longest of them so nothing jumps as it moves.
+ *
+ * From 64rem the section splits — heading and controls left, the strip right —
+ * so the plate is sized by the quote rather than stretched to the shell with
+ * half of it left empty.
+ *
+ * It degrades to a horizontally scrollable strip with no script: the controls are
+ * only shown once the script marks the carousel ready, and the scrollbar is only
+ * hidden at the same moment — so a visitor without JS keeps the affordance the
+ * buttons would otherwise have replaced.
  */
 interface Props {
   heading?: string;
 }
 
 const { heading = 'What groups say afterward' } = Astro.props;
+const TOTAL = TESTIMONIALS.length;
 ---
 
-<section class="section reviews">
+<section class="section reviews" aria-labelledby="reviews-head">
   <div class="shell">
-    <h2 class="title reviews__head">{heading}</h2>
+    <div
+      class="reviews__grid"
+      role="group"
+      aria-roledescription="carousel"
+      aria-label="What customers said"
+      data-carousel
+    >
+      <div class="reviews__lead">
+        <p class="coordinate coordinate--ink">
+          {/* Server-rendered as a count, swapped to a live index once the script
+              runs. Both states carry real information, which is what the
+              coordinate line is for. */}
+          <span data-count>{TOTAL} reviews</span>
+        </p>
+        <h2 class="title reviews__head" id="reviews-head">{heading}</h2>
+      </div>
 
-    <ul class="reviews__list">
-      {
-        TESTIMONIALS.map((t) => (
-          <li class="review">
-            <blockquote class="review__quote">
-              <p>{t.quote}</p>
-            </blockquote>
-            <footer class="review__by">
-              <span class="review__name">{t.name}</span>
-              <span class="review__ctx mono">{t.context}</span>
-            </footer>
-          </li>
-        ))
-      }
-    </ul>
+      <ul
+        class="reviews__track"
+        data-track
+        tabindex="0"
+        aria-label="Customer reviews — use the left and right arrow keys to move between them"
+      >
+        {
+          TESTIMONIALS.map((t, i) => (
+            <li
+              class="rev"
+              role="group"
+              aria-roledescription="review"
+              aria-label={`${i + 1} of ${TOTAL}: ${t.name}`}
+              data-slide
+              data-name={t.name}
+            >
+              <figure class="rev__fig">
+                {/* The logo's sheared bar, run three times at falling lengths —
+                    the quote mark this world would fabricate. Drawn here rather
+                    than added to Icon.astro because it is a large graphic mark,
+                    not a 24x24 UI glyph. */}
+                <svg
+                  class="rev__mark"
+                  viewBox="0 0 48 34"
+                  width="56"
+                  height="40"
+                  fill="currentColor"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M16 0H48L40 8H8Z" />
+                  <path d="M12 13H40L32 21H4Z" />
+                  <path d="M8 26H28L20 34H0Z" />
+                </svg>
+
+                <blockquote class="lede rev__quote">
+                  <p>{t.quote}</p>
+                </blockquote>
+
+                <figcaption class="rev__by">
+                  <span class="rev__name">{t.name}</span>
+                  <span class="rev__ctx mono">{t.context}</span>
+                </figcaption>
+              </figure>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="reviews__foot">
+        <ol class="reviews__bars">
+          {
+            TESTIMONIALS.map((t, i) => (
+              <li>
+                <button
+                  type="button"
+                  class="bar"
+                  data-bar
+                  data-go={i}
+                  aria-label={`Show review ${i + 1}, ${t.name}`}
+                  aria-current={i === 0 ? 'true' : 'false'}
+                />
+              </li>
+            ))
+          }
+        </ol>
+
+        <div class="reviews__arrows">
+          <button
+            type="button"
+            class="revbtn revbtn--prev"
+            data-prev
+            aria-label="Previous review"
+            aria-disabled="true"
+          >
+            <Icon name="arrow" size={20} />
+          </button>
+          <button type="button" class="revbtn" data-next aria-label="Next review">
+            <Icon name="arrow" size={20} />
+          </button>
+        </div>
+      </div>
+
+      <p class="sr-only" role="status" aria-live="polite" data-status></p>
+    </div>
   </div>
 </section>
 
 <style>
-  .reviews__head {
-    max-width: 20ch;
-    margin-bottom: var(--space-12);
+  .reviews__grid {
+    display: grid;
+    gap: var(--space-8);
   }
 
-  .reviews__list {
-    display: grid;
+  .reviews__head {
+    max-width: 20ch;
+  }
+
+  /* ---------- The strip ---------- */
+
+  .reviews__track {
+    display: flex;
     gap: var(--space-6);
     margin: 0;
     padding: 0;
     list-style: none;
-    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
-    align-items: start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
   }
 
-  .review {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-    padding: var(--space-6);
-    border-top: 3px solid var(--enamel);
+  /* Hidden only once the buttons exist to replace it. Without a script the
+     scrollbar is the affordance, and taking it away would leave the strip
+     looking like a single review with nowhere to go. */
+  [data-ready] .reviews__track {
+    scrollbar-width: none;
+  }
+
+  [data-ready] .reviews__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rev {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+  }
+
+  /* Marked top edge, so no radius and no border — the Square-Plate rule.
+     Every slide is the height of the longest quote, because the strip is one
+     stretched flex row: the stage cannot jump as it moves. The plate therefore
+     ends on a 1fr row and drops the attribution to its foot, so a short review
+     reads as anchored rather than as trailing off. */
+  .rev__fig {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: var(--space-6);
+    height: 100%;
+    margin: 0;
+    padding: var(--space-8);
+    border-top: 3px solid var(--enamel-ink);
     background: var(--paper-lift);
   }
 
-  .review__quote {
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.6;
+  .rev__mark {
+    color: var(--enamel-ink);
   }
 
-  .review__quote p {
+  /* The quote is the one paragraph on this plate, which is what the `.lede` step
+     is for — so the scale comes from the primitive, not from a size invented
+     here. The single override is the colour: a lede supports a heading and takes
+     `ink-dim`, but this quote IS the content of the plate and takes full ink. */
+  .rev__quote {
+    margin: 0;
+    max-width: 52ch;
+    color: var(--ink);
+  }
+
+  .rev__quote p {
     margin: 0;
   }
 
-  .review__by {
+  /* Scribed rule across the foot of the plate. The slide is as tall as the
+     longest of the three, so a short review leaves room above the attribution;
+     the rule turns that room into a signature area instead of a void. */
+  .rev__by {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
+    align-self: end;
     gap: var(--space-3);
-    margin-top: auto;
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--paper-line);
   }
 
-  .review__name {
+  .rev__name {
+    font-size: 1.125rem;
     font-weight: 800;
     letter-spacing: -0.01em;
   }
 
-  .review__ctx {
+  .rev__ctx {
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink-dim);
   }
+
+  /* ---------- Controls ---------- */
+
+  .reviews__foot {
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+
+  [data-ready] .reviews__foot {
+    display: flex;
+  }
+
+  .reviews__bars {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Position marks, drawn as the same dashes the ground is patterned with. The
+     current one is amber because current state is one of the jobs amber is
+     allowed to do. The mark is 4px; the button around it is 24px tall so the
+     target clears the 24x24 minimum rather than being a 4px-tall hairline. */
+  .bar {
+    display: grid;
+    align-items: center;
+    width: 2.25rem;
+    height: 1.5rem;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  /* The current mark thickens rather than lengthens: every slot stays the same
+     width, so the run of dashes keeps even spacing, and the change is a
+     transform rather than a layout property. */
+  .bar::before {
+    content: '';
+    display: block;
+    height: 4px;
+    border-radius: 1px;
+    background: var(--paper-line);
+    transition:
+      transform 200ms var(--ease-out),
+      background 200ms var(--ease-out);
+  }
+
+  .bar:hover::before {
+    background: var(--ink-dim);
+  }
+
+  .bar[aria-current='true']::before {
+    transform: scaleY(1.75);
+    background: var(--hivis);
+  }
+
+  .reviews__arrows {
+    display: flex;
+    gap: var(--space-3);
+  }
+
+  /* The concrete-ground outline action, sized down to an icon square. */
+  .revbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius);
+    background: var(--paper-lift);
+    color: var(--enamel-ink);
+    box-shadow: inset 0 0 0 1.5px var(--enamel-ink);
+    cursor: pointer;
+    transition:
+      background 180ms var(--ease-out),
+      color 180ms var(--ease-out),
+      box-shadow 180ms var(--ease-out);
+  }
+
+  .revbtn :global(svg) {
+    transition: transform 180ms var(--ease-out);
+  }
+
+  .revbtn--prev :global(svg) {
+    transform: scaleX(-1);
+  }
+
+  .revbtn:not([aria-disabled='true']):hover {
+    background: var(--enamel);
+    color: var(--signal);
+    box-shadow: inset 0 0 0 1.5px var(--enamel);
+  }
+
+  /* The arrow travels along its own axis, which for the flipped glyph means the
+     translate is applied inside the flipped frame. */
+  .revbtn:not([aria-disabled='true']):hover :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .revbtn--prev:not([aria-disabled='true']):hover :global(svg) {
+    transform: scaleX(-1) translateX(3px);
+  }
+
+  .revbtn[aria-disabled='true'] {
+    background: transparent;
+    color: var(--ink-dim);
+    box-shadow: inset 0 0 0 1.5px var(--paper-line);
+    cursor: default;
+  }
+
+  /* ---------- Desktop split ----------
+     The strip spans both rows on the right; the heading takes the top of the
+     left column and the controls sit under it, which puts the buttons at the
+     eye rather than at the foot of a tall plate. DOM order stays
+     heading -> strip -> controls, so the phone stacks in the order it reads. */
+  @media (min-width: 64rem) {
+    .reviews__grid {
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      grid-template-rows: auto 1fr;
+      column-gap: var(--space-16);
+      row-gap: var(--space-8);
+      align-items: start;
+    }
+
+    .reviews__lead {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .reviews__track {
+      grid-column: 2;
+      grid-row: 1 / -1;
+    }
+
+    .reviews__foot {
+      grid-column: 1;
+      grid-row: 2;
+      justify-content: flex-start;
+      gap: var(--space-8);
+    }
+
+    .rev__fig {
+      padding: var(--space-12);
+    }
+  }
 </style>
+
+<script>
+  /**
+   * Carousel behaviour. The scroll container is the source of truth — the
+   * buttons scroll it and the scroll position drives the marks, so a swipe, a
+   * trackpad flick and a button press all end in the same state.
+   */
+  const carousels = document.querySelectorAll<HTMLElement>('[data-carousel]');
+
+  carousels.forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-track]');
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
+    const bars = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-bar]'));
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-next]');
+    const count = root.querySelector<HTMLElement>('[data-count]');
+    const status = root.querySelector<HTMLElement>('[data-status]');
+
+    if (!track || !prev || !next || slides.length < 2) return;
+
+    const total = slides.length;
+    let index = 0;
+
+    root.setAttribute('data-ready', '');
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    /** Slide positions are read live, so a resize or a font swap cannot stale them. */
+    const offsetOf = (i: number) => slides[i].offsetLeft - slides[0].offsetLeft;
+
+    function paint(i: number, announce: boolean) {
+      index = i;
+      if (count) count.textContent = `${pad(i + 1)} / ${pad(total)}`;
+      bars.forEach((b, n) => b.setAttribute('aria-current', n === i ? 'true' : 'false'));
+      prev!.setAttribute('aria-disabled', String(i === 0));
+      next!.setAttribute('aria-disabled', String(i === total - 1));
+      if (announce && status) {
+        const name = slides[i].dataset.name ?? '';
+        status.textContent = `Review ${i + 1} of ${total}${name ? `: ${name}` : ''}`;
+      }
+    }
+
+    function go(i: number) {
+      const target = Math.max(0, Math.min(total - 1, i));
+      track!.scrollTo({ left: offsetOf(target), behavior: still.matches ? 'auto' : 'smooth' });
+      paint(target, true);
+    }
+
+    prev.addEventListener('click', () => {
+      if (prev!.getAttribute('aria-disabled') !== 'true') go(index - 1);
+    });
+
+    next.addEventListener('click', () => {
+      if (next!.getAttribute('aria-disabled') !== 'true') go(index + 1);
+    });
+
+    bars.forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.go))));
+
+    track.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        go(index + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        go(index - 1);
+      }
+    });
+
+    // Scroll drives the marks: nearest slide to the current scroll position wins.
+    let frame = 0;
+    track.addEventListener(
+      'scroll',
+      () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const x = track!.scrollLeft;
+          let best = 0;
+          let bestGap = Infinity;
+          for (let i = 0; i < total; i += 1) {
+            const gap = Math.abs(offsetOf(i) - x);
+            if (gap < bestGap) {
+              bestGap = gap;
+              best = i;
+            }
+          }
+          if (best !== index) paint(best, true);
+        });
+      },
+      { passive: true },
+    );
+
+    // A width change moves every slide's offset; hold the current one in view.
+    let settle = 0;
+    window.addEventListener('resize', () => {
+      window.clearTimeout(settle);
+      settle = window.setTimeout(() => {
+        track!.scrollTo({ left: offsetOf(index), behavior: 'auto' });
+      }, 120);
+    });
+
+    paint(0, false);
+  });
+</script>

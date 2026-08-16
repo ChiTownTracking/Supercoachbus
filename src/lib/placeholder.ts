@@ -108,6 +108,21 @@ export const OPEN_ITEMS = {
     'Years in operation',
     'The old site said "thousands of people" with no verifiable number. Supply a real founding year or the claim stays off the site.'
   ),
+  /**
+   * The guide photographs. Two of the three are licensed stock standing in for
+   * the operator's own work, which is a different kind of open item from the
+   * rest of this registry: nothing on the page is *wrong*, so nothing is marked
+   * on the page. It is declared here so the build keeps asking, because a
+   * stock photograph of somebody else's wedding is not this company's proof —
+   * and this build's whole argument is that the proof is its own.
+   * Provenance for each is recorded on the entry in src/data/guides.ts.
+   */
+  guidePhotos: todo(
+    'guides.photos',
+    'asset',
+    'Owned photography for the guide articles',
+    'The cost and booking guides run licensed Pexels stock (Chicago traffic; wedding guests). The size guide already runs the operator\'s own coach interior. Supply real photographs — a coach on a Chicago street, a group boarding — and all three become owned images.'
+  ),
   credentials: todo(
     'about.credentials',
     'fact',

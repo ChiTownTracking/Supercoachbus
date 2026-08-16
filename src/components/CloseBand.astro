@@ -1,0 +1,61 @@
+---
+import Icon from './Icon.astro';
+
+/**
+ * The site's closing band. It was written inline on the homepage and is now a
+ * component because the guides end on it too — the last thing a reader sees
+ * after an article is the same ask the homepage closes with, in the same words.
+ * Two copies of that would drift the moment either one was edited.
+ *
+ * The quote link is absolute rather than a bare `#quote-form`: from a guide the
+ * fragment has to carry the path with it, and from the homepage the browser
+ * still treats it as same-document navigation.
+ */
+---
+
+<section class="close field field--deep">
+  <div class="shell close__inner">
+    <div>
+      <h2 class="title close__head">Give us a date and a headcount.</h2>
+      <p class="lede close__lede">
+        Most quotes need nothing more than that, the route, and a return time.
+      </p>
+    </div>
+    <div class="close__actions">
+      <a class="action" href="/#quote-form">
+        Get a quote
+        <Icon name="arrow" size={16} />
+      </a>
+      <a class="action action--ghost" href="/reserve">Reserve online</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .close {
+    padding-block: var(--space-12);
+  }
+
+  .close__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .close__head {
+    max-width: 18ch;
+    margin-bottom: var(--space-3);
+  }
+
+  .close__lede {
+    max-width: 44ch;
+  }
+
+  .close__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+</style>

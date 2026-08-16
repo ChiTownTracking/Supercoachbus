@@ -13,11 +13,35 @@
 @import '@fontsource-variable/overpass-mono';
 
 :root {
-  /* --- Enamel: the identity field. Carries roughly half the surface. --- */
-  --enamel: #0e3b2a;
-  --enamel-deep: #07241a;
-  --enamel-lift: #17553c;
-  --enamel-line: #2f6e52;
+  /* --- Enamel: the identity field. Carries roughly half the surface. ---
+     Lifted ~2.1x in luminance from the near-black forest green this began as,
+     and pulled toward the mark's own green at the same time: saturation went
+     0.74 -> 0.85, which is what makes it read as vivid rather than merely
+     lighter. Chroma is the cheaper half of "pop" — it costs almost no contrast,
+     where lightness costs it directly. The whole ramp moved together and kept
+     its internal ratios: `lift` still sits ~1.4:1 above the field so a hover is
+     felt, and `line` ~2:1 so a hairline is seen.
+
+     `--enamel` is the one token that works on both sides of the system — the
+     dark field AND the ink on concrete — so lifting it lowers contrast in both
+     directions at once. Every pair was re-measured, not assumed; the binding
+     one turned out to be azure on the field, which is why --azure moved too. */
+  --enamel: #0d5637;
+  --enamel-deep: #0a3f2a;
+  --enamel-lift: #137047;
+  --enamel-line: #3f8a60;
+
+  /* The same green as a MARK rather than as a SURFACE.
+     `--enamel` used to do both jobs, which is why it could never be brightened
+     without darkening every green headline, numeral, icon and hairline on the
+     concrete ground at the same time. Splitting it settles that: the field is
+     free to be vivid, and green type is free to be dark enough to read as type.
+
+     The rule this encodes — green as a surface is `--enamel`, green as a mark on
+     concrete is `--enamel-ink`. A filled chip carrying signal-white text is a
+     surface, however small. A 3px rule, a drawn seat, an icon, a focus border
+     and a numeral are all marks. */
+  --enamel-ink: #0b4029;
 
   /* --- Concrete: the reading ground. --- */
   --paper: #edeee9;
@@ -52,8 +76,13 @@
      bright amber is a fill colour, never a text colour on light. */
   --hivis-text: #8a5a00;
 
-  /* --- Chicago flag azure. Coordinates and measurement marks only. --- */
-  --azure: #41b6e6;
+  /* --- Chicago flag azure. Coordinates and measurement marks only. ---
+     Opened up from the flag's own #41b6e6 across two passes of lifting the
+     enamel field. Azure-on-enamel is the binding pair in this palette: it is
+     11px mono that has to clear 4.5:1, and it hits the floor before signal-dim
+     or amber do. Every further lift of --enamel has to buy its headroom here
+     first. Still unmistakably the flag blue. */
+  --azure: #6ac9ee;
 
   /* --- The logo's own colours, sampled from src/assets/images/logo.png.
      These describe the supplied mark; they are NOT page colours. The navy
@@ -364,8 +393,8 @@ svg {
    variant casts; the ring is the whole affordance until it is pressed. */
 .action--outline {
   background: var(--paper-lift);
-  color: var(--enamel);
-  box-shadow: inset 0 0 0 1.5px var(--enamel);
+  color: var(--enamel-ink);
+  box-shadow: inset 0 0 0 1.5px var(--enamel-ink);
 }
 
 .action--outline:hover {
@@ -465,7 +494,7 @@ svg {
 }
 
 .control :is(input, select, textarea):focus {
-  border-color: var(--enamel);
+  border-color: var(--enamel-ink);
   box-shadow: 0 0 0 3px rgb(14 59 42 / 0.14);
   outline: none;
 }

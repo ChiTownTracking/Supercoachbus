@@ -11,10 +11,33 @@ interface Props {
   path: string;
   /** Set on pages that should not be indexed. */
   noindex?: boolean;
+  /** "article" on a guide; everything else is a page of the site itself. */
+  ogType?: 'website' | 'article';
+  /**
+   * Share image, as a site-root path (the `.src` of an imported asset is
+   * exactly that). Resolved to an absolute URL here, because Open Graph
+   * consumers do not resolve relative ones.
+   */
+  ogImage?: string;
+  /**
+   * Extra structured data nodes for this page — an Article on a guide, and
+   * anything else a page can honestly claim. They are emitted as their own
+   * `application/ld+json` blocks alongside the site-wide LocalBusiness.
+   */
+  jsonLd?: Record<string, unknown>[];
 }
 
-const { title, description, path, noindex = false } = Astro.props;
+const {
+  title,
+  description,
+  path,
+  noindex = false,
+  ogType = 'website',
+  ogImage,
+  jsonLd = [],
+} = Astro.props;
 const canonical = new URL(path, SITE_ORIGIN).href;
+const ogImageUrl = ogImage ? new URL(ogImage, SITE_ORIGIN).href : undefined;
 
 const { address, geo, hours, phone } = BUSINESS;
 
@@ -76,17 +99,29 @@ const schema = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex, follow" />}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={BUSINESS.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
     <meta name="twitter:card" content="summary_large_image" />
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
     <meta name="generator" content={Astro.generator} />
-    <meta name="theme-color" content="#0e3b2a" />
-    <set:html
-      value={`<script type="application/ld+json">${JSON.stringify(schema)}</script>`}
-    />
+    <meta name="theme-color" content="#0d5637" />
+    {/*
+      `<script type="application/ld+json" set:html={...}>` is the idiom, and the
+      distinction matters: this shipped for months as `<set:html value={...} />`,
+      which Astro rendered as a literal `<set :html="...">` element carrying an
+      HTML-escaped string. The business's structured data was in the source and
+      in no crawler's index. Never hand-build a script tag as a string.
+    */}
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    {
+      jsonLd.map((node) => (
+        <script is:inline type="application/ld+json" set:html={JSON.stringify(node)} />
+      ))
+    }
   </head>
   <body>
     <!--

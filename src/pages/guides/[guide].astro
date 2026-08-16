@@ -1,0 +1,379 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import GuideBody from '../../components/GuideBody.astro';
+import GuideCard from '../../components/GuideCard.astro';
+import CloseBand from '../../components/CloseBand.astro';
+import Icon from '../../components/Icon.astro';
+import { GUIDES, relatedGuides, readingMinutes } from '../../data/guides';
+import { BUSINESS, SITE_ORIGIN } from '../../config/site';
+
+export function getStaticPaths() {
+  return GUIDES.map((guide) => ({
+    params: { guide: guide.slug },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const path = `/guides/${guide.slug}`;
+const canonical = new URL(path, SITE_ORIGIN).href;
+const minutes = readingMinutes(guide);
+const others = relatedGuides(guide.slug);
+
+/** Section headings, read off the article's own blocks — never a second list. */
+const sections = guide.blocks
+  .filter((b) => b.type === 'h2')
+  .map((b) => (b as { text: string }).text);
+
+const slugify = (text: string) =>
+  text
+    .toLowerCase()
+    .replace(/[’']/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+/**
+ * Article and breadcrumb structured data. The publisher is a reference to the
+ * LocalBusiness node the layout already emits rather than a second copy of the
+ * business — one company, one node, referenced by id.
+ */
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  '@id': `${canonical}#article`,
+  headline: guide.title,
+  description: guide.meta.description,
+  image: [new URL(guide.image.src.src, SITE_ORIGIN).href],
+  datePublished: guide.published,
+  dateModified: guide.published,
+  inLanguage: 'en-US',
+  author: { '@type': 'Organization', name: BUSINESS.name, url: SITE_ORIGIN },
+  publisher: { '@id': `${SITE_ORIGIN}/#business` },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  isPartOf: { '@type': 'CollectionPage', '@id': `${SITE_ORIGIN}/guides` },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_ORIGIN },
+    { '@type': 'ListItem', position: 2, name: 'Guides', item: `${SITE_ORIGIN}/guides` },
+    { '@type': 'ListItem', position: 3, name: guide.title, item: canonical },
+  ],
+};
+---
+
+<Layout
+  path={path}
+  title={guide.meta.title}
+  description={guide.meta.description}
+  ogType="article"
+  ogImage={guide.image.src.src}
+  jsonLd={[articleSchema, breadcrumbSchema]}
+>
+  <article>
+    <PageHead coordinate={guide.coordinate} title={guide.title} lede={guide.intro}>
+      <div class="byline">
+        <nav class="byline__crumbs" aria-label="Breadcrumb">
+          <a href="/">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href="/guides">Guides</a>
+        </nav>
+        <p class="byline__kind">Guide · {minutes} min read</p>
+      </div>
+    </PageHead>
+
+    <div class="section">
+      <div class="shell">
+        <figure class="shot">
+          <Image
+            src={guide.image.src}
+            alt={guide.image.alt}
+            widths={[720, 1100, 1600]}
+            sizes="(min-width: 82rem) 78rem, 92vw"
+            loading="eager"
+            style={`object-position: ${guide.image.position ?? 'center'}`}
+          />
+        </figure>
+
+        {
+          sections.length > 2 && (
+            <nav class="toc" aria-label="Sections of this guide">
+              <p class="toc__head mono">In this guide</p>
+              <ol class="toc__list">
+                {sections.map((s) => (
+                  <li>
+                    <a href={`#${slugify(s)}`}>{s}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+
+        <GuideBody blocks={guide.blocks} />
+
+        {/* The contextual close. A plate on the reading ground rather than a
+            band, so it does not compete with the enamel one at the foot of the
+            page — one is about this guide, the other is about the business. */}
+        <aside class="ask">
+          <h2 class="ask__head">{guide.cta.head}</h2>
+          {guide.cta.body && <p class="ask__body">{guide.cta.body}</p>}
+          <a class="action" href={guide.cta.href}>
+            {guide.cta.label}
+            <Icon name="arrow" size={16} />
+          </a>
+        </aside>
+      </div>
+    </div>
+  </article>
+
+  <section class="section--tight more">
+    <div class="shell">
+      <div class="more__top">
+        <h2 class="subtitle">Keep planning</h2>
+        <a class="more__all" href="/guides">
+          View all guides
+          <Icon name="arrow" size={15} />
+        </a>
+      </div>
+      <ul class="more__grid">
+        {
+          others.map((other) => (
+            <li>
+              <GuideCard guide={other} sizes="(min-width: 52rem) 32rem, 90vw" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CloseBand />
+</Layout>
+
+<style>
+  /* ---- Byline, inside the enamel nameplate ---- */
+
+  .byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-6);
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--enamel-line);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .byline__crumbs {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    color: var(--signal-dim);
+  }
+
+  .byline__crumbs a {
+    color: var(--signal-dim);
+    text-decoration: none;
+  }
+
+  .byline__crumbs a:hover {
+    color: var(--signal);
+  }
+
+  /* Same reasoning as the card's separator: at `enamel-line` the slash measured
+     2.09:1 on the enamel ground and read as a smudge. It takes the crumb's own
+     colour, and the anchors carry the underline that distinguishes them. */
+  .byline__crumbs span {
+    color: var(--signal-dim);
+  }
+
+  .byline__kind {
+    color: var(--azure);
+  }
+
+  /* ---- Hero photograph, mounted as a plate ---- */
+
+  .shot {
+    position: relative;
+    margin: 0 0 var(--space-12);
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .shot::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  @media (min-width: 52rem) {
+    .shot :global(img) {
+      aspect-ratio: 21 / 9;
+    }
+  }
+
+  /* ---- Contents ---- */
+
+  .toc {
+    max-width: var(--measure);
+    margin-bottom: var(--space-12);
+    padding: var(--space-6) 0;
+    border-top: 1px solid var(--paper-line);
+    border-bottom: 1px solid var(--paper-line);
+  }
+
+  .toc__head {
+    margin-bottom: var(--space-4);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .toc__list {
+    display: grid;
+    gap: var(--space-2) var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: toc;
+  }
+
+  @media (min-width: 44rem) {
+    .toc__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .toc__list li {
+    counter-increment: toc;
+  }
+
+  .toc__list a {
+    display: flex;
+    gap: var(--space-3);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  /* The index numeral is drawn from the list's own counter, so it can never
+     disagree with the order of the sections it points at. */
+  .toc__list a::before {
+    content: counter(toc, decimal-leading-zero);
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--ink-dim);
+    padding-top: 0.15em;
+  }
+
+  .toc__list a:hover {
+    color: var(--enamel-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ---- The contextual ask ---- */
+
+  .ask {
+    max-width: var(--measure);
+    margin-top: var(--space-12);
+    padding: var(--space-8);
+    border-top: 3px solid var(--enamel-ink);
+    background: var(--paper-lift);
+  }
+
+  .ask__head {
+    font-size: 1.375rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .ask__body {
+    max-width: 46ch;
+    margin-top: var(--space-3);
+    color: var(--ink-dim);
+    line-height: 1.6;
+  }
+
+  .ask .action {
+    margin-top: var(--space-6);
+  }
+
+  /* ---- Related ---- */
+
+  .more {
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .more__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .more__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-bottom: 2px;
+    border-bottom: 2px solid currentColor;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--enamel-ink);
+    transition: gap 200ms var(--ease-out);
+  }
+
+  .more__all:hover {
+    gap: var(--space-3);
+    color: var(--hivis-text);
+  }
+
+  .more__grid {
+    display: grid;
+    gap: var(--space-12) var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 52rem) {
+    .more__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

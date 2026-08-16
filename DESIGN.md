@@ -2,10 +2,11 @@
 name: Chicago Super Coach
 description: Chicago's public-way signage program, built as a charter booking site — porcelain enamel blades, Highway Gothic, and amber reserved for action.
 colors:
-  enamel: "#0e3b2a"
-  enamel-deep: "#07241a"
-  enamel-lift: "#17553c"
-  enamel-line: "#2f6e52"
+  enamel: "#0d5637"
+  enamel-deep: "#0a3f2a"
+  enamel-lift: "#137047"
+  enamel-line: "#3f8a60"
+  enamel-ink: "#0b4029"
   paper: "#edeee9"
   paper-lift: "#f7f8f5"
   paper-line: "#d2d5cc"
@@ -18,8 +19,29 @@ colors:
   hivis-lift: "#ffc233"
   hivis-deep: "#d68f00"
   hivis-ink: "#241800"
-  azure: "#41b6e6"
+  azure: "#6ac9ee"
 typography:
+  scale:
+    key-mono: "0.625rem"
+    label: "0.6875rem"
+    coordinate: "0.75rem"
+    direction: "0.8125rem"
+    nav-phone: "0.875rem"
+    support: "0.9375rem"
+    control: "1rem"
+    body: "1.0625rem"
+    sub-heading: "1.125rem"
+    service-name-min: "1.25rem"
+    plate-heading: "1.375rem"
+    receipt: "1.5rem"
+    contact-heading: "1.625rem"
+    blade-receipt: "2.125rem"
+    fleet-numeral: "2.25rem"
+    hero-display-min: "2.5rem"
+    card-numeral-max: "3rem"
+    pagehead-max: "4.5rem"
+    hero-display-max: "4.75rem"
+    capacity-numeral: "5rem"
   display:
     fontFamily: "'Overpass Variable', system-ui, sans-serif"
     fontSize: "clamp(2.75rem, 7.5vw, 5.75rem)"
@@ -185,6 +207,16 @@ A two-ground palette — deep porcelain green and cool concrete — punctuated b
 
 ### Primary
 - **Porcelain Enamel Green** (`enamel`): The identity field. Carries roughly half the surface of the site — the masthead, the services band, interior `PageHead` bands, the footer, and every `.blade` — and, since the hero moved to the concrete ground, it is also the ink of the hero headline, its coordinate, and its icons. Also the ink color of drawn diagrams and inline icons when they sit on concrete.
+
+  The ramp was lifted ~2.1× in luminance across three passes from the near-black forest green it started as, which was reading heavy rather than confident. Internal ratios were preserved: `lift` sits ~1.4:1 above the field so a hover is felt, `line` ~2:1 so a hairline is seen.
+
+  **Chroma is the cheaper half of "brighter".** Saturation went 0.74 → 0.85, pulling the field toward the mark's own green, and that is where most of the vividness came from rather than from lightness. Saturation at fixed luminance costs almost no contrast; lightness costs it directly, against every foreground at once. Reach for chroma first when this field needs to feel more alive, and only then for lightness.
+
+- **Enamel Ink** (`enamel-ink`): The same green as a **mark** rather than as a **surface** — every green headline, numeral, icon, drawn seat, marked edge, focus border and hairline that sits on the concrete ground.
+
+  `--enamel` used to do both jobs, and that made it the one token in the system that could not be changed without a fight: as a field it wants to be light enough to feel alive, as ink it wants to be dark enough to read as type, and those pull in opposite directions. Splitting the token settles it permanently — the field is free to be vivid and green type is free to be dark.
+
+  **The rule: green as a surface is `--enamel`; green as a mark on concrete is `--enamel-ink`.** A filled chip carrying signal-white text is a surface however small it is — the services arrow button, the step-two numbered chip, `.action--ink`, `.method--primary`, `.action--outline` in its hovered filled state. A 3px marked edge, a drawn seat, an icon, a capacity numeral, a focus border and a route stop are all marks. When adding a green thing, ask which of the two it is; the answer is never "both".
 - **Enamel Deep** (`enamel-deep`): The band-within-a-band. Used for the page-closing call band and the footer, and as the mobile nav drawer fill, so a second enamel surface can sit against the first without a border.
 - **Enamel Lift** (`enamel-lift`): Hover fill for enamel-backed actions and the primary contact method plate.
 - **Enamel Line** (`enamel-line`): The hairline on enamel — plate borders inside a field, the services list rules, footer dividers, and the resting color of footer icons. Not the masthead: that band carries no underbar.
@@ -196,7 +228,7 @@ A two-ground palette — deep porcelain green and cool concrete — punctuated b
 - **Amber Ink** (`hivis-ink`): Near-black brown, the text color on every amber fill. Never used on any other ground.
 
 ### Tertiary
-- **Chicago Flag Azure** (`azure`): Coordinates and measurement marks only. The mono grid coordinate above a heading, the hero's coordinate line, the blade's coordinate strip, footer column heads, and destination keys. It never carries body text and is never a fill. It no longer appears in the masthead.
+- **Chicago Flag Azure** (`azure`): Coordinates and measurement marks only. The mono grid coordinate above a heading, the hero's coordinate line, the blade's coordinate strip, footer column heads, and destination keys. It never carries body text and is never a fill. It no longer appears in the masthead. Opened up from the flag's own `#41b6e6` across two passes of lifting the enamel field — this is 11px mono that has to clear 4.5:1. **Azure on enamel is the binding pair in this palette**: at 4.66:1 it is the tightest measurement on the site, and it reaches the floor before `signal-dim` (5.06:1) or amber do. Any further lift of `--enamel` has to buy its headroom here first, and there is not much of it left — the next pass should come out of chroma, not lightness.
 
 ### Neutral
 - **Concrete** (`paper`): The reading ground. The body background under every non-enamel band.
@@ -268,6 +300,8 @@ Both are self-hosted via `@fontsource-variable/overpass` and `@fontsource-variab
 
 Numerals in mono contexts get `font-variant-numeric: tabular-nums` via `.mono`, so counts and capacities never jitter as they update.
 
+**The utility steps.** Below Lede the build also uses a short list of fixed sizes that the seven named roles above never covered, and they have been in the code since the first pass — documenting them here rather than pretending the ramp is only seven values. In `rem`, with their pixel equivalents: `0.625` (10px, the smallest mono key), `0.6875` (11px, the Label step), `0.75` (12px, the Coordinate step), `0.8125` (13px, directional links and captions), `0.875` (14px, the masthead phone), `0.9375` (15px, supporting copy inside a component — the most-used size in the build after body), `1` (16px, drawer links and form controls), `1.0625` (17px, the Body step), `1.125` (18px, sub-headings inside a plate), `1.375` (22px, plate headings). Three one-off sizes exist above that and are noted where they are used: `1.5rem` on both blades' receipt lines, `1.625rem` on the contact page, `2.25rem` on `/fleet`. **Anything not on this list is a new step and needs a reason.** A guide's `h2` wanted 26px and took the Title step's `clamp(1.375rem, 2.4vw, 1.75rem)` instead, because a guide's `h2` is a sub-section head inside a band and that is what the step is for.
+
 ### Named Rules
 
 **The Highway Gothic Rule.** Overpass is the only voice. Its descent from the FHWA series is the reason it is here, so a second display face — a serif, a geometric, a condensed — would put a different road on the same sign. There is no second family beyond the mono sibling.
@@ -292,10 +326,13 @@ The page is a vertical stack of full-bleed bands alternating between the two gro
 - Hero is a concrete band, not an enamel one: the photograph covers the whole band at every width, with the copy column left and capped at `min(40rem, 50vw)` so it ends at roughly half the band on every desktop size
 - Fleet and vehicle detail split evenly at 52rem and 60rem
 - Footer splits `1fr / 1.45fr` at 60rem; its link columns are `auto-fit, minmax(11rem, 1fr)`
-- Testimonials are `auto-fit, minmax(17rem, 1fr)` — the only auto-fit content grid
+- Testimonials split `0.85fr / 1.15fr` at 64rem — heading and controls left, the review strip right
+- Guide grids go one, then two at 44rem, then three at 64rem — two before three, so a fourth guide lands in a grid that already knows what to do with it rather than stranding one card on its own line
 - The booking form is a 4-column grid collapsing to 2 at 46rem, with `.span-2` and `.span-4` utilities; `.span-2` becomes full-width on collapse
 
-**Breakpoints observed** (all `rem`, all component-local rather than global): 46rem (form grid, blade meta restacks), 48rem (shell gutter), 52rem (fleet grid, services rows), 60rem (nav drawer, footer, vehicle detail), 64rem and 80rem (hero measure and the two steps of the hero wash).
+**Breakpoints observed** (all `rem`, all component-local rather than global): 40rem (the guide fleet comparison swaps from table to stack), 44rem (guide grids go two-up), 46rem (form grid, blade meta restacks), 48rem (shell gutter), 52rem (fleet grid, services rows, guide hero widens to 21:9), 60rem (nav drawer, footer, vehicle detail), 64rem and 80rem (hero measure and the two steps of the hero wash; 64rem also splits the review carousel and takes guide grids three-up), 72rem (the masthead's phone number returns).
+
+**The masthead's width budget.** The bar carries the mark, five nav links, a phone number and the one action, and it has now twice run out of room — first when a grid coordinate sat beside the logo, and again when Guides became the fifth link, which wrapped `Reserve now` onto two lines and grew the band from 81px to 106px. Three rules hold it: the action never wraps (a call to action broken across two lines is a paragraph with a background); between the drawer breakpoint and 72rem the gaps close up; and in that same band the phone number stands down. The phone is the only item in the bar that can leave without taking a route with it — it is repeated verbatim in the footer of every page and in the drawer below 60rem. Measured at 961/1000/1024/1100/1152/1153/1280/1440/1920, the band is 81px at every width with no collision.
 
 **One container query.** The hero's hours divider asks `.hero__lead`, not the viewport, whether it has 35rem to work in. Everything else in the build is a media query. The rule: when the thing that decides a layout is a component's own width rather than the screen's, ask the component — a viewport guess got the divider right on a phone and stranded it again at 1024, where the copy column is capped to half the band.
 
@@ -320,7 +357,7 @@ Exactly one element casts a shadow: `.action`. Its shadow is a press affordance,
 
 **The One-Signal Rule.** A surface gets exactly one elevation signal. A `.plate` has a hairline border *or* a 3px marked top edge — never both, and never either plus a shadow.
 
-**The Shadow-Is-Press Rule.** `box-shadow` belongs to the pressable and to focus. Plates, blades, the masthead, the mobile nav drawer, and testimonial cards all cast nothing.
+**The Shadow-Is-Press Rule.** `box-shadow` belongs to the pressable and to focus. Plates, blades, the masthead, the mobile nav drawer, and the review plate all cast nothing. The carousel's own arrow buttons are the edge case that proves it: they are pressable, so they carry a ring — but an *inset* one, because they stand on concrete rather than on a photograph, and a ring is the whole affordance until it is pressed.
 
 ## Shapes
 
@@ -328,7 +365,7 @@ Exactly one element casts a shadow: `.action`. Its shadow is a press affordance,
 
 **The inset keyline.** `.blade::before` is absolutely positioned at `inset: 5px` with a `1px solid rgb(255 255 255 / 0.32)` border and `1px` radius. This is the line every fabricated blade carries a few millimetres inside its edge, and it is what distinguishes a blade from a green rectangle. It is `pointer-events: none`.
 
-**Marked edges.** The alternative to a bordered plate is a square plate with a 3px colored top edge: `border-top: 3px solid` in either `enamel` (testimonial cards, the about facts panel, the service detail panel) or `hivis` (the footer, the map). These take no radius at all.
+**Marked edges.** The alternative to a bordered plate is a square plate with a 3px colored top edge: `border-top: 3px solid` in either `enamel-ink` (the review plate, the about facts panel, the service detail panel) or `hivis` (the footer, the map). These take no radius at all. It is `enamel-ink` and not `enamel` because a 3px rule is a mark on concrete, not a surface — see the surface/mark split in Colors.
 
 **Hairlines.** 1px throughout — `paper-line` on concrete, `enamel-line` on enamel, and `--blade-divider` (`rgb(255 255 255 / 0.22)`) for internal dividers inside a blade. The divider sits a step below the inset keyline on purpose: a blade must read as one plate with rules scribed on it, not as stacked panels.
 
@@ -419,6 +456,37 @@ Four cards directly under the quote form, because the question the form raises �
 - **Rows, not gaps.** `grid-template-rows: auto auto auto auto 1fr auto` with the role taking the slack, so the four "View details" links sit on one line across the row however the names wrap.
 - **New type step:** the card numeral at `clamp(2.25rem, 4vw, 3rem)`, between `.title` and the `clamp(3.25rem, 8vw, 5rem)` capacity numeral the Drawn-Proof Rule specifies for a single hero figure. Four numerals in a row cannot carry the hero size.
 
+### Review carousel — `Testimonials.astro`
+One review at a time on a marked-edge plate, not three cards side by side. The three real reviews differ in length by a factor of three, so a grid produced three ragged-bottomed cards and set the longest review in the smallest type on the page.
+
+- **The scroll container is the source of truth.** The track is `overflow-x: auto` with `scroll-snap-type: x mandatory` and slides at `flex: 0 0 100%`. Buttons scroll it; the scroll position drives the counter, the marks and the disabled states. A swipe, a trackpad flick, an arrow key and a button press therefore all end in the same state, and there is no second copy of "which slide is showing" to fall out of sync.
+- **It works with the script removed.** Without JS the strip is still a horizontally scrollable region carrying all three reviews. The controls are `display: none` until the script sets `data-ready`, and the scrollbar is hidden by the same attribute — so the affordance is never taken away before its replacement exists.
+- **The strip is one stretched row**, so every slide is the height of the longest quote and the stage cannot jump as it moves. The plate ends on a `1fr` row and drops the attribution to its foot behind a `paper-line` rule, which turns the room a short review leaves into a signature area rather than a void.
+- **The counter is the coordinate line.** It server-renders as `3 reviews` and becomes `01 / 03` once the script runs; both states carry real information, which is what the Coordinate-Carries-Information Rule asks for. A visually hidden `role="status"` announces `Review 2 of 3: Grace` on change, so the counter itself does not have to be a live region.
+- **Ends stop, they do not wrap.** A counter implies a finite strip. The arrows take `aria-disabled` rather than `disabled` at the ends, so focus is never dropped out of the control when the last press lands.
+- **Marks thicken, they do not lengthen.** The position marks are the ground's own dashes; the current one is amber (current state is one of the jobs amber is allowed to do) and scales on Y. Every slot keeps its width, so the run stays evenly spaced and the change is a transform rather than a layout property. Each 4px mark sits inside a 24px-tall button so the target clears the minimum.
+- **The quote mark is drawn, not typed.** The logo's sheared bar run three times at falling lengths, inline in the component rather than in `Icon.astro` because it is a 56px graphic mark and not a 24×24 UI glyph.
+
+### Guide card — `GuideCard.astro`
+One object for three surfaces: the homepage guides section, `/guides`, and the related cards at the foot of an article. Editorial rather than a blog tile — the photograph is mounted under the Mounted-Photograph Rule and the type sits directly on the ground with no panel behind it, because a filled card with a border and a radius is the generic template this section exists to not be.
+
+- **3:2, chosen by the photographs.** All three guide images are natively 3:2, so the frame crops none of them. Same instinct as the fleet grid's 16:10: the ratio answers to the assets.
+- **The eyebrow carries a measurement.** `Guide · 6 min read`, where the minutes are derived from the article's own word count at 220 wpm — never typed, so it cannot drift from the prose. The category label is what the brief asked for; the reading time is what makes it a coordinate rather than a kicker.
+- **Rows, not gaps.** `grid-template-rows: auto auto auto 1fr auto` with the summary taking the slack, so every "Read guide" sits on one line across a row however the titles wrap.
+- **One link, one ring.** The whole card is the anchor and the focus ring belongs to the card, matching `.vcard`.
+
+### Guide body — `GuideBody.astro`
+The only place a guide's structure becomes markup. Articles are a typed block union in `src/data/guides.ts`, not markdown, so there is no path by which an author introduces a heading level, a table treatment or an inline style the sign system has no answer for.
+
+- **Links are data, and they fail loudly.** A block carries `links: [{ phrase, href }]`; the renderer splits the block's own text on the phrase and **throws at build time** if it is not there. An internal link that stops matching its copy breaks the build instead of silently vanishing from the sentence. A `list` block's links are filtered per item, because a phrase belongs to the block, not to any one item.
+- **The vehicle comparison is rendered from `fleet.ts`, never typed.** A `fleetTable` block takes no content at all: names, capacity ranges and audiences come from the fleet data, so a capacity in a guide cannot disagree with `/fleet`. The `bestFor` audiences live on the vehicle for the same reason.
+- **Two renderings of that table, one in the accessibility tree.** A three-column comparison cannot be read at 390px: it either scrolls sideways, hiding the column that answers the question, or it is restructured. Restructuring in CSS by setting `display: block` on table elements strips the table semantics and needs a full set of ARIA roles bolted back on; rendering the small version as the list it actually is costs four rows of markup and no correctness. `display: none` keeps exactly one of the pair exposed at any width.
+- **The callout is an enamel plate inside the reading ground**, with the blade's inset keyline. Used once per article — it is a ground change, and a page that changes ground three times has stopped meaning it.
+- **The checklist is the one thing on the page you are meant to go and gather**, so it takes a marked-edge plate and the authored check icon rather than list markers.
+
+### Close band — `CloseBand.astro`
+The site's closing ask, extracted from the homepage when the guides began ending on it. Its quote link is absolute (`/#quote-form`) rather than a bare fragment, because from a guide the fragment has to carry the path with it — and from the homepage the browser still treats it as same-document navigation.
+
 ### Placeholder — `Placeholder.astro`
 Unresolved content, marked so it can never pass as finished: a 2px dashed `hivis-deep` border over a -45° amber hatch (`rgb(255 177 0 / 0.09)` at 12px/24px), with a mono "Awaiting …" kind line, a label, and a statement of what is needed. Amber is correct here for the same reason it is correct on a button — it is the thing that is not yet safe to walk past.
 
@@ -427,9 +495,9 @@ The Read surface inside a Persuade site. Capped at `--measure` (68ch), 1.7 line-
 
 ### Named Rules
 
-**The Drawn-Proof Rule.** Evidence is drawn or set in type, never photographed. Capacity is a numeral at display scale (`clamp(3.25rem, 8vw, 5rem)`, 900, tabular), a layout is an SVG plan, an amenity is an authored icon. The build ships no photographic assets and no illustration library.
+**The Drawn-Proof Rule.** Evidence is drawn or set in type, never photographed. Capacity is a numeral at display scale (`clamp(3.25rem, 8vw, 5rem)`, 900, tabular), a layout is an SVG plan, an amenity is an authored icon. Photography arrived later and is now first-class, but it never carries *evidence*: the four vehicle photographs are the operator's own and show what a visitor is being quoted, and the guides' photographs illustrate a subject rather than proving a claim. Where a fact has to be proved — a capacity, a seating arrangement, the relative size of four vehicles — it is still drawn. The guide fleet comparison is the newest instance: the bar under each capacity range is drawn to one shared scale, because four ranges side by side do not tell you how much bigger a Supercoach is than a Sprinter.
 
-**The Mechanical-Motion Rule.** Motion depicts a mechanism. Arrows translate along their axis (4–5px on hover), list rows grow their inside gutter (`padding-inline`, 240ms) so the row appears to slide toward you, and the destination blade rolls. Durations are 160ms for input state, 180ms for actions, 200ms for links and hovers, 240ms for row expansion, and 420ms for the roll — all on `--ease-out` (`cubic-bezier(0.16, 1, 0.3, 1)`). Nothing fades in on scroll and nothing bounces. `prefers-reduced-motion: reduce` collapses all animation and transition to 0.01ms globally.
+**The Mechanical-Motion Rule.** Motion depicts a mechanism. Arrows translate along their axis (4–5px on hover), list rows grow their inside gutter (`padding-inline`, 240ms) so the row appears to slide toward you, and the destination blade rolls. Durations are 160ms for input state, 180ms for actions, 200ms for links, hovers and the carousel's position marks, 240ms for row expansion, and 420ms for the roll — all on `--ease-out` (`cubic-bezier(0.16, 1, 0.3, 1)`). The review carousel is the one place motion is delegated: the strip travels on the browser's own `scrollTo({ behavior: 'smooth' })`, because the mechanism there genuinely is a strip being scrolled and a hand-rolled transform would only be an imitation of one. It falls back to `behavior: 'auto'` under `prefers-reduced-motion`, since a global transition override cannot reach a scroll the script asked for. Nothing fades in on scroll and nothing bounces. `prefers-reduced-motion: reduce` collapses all animation and transition to 0.01ms globally.
 
 ## Do's and Don'ts
 
@@ -449,7 +517,7 @@ The Read surface inside a Persuade site. Capped at `--measure` (68ch), 1.7 line-
 - **Don't** put a `box-shadow` on a plate, a blade, the masthead, or a card. Only `.action` casts, and only as a press affordance.
 - **Don't** cross the two patterns: `--enamel-pattern` never touches a concrete surface, `--concrete-pattern` never touches enamel, and no surface carries both. Don't raise either above the opacity it ships at — the chevron is a texture in the ground, not a graphic on it.
 - **Don't** introduce a second display family, a glyph or emoji icon, or a system display face. Overpass and Overpass Mono are the whole voice.
-- **Don't** ship a stock highway photograph, a vehicle beauty shot, or a translucent quote bar floating over a hero image — the three things this world was built to refuse.
+- **Don't** ship a stock highway photograph, a vehicle beauty shot, or a translucent quote bar floating over a hero image — the three things this world was built to refuse. **Amended 15 Aug 2026, and the amendment is narrow.** The guides ship two licensed stock photographs, one of which is Chicago traffic on Lake Shore Drive — which is, read literally, the stock highway photograph this rule names. The distinction the rule was always making is between a photograph that *makes a claim* and a photograph that *illustrates a subject*. A highway under a hero says "this is our operation" using somebody else's road, and that is still forbidden. A photograph of Chicago traffic inside an article about what mileage, rush windows and tolls do to a quote is a picture of the subject of the paragraph next to it, and it claims nothing about the fleet. The test to apply: **could a visitor mistake this photograph for evidence about this business?** If yes, it must be the operator's own or it must be drawn. Both stock images are registered as `guides.photos` in `src/lib/placeholder.ts` and are meant to be replaced with owned photography; the third guide already uses the operator's own coach interior, because a guide about how many seats you need should show the real seats.
 - **Don't** write a kicker above a heading. The `.coordinate` line is the only line permitted there and it must carry real information; a line that restates the heading in softer words is not a coordinate.
 - **Don't** reference a spacing step outside the defined ramp (1, 2, 3, 4, 5, 6, 8, 12, 16, 24, 32). Every step in that list is a real token in `global.css`; anything else resolves to nothing and is silently dropped at computed-value time.
 - **Don't** let a sticky element cover the thing it is confirming — the destination blade goes `static` below 46rem for exactly this reason.
