@@ -65,20 +65,26 @@ export const OPEN_ITEMS = {
   // their passenger counts; they are in src/data/fleet.ts exactly as given.
   //
   // fleet.photos — RESOLVED. The owner supplied coach-bus-44.png,
-  // coach-bus-28.png and excutive-sprinter.png; all four vehicles now carry
-  // their own exterior in the fleet grid and on /fleet. The drawn-capacity
-  // fallback stays in both, because a fifth vehicle can arrive before its
-  // photograph does. Interiors still exist only for the Supercoach.
+  // coach-bus-28.png and excutive-sprinter.png, and on 16 Aug 2026 an interior
+  // for each of those three (src/assets/images/fleet/). All four vehicles now
+  // carry an exterior in the fleet grid and an exterior and an interior on
+  // /fleet. The drawn-capacity fallback stays in both, and the single-frame
+  // case still renders, because a fifth vehicle can arrive before its
+  // photographs do.
   //
-  // The one below is why three of the four /fleet entries carry no "On board"
-  // list. It ships no visible marker, because it ships nothing at all — an
-  // absent block is honest, an invented one is not, and a hatched box on a live
-  // page is neither. It is declared here so the manifest still asks for it.
-  fleetSpecs: todo(
-    'fleet.specs',
+  // fleet.specs — RESOLVED 16 Aug 2026. The owner supplied the on-board list
+  // for the Coach Bus, Small Coach Bus and Executive Sprinter Van; all four
+  // /fleet entries now carry a real "On board" section.
+  //
+  // What that left behind is the item below. It ships no visible marker,
+  // because nothing on the page is wrong — every drawn plan sits inside its
+  // own confirmed range, and the page says the exact count comes with the
+  // quote. It is declared here so the build keeps asking.
+  fleetLayouts: todo(
+    'fleet.layouts',
     'fact',
-    'On-board specification for the three vehicles below the Supercoach',
-    'Seating, luggage, power and entertainment for the Coach Bus, Small Coach Bus and Executive Sprinter Van, plus confirmation that the Supercoach Bus is the coach the old site listed at 54–57 with the amenity list now attached to it.'
+    'Real row arrangements behind the four seating diagrams',
+    'Every plan on /fleet is derived, not supplied: two-and-two across an aisle at floor(max seats / 4) rows. Confirm each vehicle\'s actual arrangement — and whether the Supercoach is the coach the old site listed at 54–57, which is the assumption its amenity list and lavatory rest on.'
   ),
   // brand.logo — RESOLVED. The owner supplied src/assets/images/logo.png, now
   // used in the header and footer. A vector version would still be preferable

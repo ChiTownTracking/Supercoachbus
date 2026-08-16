@@ -11,26 +11,36 @@ import coachInterior from '../assets/images/coach-interior.png';
 import coachBus44 from '../assets/images/coach-bus-44.png';
 import coachBus28 from '../assets/images/coach-bus-28.png';
 import executiveSprinter from '../assets/images/excutive-sprinter.png';
+import coachBus44Interior from '../assets/images/fleet/Coachbus 39-44/executive-coachbus-39-44-interior.avif';
+import coachBus28Interior from '../assets/images/fleet/Coachbus 22-28/executive-coachbus-22-28-interior.avif';
+import sprinterInterior from '../assets/images/fleet/sprinter 13-16/excutive-van-interior.png';
 
 /**
  * Every vehicle's own photography, keyed by slug. The Supercoach carries two
  * frames because an interior exists for it; the rest carry one. A slug with no
  * entry falls back to the drawn capacity below rather than borrowing another
  * vehicle's photograph.
+ *
+ * `view` captions the frame only where a vehicle has more than one, because a
+ * caption is there to distinguish. Under a lone photograph "Exterior" labels
+ * the obvious.
  */
-const SHOTS: Record<string, { src: ImageMetadata; alt: string }[]> = {
+const SHOTS: Record<string, { src: ImageMetadata; view: string; alt: string }[]> = {
   supercoach: [
-    { src: coachExterior, alt: 'The Supercoach bus, luggage bays open' },
-    { src: coachInterior, alt: 'Interior of the Supercoach: high back leather reclining seats down both sides of the aisle' },
+    { src: coachExterior, view: 'Exterior', alt: 'The Supercoach bus, luggage bays open' },
+    { src: coachInterior, view: 'Interior', alt: 'Interior of the Supercoach: high back leather reclining seats down both sides of the aisle' },
   ],
   coach: [
-    { src: coachBus44, alt: 'The Coach Bus, a white full-length coach, seen from the front and side' },
+    { src: coachBus44, view: 'Exterior', alt: 'The Coach Bus, a white full-length coach, seen from the front and side' },
+    { src: coachBus44Interior, view: 'Interior', alt: 'Interior of the Coach Bus: rows of black leather high-back reclining seats down both sides of a wood-floored aisle, seatbelts fitted' },
   ],
   'small-coach': [
-    { src: coachBus28, alt: 'The Small Coach Bus, a white short coach, seen from the front and side' },
+    { src: coachBus28, view: 'Exterior', alt: 'The Small Coach Bus, a white short coach, seen from the front and side' },
+    { src: coachBus28Interior, view: 'Interior', alt: 'Interior of the Small Coach Bus: quilted black and grey reclining seats along a wood-floored aisle' },
   ],
   'executive-sprinter': [
-    { src: executiveSprinter, alt: 'The Executive Sprinter Van, a black high-roof Mercedes-Benz Sprinter, seen from the front and side' },
+    { src: executiveSprinter, view: 'Exterior', alt: 'The Executive Sprinter Van, a black high-roof Mercedes-Benz Sprinter, seen from the front and side' },
+    { src: sprinterInterior, view: 'Interior', alt: 'Interior of the Executive Sprinter Van: black leather seats facing a table, the side door open to the kerb' },
   ],
 };
 
@@ -48,22 +58,36 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     lede="Capacity is what decides a charter, so it leads. Pick the size that fits the group and we will confirm the exact seat count when we quote."
   />
 
-  <div class="section">
+  <div class="section--tight">
     <div class="shell vehicles">
       {
-        FLEET.map((v) => (
-          <article class="v" id={v.slug}>
+        FLEET.map((v, i) => (
+          <article class="v" id={v.slug} data-shots={(SHOTS[v.slug] ?? []).length}>
             <div class="v__figure">
-              {(SHOTS[v.slug] ?? []).map((shot) => (
+              {(SHOTS[v.slug] ?? []).map((shot, j) => (
                 <figure class="v__shot">
-                  <Image src={shot.src} alt={shot.alt} widths={[420, 720, 1028]} sizes="(min-width: 60rem) 44vw, 92vw" />
+                  <span class="v__plate">
+                    {/* The first vehicle's exterior is the first thing below
+                        the nameplate — it is the page's opening image, not
+                        something scrolled to, so it loads with the page. */}
+                    <Image
+                      src={shot.src}
+                      alt={shot.alt}
+                      widths={[420, 720, 1028]}
+                      sizes="(min-width: 82rem) 37rem, (min-width: 60rem) 44vw, 92vw"
+                      loading={i === 0 && j === 0 ? 'eager' : 'lazy'}
+                      fetchpriority={i === 0 && j === 0 ? 'high' : 'auto'}
+                    />
+                  </span>
+                  {(SHOTS[v.slug]?.length ?? 0) > 1 && (
+                    <figcaption class="v__view mono">{shot.view}</figcaption>
+                  )}
                 </figure>
               ))}
-              {v.layout && <SeatPlan vehicle={v} />}
-              {/* Neither a photograph nor a seating plan yet. The capacity is
-                  drawn instead — the one thing about this vehicle that is
-                  confirmed — rather than padding the column with a stand-in. */}
-              {!SHOTS[v.slug] && !v.layout && (
+              {/* No photograph yet. The capacity is drawn instead — the one
+                  thing about this vehicle that is confirmed — rather than
+                  padding the column with a stand-in. */}
+              {!SHOTS[v.slug] && (
                 <p class="v__only">
                   <span class="v__onlynum">{v.capacityLabel}</span>
                   <span class="v__onlyunit mono">passengers</span>
@@ -71,6 +95,11 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
               )}
             </div>
 
+            {/* The specification column. Each part is introduced by a ruled
+                coordinate so the column reads as a spec sheet with sections
+                rather than one long stack, and the seating plan sits here —
+                beside the capacity it draws, and directly above the button it
+                argues for — rather than lengthening the photograph column. */}
             <div class="v__body">
               <h2 class="title v__name">{v.name}</h2>
               <p class="v__cap mono">
@@ -78,19 +107,43 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
               </p>
               <p class="lede v__role">{v.role}</p>
 
-              {v.amenities.length > 0 && (
-                <Fragment>
-                  <h3 class="v__subhead mono">On board</h3>
-                  <ul class="v__amenities">
-                    {v.amenities.map((a) => (
-                      <li>
-                        <Icon name="check" size={15} />
-                        {a}
-                      </li>
-                    ))}
-                  </ul>
-                </Fragment>
-              )}
+              {/* Every vehicle carries both sections, so the four rows are the
+                  same object. Where the owner has not supplied a spec, the
+                  section says so and points at the phone rather than borrowing
+                  another vehicle's fittings — the one thing this page must not
+                  do. */}
+              <div class="v__spec">
+                <div class="v__block">
+                  <h3 class="coordinate coordinate--ink v__sec">On board</h3>
+                  {v.amenities.length > 0 ? (
+                    <ul class="v__amenities">
+                      {v.amenities.map((a) => (
+                        <li>
+                          <Icon name="check" size={15} />
+                          {a}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p class="v__pending">
+                      We have not published a fittings list for this vehicle —
+                      call and we will confirm what it carries.
+                    </p>
+                  )}
+                </div>
+
+                <div class="v__block">
+                  <h3 class="coordinate coordinate--ink v__sec">Seating</h3>
+                  {v.layout ? (
+                    <SeatPlan vehicle={v} />
+                  ) : (
+                    <p class="v__pending">
+                      No seating plan published for this size yet. The exact
+                      seat count is confirmed with your quote.
+                    </p>
+                  )}
+                </div>
+              </div>
 
               <div class="v__actions">
                 <a class="action" href="/#quote-form">
@@ -129,41 +182,66 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 <style>
   .vehicles {
     display: grid;
-    gap: clamp(var(--space-12), 10vw, var(--space-16));
+    gap: var(--space-8);
   }
 
+  /* Four vehicles read as a catalogue, so each opens on the same hairline the
+     rest of the site uses for a section boundary. It also gives the `#slug`
+     deep links a visible top edge to land against. The rule is what lets the
+     rows sit this close: the boundary is drawn, so it does not have to be a
+     gap wide enough to read as one. */
   .v {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-8);
+    gap: var(--space-6);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--paper-line);
     scroll-margin-top: 6rem;
   }
 
   @media (min-width: 60rem) {
     .v {
       grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      gap: var(--space-16);
-      align-items: start;
+      gap: var(--space-12);
+    }
+
+    /* The spec column takes the row's full height and drops its buttons to the
+       foot of it, so every row closes on one line: the second photograph ends,
+       the call to action ends, and the hairline for the next vehicle follows.
+       Left to sit at its natural height the column stopped up to 135px short,
+       which put the row's dead space exactly where its call to action was. */
+    .v__body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .v__actions {
+      margin-top: auto;
     }
   }
 
   .v__figure {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-6);
+    gap: var(--space-4);
+  }
+
+  .v__shot {
+    margin: 0;
   }
 
   /* Photographs are mounted like sign plates: square corners, a scribed
-     keyline, no shadow. */
-  .v__shot {
+     keyline, no shadow. The mount is its own element so the caption sits
+     outside the clip rather than under it. */
+  .v__plate {
     position: relative;
-    margin: 0;
+    display: block;
     overflow: hidden;
     border-radius: var(--radius);
     background: var(--enamel-deep);
   }
 
-  .v__shot::after {
+  .v__plate::after {
     content: '';
     position: absolute;
     inset: 5px;
@@ -172,12 +250,25 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     pointer-events: none;
   }
 
-  .v__shot :global(img) {
+  /* 16:10, the ratio the homepage fleet grid already settled on: these
+     exteriors run 1.5:1 to 2:1, and 3:2 took 12.5% off each side of the
+     widest — exactly where a coach keeps its bumper and its tail. One ratio
+     for a fleet photograph wherever it appears. */
+  .v__plate :global(img) {
     display: block;
     width: 100%;
     height: auto;
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 16 / 10;
     object-fit: cover;
+  }
+
+  .v__view {
+    margin-top: var(--space-2);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
   }
 
   /* The capacity standing on its own, for a vehicle with neither a photograph
@@ -212,12 +303,20 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     color: var(--ink-dim);
   }
 
+  /* 1.75rem is 28px, between `space-6` and `space-8` and on neither. It is set
+     here rather than snapped to the scale because it is the distance the
+     buttons stand off the foot of the row, and the two nearest steps read as
+     flush and as adrift respectively. */
+  .v__body {
+    padding-bottom: 1.75rem;
+  }
+
   .v__name {
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-2);
   }
 
   .v__cap {
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-4);
     font-size: 0.875rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -237,22 +336,38 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 
   .v__role {
     max-width: 44ch;
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
   }
 
-  .v__subhead {
-    margin: 0 0 var(--space-4);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
+  /* Tighter than the `.coordinate` default: at four rows of these the label
+     wants to sit on its list, not float above it. */
+  .v__sec {
+    margin-bottom: var(--space-3);
+  }
+
+  /* The two spec sections. Beside one photograph the sheet is nearly twice the
+     picture's height, so past 72rem — where the blocks have room to be read
+     side by side — it runs two across and the row balances. Beside two
+     photographs there is height to fill and it stays one column, which is why
+     this keys off the picture count rather than the viewport alone. */
+  .v__spec {
+    display: grid;
+    align-items: start;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  @media (min-width: 72rem) {
+    .v:not([data-shots='2']) .v__spec {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: var(--space-8);
+    }
   }
 
   .v__amenities {
     display: grid;
-    gap: var(--space-3);
-    margin: 0 0 var(--space-8);
+    gap: var(--space-2);
+    margin: 0;
     padding: 0;
     list-style: none;
     font-size: 0.9375rem;
@@ -268,6 +383,15 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     flex: none;
     margin-top: 4px;
     color: var(--enamel-ink);
+  }
+
+  /* A section the owner has not filled in. It states the gap and gives the
+     visitor the next move; it never reads as a specification. */
+  .v__pending {
+    max-width: 46ch;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
   }
 
   .v__actions {

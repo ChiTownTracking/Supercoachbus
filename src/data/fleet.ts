@@ -13,16 +13,29 @@
  * speculative vehicles, and do not widen a range to make a headcount fit.
  *
  * WHAT IS AND IS NOT CONFIRMED HERE:
- *  - Confirmed: the four names and the four passenger ranges.
+ *  - Confirmed: the four names, the four passenger ranges, and — as of
+ *    16 Aug 2026 — the amenity list for all four vehicles. The owner supplied
+ *    the three below the Supercoach that day; they are transcribed as given,
+ *    with sentence case applied to match the list they sit beside.
  *  - Assumed, and flagged to the owner: that the Supercoach Bus is the same
  *    full-size coach the live site listed at "54–57 passengers" with the
  *    amenity list below, now renamed and re-ranged. If it is a different
  *    vehicle, those amenities and that seating plan belong somewhere else.
- *  - Not supplied, and therefore absent rather than invented: amenities, seat
- *    arrangements and photography for the other three vehicles. `amenities` is
- *    empty and `layout` is undefined for those, and every surface that renders
- *    them omits the block rather than filling it. See OPEN_ITEMS in
- *    lib/placeholder.ts.
+ *  - PART DERIVED, PART DRAWN — the `layout` entries. The owner asked for a
+ *    diagram on all four vehicles on 16 Aug 2026 without supplying a row
+ *    arrangement, so each plan starts from one stated rule: two-and-two across
+ *    an aisle, `rows = floor(seatsMax / 4)`. Two vehicles have since been drawn
+ *    by the owner and no longer follow it — the Small Coach Bus and the
+ *    Executive Sprinter Van. **Say on the entry when an arrangement is real**,
+ *    as those two do; the Supercoach and the Coach Bus are still the rule plus
+ *    the Supercoach's lavatory.
+ *
+ *    Drawn totals: 54 of 50–57, 44 of 39–44, 27 of 22–28, 14 of 13–16. Every
+ *    one inside its own confirmed range — that is the check to run after any
+ *    change here, because every flag below moves the count. The plans are
+ *    schematic and the page must keep saying so: `/fleet`'s lede promises the
+ *    exact seat count at quote, and the SVG's own aria-label opens "Schematic
+ *    seating plan". Do not remove either.
  */
 
 export interface Vehicle {
@@ -47,13 +60,59 @@ export interface Vehicle {
   bestFor: string[];
   amenities: string[];
   /**
-   * Rows x seats-per-row for the plan-view seat diagram. Optional: a schematic
-   * drawn from a capacity we were given but a row arrangement we were not would
-   * be an invented specification, so a vehicle without a known arrangement
-   * simply has no plan.
+   * Rows x seats-per-row for the plan-view seat diagram. Optional: the renderer
+   * and both callers still handle its absence, because a fifth vehicle can
+   * arrive before anyone works out how it is laid out.
+   *
+   * The three flags below are what a vehicle has, not decoration — each one
+   * changes the seat count the plan draws. Set them from something the owner
+   * has said about the vehicle, never from what looks right.
+   *
+   *  - `lavatory` puts the fixture at the rear of the curbside band, where a
+   *    motorcoach carries one, and takes the two places it stands in out of the
+   *    seat run. It follows the amenity: a vehicle that does not list a
+   *    lavatory must not have one drawn.
+   *  - `entrance` is a doorway forward on the curbside, so the frontmost places
+   *    in that band are the stairwell rather than seats.
+   *  - `rearBench` runs the back row across the aisle, which adds the one seat
+   *    the rows ahead of it do not have.
+   *
+   * Curbside is the lower band: nose left, plan view, so the vehicle's right is
+   * the bottom of the drawing. The lavatory and the door both belong there and
+   * both derive their position from `leftPerRow` — do not hard-code a row.
    */
-  layout?: { rows: number; leftPerRow: number; rightPerRow: number };
+  layout?: {
+    rows?: number;
+    leftPerRow?: number;
+    rightPerRow?: number;
+    lavatory?: boolean;
+    entrance?: boolean;
+    rearBench?: boolean;
+    /**
+     * Places that carry no seat, as `[row, place]` pairs — both zero-indexed,
+     * rows from the nose and places from the aisle-side wall. The escape hatch
+     * for an arrangement the flags above do not describe. Use it only for a
+     * layout the owner has actually drawn, and say on the entry what the space
+     * is if you know; leaving it unnamed is better than guessing.
+     */
+    omit?: [number, number][];
+    /**
+     * The drawing, given directly: rows top to bottom and columns left to right
+     * **exactly as they appear on the page**. No rule, no derivation, no
+     * rotation. `aisle` is drawn as a wider gap and never as a seat; `empty` is
+     * drawn as nothing.
+     *
+     * When this is present it is the whole plan — `rows`, `leftPerRow` and
+     * every flag above are ignored for that vehicle. Reach for it when the
+     * owner has drawn the arrangement, because then the drawing *is* the
+     * specification and anything that re-derives it can only get it wrong.
+     */
+    grid?: PlanCell[][];
+  };
 }
+
+/** One place in an explicit plan grid. */
+export type PlanCell = 'seat' | 'aisle' | 'empty';
 
 /** Largest first. This order is the grid order and the select order. */
 export const FLEET: Vehicle[] = [
@@ -72,15 +131,15 @@ export const FLEET: Vehicle[] = [
     ],
     amenities: [
       'High back leather reclining seats',
-      'Laminate wood floors',
+      'Lavatory',
       'Overhead luggage space',
       'Undercarriage luggage available on request',
-      'Premium sound system',
-      'TV / DVD / CD player / iPod connections',
+      'Sound system',
+      'PA system for announcements on board',
       'Seatbelts on all seats',
-      'USB charging port at every seat',
+      'USB charging port',
     ],
-    layout: { rows: 14, leftPerRow: 2, rightPerRow: 2 },
+    layout: { rows: 14, leftPerRow: 2, rightPerRow: 2, lavatory: true },
   },
   {
     slug: 'coach',
@@ -95,7 +154,24 @@ export const FLEET: Vehicle[] = [
       'Sports groups',
       'Wedding transportation',
     ],
-    amenities: [],
+    amenities: [
+      'High back leather reclining seats',
+      'Lavatory (upon request)',
+      'Overhead luggage space',
+      'Limited undercarriage and rear space',
+      'Sound system',
+      'PA system for announcements on board',
+      'Seatbelts on all seats',
+      'USB charging port',
+    ],
+    /**
+     * No `lavatory` on the plan, unlike the Supercoach: this one is "upon
+     * request", so the drawing shows the standard configuration and the
+     * amenity line carries the condition. Drawing a fixture that may not be in
+     * the vehicle that turns up would be the plan asserting more than the
+     * amenity does.
+     */
+    layout: { rows: 11, leftPerRow: 2, rightPerRow: 2 },
   },
   {
     slug: 'small-coach',
@@ -110,7 +186,21 @@ export const FLEET: Vehicle[] = [
       'Corporate outings',
       'Medium-sized private groups',
     ],
-    amenities: [],
+    amenities: [
+      'High back leather reclining seats',
+      'Overhead luggage space',
+      'Sound system',
+      'PA system for announcements on board',
+      'Seatbelts on all seats',
+      'USB charging port',
+    ],
+    /**
+     * The only arrangement the owner has actually described: a doorway forward
+     * on the curbside in place of the first pair, and a back row that runs
+     * across the aisle. 7 × 4, less the two at the door, plus the one in the
+     * back row — 27, inside the confirmed 22–28.
+     */
+    layout: { rows: 7, leftPerRow: 2, rightPerRow: 2, entrance: true, rearBench: true },
   },
   {
     slug: 'executive-sprinter',
@@ -125,7 +215,37 @@ export const FLEET: Vehicle[] = [
       'Small wedding parties',
       'Small private groups',
     ],
-    amenities: [],
+    amenities: [
+      'High back leather reclining seats',
+      'Rear luggage space',
+      'Sound system',
+      'PA system for announcements on board',
+      'Seatbelts on all seats',
+      'USB charging port',
+    ],
+    /**
+     * Drawn by the owner, 16 Aug 2026, and given here exactly as drawn: four
+     * rows down the page, one seat column at the left, a wide aisle, then three
+     * columns at the right, with row 2 keeping only its far-right place. 14
+     * seats, inside the confirmed 13–16.
+     *
+     * A `grid` rather than the rule-and-flags the other three use, because
+     * three attempts to express this arrangement as a rule produced a plan that
+     * was mirrored, then transposed, then rotated. **The rows below are the
+     * rows on screen.** Do not convert them back into `rows`/`leftPerRow`, and
+     * do not add a rotation.
+     *
+     * What the two open places are — a door, a table, luggage — was not said,
+     * so the plan carries no caption for them.
+     */
+    layout: {
+      grid: [
+        ['seat', 'aisle', 'seat', 'seat', 'seat'],
+        ['seat', 'aisle', 'empty', 'empty', 'seat'],
+        ['seat', 'aisle', 'seat', 'seat', 'seat'],
+        ['seat', 'aisle', 'seat', 'seat', 'seat'],
+      ],
+    },
   },
 ];
 

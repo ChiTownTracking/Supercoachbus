@@ -19,22 +19,60 @@ const { vehicle } = Astro.props;
  * exactly what this build refuses to do — callers render this only when there is
  * something real to draw, and this guard is the backstop.
  */
-const { rows, leftPerRow, rightPerRow } = vehicle.layout ?? {
-  rows: 0,
-  leftPerRow: 0,
-  rightPerRow: 0,
-};
+const { lavatory, entrance, rearBench, omit, grid } = vehicle.layout ?? {};
+const rows = vehicle.layout?.rows ?? 0;
+const leftPerRow = vehicle.layout?.leftPerRow ?? 0;
+const rightPerRow = vehicle.layout?.rightPerRow ?? 0;
+
+const omitted = new Set((omit ?? []).map(([r, c]) => `${r},${c}`));
 
 const SEAT = 13;
 const GAP = 4;
 const AISLE = 12;
 const NOSE = 26;
+const PAD = 8;
+/** Grid rows sit further apart than seats in a row, as the owner drew them. */
+const ROW_GAP = 4;
 
-const planWidth = (v: Vehicle) => NOSE + (v.layout?.rows ?? 0) * (SEAT + GAP) + 10;
+/**
+ * A grid vehicle is laid out exactly as written — rows down the page, columns
+ * across it — and nothing here derives, mirrors or turns it. The only geometry
+ * decision left is how wide an aisle column is, and it is `AISLE` plus the two
+ * gaps either side of it: five times a seat-to-seat gap, which is the ratio in
+ * the drawing this came from.
+ */
+const gridCols = grid ? Math.max(...grid.map((row) => row.length)) : 0;
+const gridX: number[] = [];
+let cursor = NOSE;
+for (let c = 0; c < gridCols; c++) {
+  gridX.push(cursor);
+  const isAisle = grid!.some((row) => row[c] === 'aisle');
+  cursor += (isAisle ? AISLE : SEAT) + GAP;
+}
+
+/**
+ * A grid's columns start at `NOSE` like a rule-based plan's rows do, so both
+ * kinds carry the same cab band down their left side and the bulkhead can be
+ * one unconditional line.
+ */
+const planWidth = (v: Vehicle) => {
+  const g = v.layout?.grid;
+  if (g) {
+    const n = Math.max(...g.map((row) => row.length));
+    let x = NOSE;
+    for (let c = 0; c < n; c++) {
+      x += (g.some((row) => row[c] === 'aisle') ? AISLE : SEAT) + GAP;
+    }
+    return x - GAP + PAD;
+  }
+  return NOSE + (v.layout?.rows ?? 0) * (SEAT + GAP) + 10;
+};
 
 const cols = leftPerRow + rightPerRow;
 const width = planWidth(vehicle);
-const height = cols * (SEAT + GAP) + AISLE + 16;
+const height = grid
+  ? PAD * 2 + grid.length * SEAT + (grid.length - 1) * ROW_GAP
+  : cols * (SEAT + GAP) + AISLE + 16;
 
 /**
  * Plans render at one shared scale across the whole fleet, so relative vehicle
@@ -49,18 +87,101 @@ const widest = Math.max(...FLEET.filter((v) => v.layout).map(planWidth));
  * auto-sized grid track resolves against a track that is itself sized from the
  * SVG — the circularity blew the /fleet page out to 1098px at a 390px viewport.
  * A bounded max-width keeps the shared scale and lets the plan shrink normally.
+ *
+ * The ceiling is the width of the *narrowest* track a plan has to sit in — the
+ * seating half of a two-across spec block — not the widest. Set above that, the
+ * larger plans hit their track and render at track width while the smaller ones
+ * render at their own, and the shared scale this whole calculation exists to
+ * preserve quietly stops being shared.
  */
-const WIDEST_PLAN_PX = 460;
+const WIDEST_PLAN_PX = 300;
 const maxWidth = `${Math.round((width / widest) * WIDEST_PLAN_PX)}px`;
 
+/**
+ * The lavatory sits at the rear of the curbside band — the last row position,
+ * the two seat places furthest from the aisle-side band — because that is where
+ * a motorcoach puts one. Those two places are removed from the seat run rather
+ * than drawn under the fixture, so the plan does not show a seat that the
+ * fixture is standing in.
+ */
+const lavRow = rows - 1;
+const lavCols = [cols - 2, cols - 1];
+const seatY = (c: number) => 8 + c * (SEAT + GAP) + (c < leftPerRow ? 0 : AISLE);
+
+/**
+ * The aisle channel, measured rather than assumed: it runs from the foot of the
+ * last aisle-side seat to the head of the first curbside one, and a bench seat
+ * is centred in it. Derived so a vehicle with a different band split still puts
+ * its back seat in the middle of its own aisle.
+ */
+const aisleTop = seatY(leftPerRow - 1) + SEAT;
+const aisleY = aisleTop + (seatY(leftPerRow) - aisleTop - SEAT) / 2;
+
 const seats: { x: number; y: number }[] = [];
-for (let r = 0; r < rows; r++) {
-  const x = NOSE + r * (SEAT + GAP);
-  for (let c = 0; c < cols; c++) {
-    const side = c < leftPerRow ? 0 : AISLE;
-    seats.push({ x, y: 8 + c * (SEAT + GAP) + side });
+if (grid) {
+  grid.forEach((row, r) => {
+    row.forEach((cell, c) => {
+      if (cell !== 'seat') return;
+      seats.push({ x: gridX[c], y: PAD + r * (SEAT + ROW_GAP) });
+    });
+  });
+} else {
+  for (let r = 0; r < rows; r++) {
+    const x = NOSE + r * (SEAT + GAP);
+    for (let c = 0; c < cols; c++) {
+      if (lavatory && r === lavRow && lavCols.includes(c)) continue;
+      // The front of the curbside band is the stairwell, not a row.
+      if (entrance && r === 0 && c >= leftPerRow) continue;
+      if (omitted.has(`${r},${c}`)) continue;
+      seats.push({ x, y: seatY(c) });
+    }
   }
+  if (rearBench) seats.push({ x: NOSE + (rows - 1) * (SEAT + GAP), y: aisleY });
 }
+
+const lav = lavatory
+  ? {
+      x: NOSE + lavRow * (SEAT + GAP),
+      y: seatY(lavCols[0]),
+      w: SEAT,
+      h: seatY(lavCols[1]) + SEAT - seatY(lavCols[0]),
+    }
+  : null;
+
+/**
+ * The partition at the head of the curbside run: the panel and stanchion that
+ * stand between the stairwell and the first seat. It comes with the doorway
+ * rather than on a flag of its own, because it is not a separate decision — a
+ * forward curbside door has one, and drawing the door without it leaves a seat
+ * apparently opening straight onto the steps.
+ *
+ * It sits in the pitch gap ahead of the first seat and stands exactly as tall
+ * as the places it fronts — from the head of the first curbside seat to the
+ * foot of the last. Run to the vehicle wall instead and it reads as a second
+ * bulkhead cutting the saloon in two; kept to the seats, it reads as the panel
+ * beside the steps that it is.
+ */
+const partition =
+  entrance && rows > 1
+    ? {
+        x: NOSE + (SEAT + GAP) - GAP / 2,
+        y1: seatY(leftPerRow),
+        y2: seatY(cols - 1) + SEAT,
+      }
+    : null;
+
+/**
+ * The caption names whatever in the drawing is a fixture rather than a seat,
+ * and renders only when there is something to name. Gaps go uncaptioned: the
+ * entry stairwell said "Entry door at the front right" until the owner asked
+ * for it off on 16 Aug 2026, and the Sprinter's open pair never had a line
+ * because nobody has said what stands there.
+ */
+const notes = [lav && 'Lavatory at the rear'].filter(Boolean) as string[];
+
+const label = `Schematic seating plan, ${vehicle.capacityLabel} passengers${
+  notes.length ? `. ${notes.join('. ')}.` : ''
+}`;
 ---
 
 <figure class="plan">
@@ -68,25 +189,51 @@ for (let r = 0; r < rows; r++) {
     viewBox={`0 0 ${width} ${height}`}
     style={`max-width:${maxWidth}`}
     role="img"
-    aria-label={`Schematic seating plan, ${vehicle.capacityLabel} passengers`}
+    aria-label={label}
   >
     <rect
       x="1" y="1" width={width - 2} height={height - 2}
       rx="10" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.5"
     />
+    {/* The driver's bulkhead, down the left of every plan, 9 units off the
+        first seat whether that seat was placed by rule or by grid. */}
     <line
       x1={NOSE - 9} y1="6" x2={NOSE - 9} y2={height - 6}
       stroke="currentColor" stroke-opacity="0.28" stroke-width="1.5"
     />
+    {/* The entry partition. Heavier than the driver's bulkhead because it is an
+        object standing in the saloon rather than the line where the cab ends. */}
+    {
+      partition && (
+        <line
+          x1={partition.x} y1={partition.y1} x2={partition.x} y2={partition.y2}
+          stroke="currentColor" stroke-opacity="0.5" stroke-width="2.5"
+          stroke-linecap="round"
+        />
+      )
+    }
     {
       seats.map((s) => (
         <rect x={s.x} y={s.y} width={SEAT} height={SEAT} rx="2" fill="currentColor" fill-opacity="0.62" />
       ))
     }
+    {/* Outlined and two seat-places deep, so it cannot be mistaken for a seat
+        at a glance; the caption names it rather than a legend key, because
+        there is exactly one thing in this drawing that is not a seat. */}
+    {
+      lav && (
+        <rect
+          x={lav.x} y={lav.y} width={lav.w} height={lav.h} rx="2"
+          fill="currentColor" fill-opacity="0.14"
+          stroke="currentColor" stroke-opacity="0.55" stroke-width="1.5"
+        />
+      )
+    }
   </svg>
-  <figcaption class="mono">
-    {vehicle.capacityLabel} passengers · seating shown schematically
-  </figcaption>
+  {/* The capacity is set at display scale immediately above this in the spec
+      column, so repeating it here was the caption saying what the reader had
+      just read. */}
+  {notes.length > 0 && <figcaption class="mono">{notes.join(' · ')}</figcaption>}
 </figure>
 
 <style>
