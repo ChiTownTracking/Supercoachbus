@@ -60,6 +60,17 @@ export interface Vehicle {
   bestFor: string[];
   amenities: string[];
   /**
+   * Title and description for this vehicle's own page. Written out rather than
+   * generated from the fields above: four pages about four sizes of the same
+   * service are exactly where a template produces four near-identical
+   * descriptions, and near-identical is what a search engine discards.
+   *
+   * Every claim in a description has to be in `amenities` or `capacityLabel` —
+   * a meta description is the one piece of copy nobody proofreads on the page
+   * itself, so it is the easiest place for an unconfirmed spec to survive.
+   */
+  meta: { title: string; description: string };
+  /**
    * Rows x seats-per-row for the plan-view seat diagram. Optional: the renderer
    * and both callers still handle its absence, because a fifth vehicle can
    * arrive before anyone works out how it is laid out.
@@ -129,6 +140,11 @@ export const FLEET: Vehicle[] = [
       'Large weddings',
       'Major group outings',
     ],
+    meta: {
+      title: 'Supercoach Bus Rental Chicago | 50–57 Passengers',
+      description:
+        'The largest coach we run in Chicago: 50 to 57 passengers, high back reclining seats, a lavatory, and overhead and undercarriage luggage space.',
+    },
     amenities: [
       'High back leather reclining seats',
       'Lavatory',
@@ -154,6 +170,11 @@ export const FLEET: Vehicle[] = [
       'Sports groups',
       'Wedding transportation',
     ],
+    meta: {
+      title: 'Coach Bus Rental Chicago | 39–44 Passengers',
+      description:
+        'A 39 to 44 passenger coach for Chicago groups past a small bus but short of a Supercoach. High back reclining seats, overhead luggage, USB charging.',
+    },
     amenities: [
       'High back leather reclining seats',
       'Lavatory (upon request)',
@@ -186,6 +207,11 @@ export const FLEET: Vehicle[] = [
       'Corporate outings',
       'Medium-sized private groups',
     ],
+    meta: {
+      title: 'Small Coach Bus Rental Chicago | 22–28 Passengers',
+      description:
+        'A 22 to 28 passenger coach for Chicago groups that still want to travel in one vehicle. High back reclining seats, overhead luggage, USB charging.',
+    },
     amenities: [
       'High back leather reclining seats',
       'Overhead luggage space',
@@ -215,6 +241,11 @@ export const FLEET: Vehicle[] = [
       'Small wedding parties',
       'Small private groups',
     ],
+    meta: {
+      title: 'Executive Sprinter Van Rental Chicago | 13–16 Passengers',
+      description:
+        'The smallest vehicle we run in Chicago: a 13 to 16 passenger executive Sprinter van with high back leather reclining seats and rear luggage space.',
+    },
     amenities: [
       'High back leather reclining seats',
       'Rear luggage space',
@@ -251,6 +282,17 @@ export const FLEET: Vehicle[] = [
 
 /** The largest headcount one vehicle can take. Derived, never hand-typed. */
 export const MAX_SINGLE_VEHICLE = Math.max(...FLEET.map((v) => v.seatsMax));
+
+/**
+ * Where a vehicle lives. Every link to a vehicle goes through this — the fleet
+ * grid on the homepage, the cards on `/fleet`, the comparison table in the size
+ * guide — so the route is stated in one place and a rename cannot leave a dead
+ * link behind in a file nobody thought to grep.
+ */
+export const vehicleHref = (v: Vehicle) => `/fleet/${v.slug}`;
+
+/** The rest of the fleet, largest first, for the "other sizes" run. */
+export const otherVehicles = (slug: string) => FLEET.filter((v) => v.slug !== slug);
 
 /** Smallest first, so a fit search returns the smallest vehicle that works. */
 const BY_SIZE = [...FLEET].sort((a, b) => a.seatsMax - b.seatsMax);

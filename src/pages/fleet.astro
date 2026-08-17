@@ -4,45 +4,8 @@ import PageHead from '../components/PageHead.astro';
 import SeatPlan from '../components/SeatPlan.astro';
 import Icon from '../components/Icon.astro';
 import { Image } from 'astro:assets';
-import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
-import { BUSINESS } from '../config/site';
-import coachExterior from '../assets/images/coach-exterior.jpg';
-import coachInterior from '../assets/images/coach-interior.png';
-import coachBus44 from '../assets/images/coach-bus-44.png';
-import coachBus28 from '../assets/images/coach-bus-28.png';
-import executiveSprinter from '../assets/images/excutive-sprinter.png';
-import coachBus44Interior from '../assets/images/fleet/Coachbus 39-44/executive-coachbus-39-44-interior.avif';
-import coachBus28Interior from '../assets/images/fleet/Coachbus 22-28/executive-coachbus-22-28-interior.avif';
-import sprinterInterior from '../assets/images/fleet/sprinter 13-16/excutive-van-interior.png';
-
-/**
- * Every vehicle's own photography, keyed by slug. The Supercoach carries two
- * frames because an interior exists for it; the rest carry one. A slug with no
- * entry falls back to the drawn capacity below rather than borrowing another
- * vehicle's photograph.
- *
- * `view` captions the frame only where a vehicle has more than one, because a
- * caption is there to distinguish. Under a lone photograph "Exterior" labels
- * the obvious.
- */
-const SHOTS: Record<string, { src: ImageMetadata; view: string; alt: string }[]> = {
-  supercoach: [
-    { src: coachExterior, view: 'Exterior', alt: 'The Supercoach bus, luggage bays open' },
-    { src: coachInterior, view: 'Interior', alt: 'Interior of the Supercoach: high back leather reclining seats down both sides of the aisle' },
-  ],
-  coach: [
-    { src: coachBus44, view: 'Exterior', alt: 'The Coach Bus, a white full-length coach, seen from the front and side' },
-    { src: coachBus44Interior, view: 'Interior', alt: 'Interior of the Coach Bus: rows of black leather high-back reclining seats down both sides of a wood-floored aisle, seatbelts fitted' },
-  ],
-  'small-coach': [
-    { src: coachBus28, view: 'Exterior', alt: 'The Small Coach Bus, a white short coach, seen from the front and side' },
-    { src: coachBus28Interior, view: 'Interior', alt: 'Interior of the Small Coach Bus: quilted black and grey reclining seats along a wood-floored aisle' },
-  ],
-  'executive-sprinter': [
-    { src: executiveSprinter, view: 'Exterior', alt: 'The Executive Sprinter Van, a black high-roof Mercedes-Benz Sprinter, seen from the front and side' },
-    { src: sprinterInterior, view: 'Interior', alt: 'Interior of the Executive Sprinter Van: black leather seats facing a table, the side door open to the kerb' },
-  ],
-};
+import { FLEET, MAX_SINGLE_VEHICLE, vehicleHref } from '../data/fleet';
+import { listingShotsFor } from '../data/fleetPhotos';
 
 const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 ---
@@ -61,10 +24,12 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
   <div class="section--tight">
     <div class="shell vehicles">
       {
-        FLEET.map((v, i) => (
-          <article class="v" id={v.slug} data-shots={(SHOTS[v.slug] ?? []).length}>
+        FLEET.map((v, i) => {
+        const shots = listingShotsFor(v.slug);
+        return (
+          <article class="v" id={v.slug} data-shots={shots.length}>
             <div class="v__figure">
-              {(SHOTS[v.slug] ?? []).map((shot, j) => (
+              {shots.map((shot, j) => (
                 <figure class="v__shot">
                   <span class="v__plate">
                     {/* The first vehicle's exterior is the first thing below
@@ -79,7 +44,7 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
                       fetchpriority={i === 0 && j === 0 ? 'high' : 'auto'}
                     />
                   </span>
-                  {(SHOTS[v.slug]?.length ?? 0) > 1 && (
+                  {shots.length > 1 && (
                     <figcaption class="v__view mono">{shot.view}</figcaption>
                   )}
                 </figure>
@@ -87,7 +52,7 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
               {/* No photograph yet. The capacity is drawn instead — the one
                   thing about this vehicle that is confirmed — rather than
                   padding the column with a stand-in. */}
-              {!SHOTS[v.slug] && (
+              {shots.length === 0 && (
                 <p class="v__only">
                   <span class="v__onlynum">{v.capacityLabel}</span>
                   <span class="v__onlyunit mono">passengers</span>
@@ -145,19 +110,25 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
                 </div>
               </div>
 
+              {/* Quote stays the amber one: this is a listing, and the page it
+                  lists toward is not the conversion. The phone number it
+                  replaced is still in the masthead and in the footer of every
+                  page, so nothing was taken away — a second identical phone
+                  button on each of four rows was the least useful thing here. */}
               <div class="v__actions">
                 <a class="action" href="/#quote-form">
                   Quote this vehicle
                   <Icon name="arrow" size={16} />
                 </a>
-                <a class="action action--ink" href={BUSINESS.phone.href}>
-                  <Icon name="phone" size={16} />
-                  {BUSINESS.phone.display}
+                <a class="action action--ink" href={vehicleHref(v)}>
+                  View this vehicle
+                  <Icon name="arrow" size={16} />
                 </a>
               </div>
             </div>
           </article>
-        ))
+        );
+        })
       }
     </div>
   </div>

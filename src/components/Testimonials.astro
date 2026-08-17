@@ -36,6 +36,7 @@ const TOTAL = TESTIMONIALS.length;
       aria-roledescription="carousel"
       aria-label="What customers said"
       data-carousel
+      data-noun="Review"
     >
       <div class="reviews__lead">
         <p class="coordinate coordinate--ink">
@@ -389,105 +390,6 @@ const TOTAL = TESTIMONIALS.length;
 </style>
 
 <script>
-  /**
-   * Carousel behaviour. The scroll container is the source of truth — the
-   * buttons scroll it and the scroll position drives the marks, so a swipe, a
-   * trackpad flick and a button press all end in the same state.
-   */
-  const carousels = document.querySelectorAll<HTMLElement>('[data-carousel]');
-
-  carousels.forEach((root) => {
-    const track = root.querySelector<HTMLElement>('[data-track]');
-    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-slide]'));
-    const bars = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-bar]'));
-    const prev = root.querySelector<HTMLButtonElement>('[data-prev]');
-    const next = root.querySelector<HTMLButtonElement>('[data-next]');
-    const count = root.querySelector<HTMLElement>('[data-count]');
-    const status = root.querySelector<HTMLElement>('[data-status]');
-
-    if (!track || !prev || !next || slides.length < 2) return;
-
-    const total = slides.length;
-    let index = 0;
-
-    root.setAttribute('data-ready', '');
-
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const still = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-    /** Slide positions are read live, so a resize or a font swap cannot stale them. */
-    const offsetOf = (i: number) => slides[i].offsetLeft - slides[0].offsetLeft;
-
-    function paint(i: number, announce: boolean) {
-      index = i;
-      if (count) count.textContent = `${pad(i + 1)} / ${pad(total)}`;
-      bars.forEach((b, n) => b.setAttribute('aria-current', n === i ? 'true' : 'false'));
-      prev!.setAttribute('aria-disabled', String(i === 0));
-      next!.setAttribute('aria-disabled', String(i === total - 1));
-      if (announce && status) {
-        const name = slides[i].dataset.name ?? '';
-        status.textContent = `Review ${i + 1} of ${total}${name ? `: ${name}` : ''}`;
-      }
-    }
-
-    function go(i: number) {
-      const target = Math.max(0, Math.min(total - 1, i));
-      track!.scrollTo({ left: offsetOf(target), behavior: still.matches ? 'auto' : 'smooth' });
-      paint(target, true);
-    }
-
-    prev.addEventListener('click', () => {
-      if (prev!.getAttribute('aria-disabled') !== 'true') go(index - 1);
-    });
-
-    next.addEventListener('click', () => {
-      if (next!.getAttribute('aria-disabled') !== 'true') go(index + 1);
-    });
-
-    bars.forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.go))));
-
-    track.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        go(index + 1);
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        go(index - 1);
-      }
-    });
-
-    // Scroll drives the marks: nearest slide to the current scroll position wins.
-    let frame = 0;
-    track.addEventListener(
-      'scroll',
-      () => {
-        cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(() => {
-          const x = track!.scrollLeft;
-          let best = 0;
-          let bestGap = Infinity;
-          for (let i = 0; i < total; i += 1) {
-            const gap = Math.abs(offsetOf(i) - x);
-            if (gap < bestGap) {
-              bestGap = gap;
-              best = i;
-            }
-          }
-          if (best !== index) paint(best, true);
-        });
-      },
-      { passive: true },
-    );
-
-    // A width change moves every slide's offset; hold the current one in view.
-    let settle = 0;
-    window.addEventListener('resize', () => {
-      window.clearTimeout(settle);
-      settle = window.setTimeout(() => {
-        track!.scrollTo({ left: offsetOf(index), behavior: 'auto' });
-      }, 120);
-    });
-
-    paint(0, false);
-  });
+  import { initCarousels } from '../scripts/carousel';
+  initCarousels();
 </script>

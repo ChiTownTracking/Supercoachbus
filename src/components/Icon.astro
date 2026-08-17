@@ -5,7 +5,17 @@
  * actually uses. No glyph or emoji substitutes.
  */
 interface Props {
-  name: 'arrow' | 'phone' | 'mail' | 'pin' | 'clock' | 'seat' | 'check' | 'menu' | 'close';
+  name:
+    | 'arrow'
+    | 'phone'
+    | 'mail'
+    | 'pin'
+    | 'clock'
+    | 'seat'
+    | 'check'
+    | 'menu'
+    | 'close'
+    | 'expand';
   size?: number;
   class?: string;
 }
@@ -35,4 +45,7 @@ const { name, size = 20, class: className } = Astro.props;
   {name === 'check' && <path d="M4 12.5l5 5L20 6.5" />}
   {name === 'menu' && <><path d="M3 6h18" /><path d="M3 12h18" /><path d="M3 18h18" /></>}
   {name === 'close' && <><path d="M5 5l14 14" /><path d="M19 5L5 19" /></>}
+  {/* Corner marks, not a magnifier: this opens the frame to its full size, it
+      does not magnify a detail. */}
+  {name === 'expand' && <><path d="M4 9V4h5" /><path d="M15 4h5v5" /><path d="M20 15v5h-5" /><path d="M9 20H4v-5" /></>}
 </svg>

@@ -7,7 +7,7 @@ import Testimonials from '../components/Testimonials.astro';
 import GuideCard from '../components/GuideCard.astro';
 import CloseBand from '../components/CloseBand.astro';
 import { BUSINESS, TRUST_CLAIMS } from '../config/site';
-import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
+import { FLEET, MAX_SINGLE_VEHICLE, vehicleHref } from '../data/fleet';
 import { SERVICES } from '../data/services';
 import { GUIDES } from '../data/guides';
 
@@ -151,7 +151,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
             const photo = FLEET_PHOTOS[v.slug];
             return (
               <li>
-                <a class="vcard" href={`/fleet#${v.slug}`}>
+                <a class="vcard" href={vehicleHref(v)}>
                   <span class="vcard__frame">
                     {photo ? (
                       <Image

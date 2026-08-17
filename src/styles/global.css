@@ -60,6 +60,14 @@
      blade reads as one plate with rules on it rather than as stacked panels. */
   --blade-divider: rgb(255 255 255 / 0.22);
 
+  /* --- Scrim. The ground a modal is laid over, and the wash a control sits on
+     when it has to hold its shape against a photograph. Enamel taken darker
+     than `enamel-deep` so what covers the page still reads as the brand's own
+     green rather than as neutral black. One value each, so two overlays cannot
+     drift apart. --- */
+  --scrim: rgb(6 34 23 / 0.92);
+  --scrim-soft: rgb(6 34 23 / 0.72);
+
   /* An unfilled slot on a blade — reads as empty while staying above the
      contrast floor, because it is rendered content, not a placeholder. */
   --signal-unset: rgb(255 255 255 / 0.62);

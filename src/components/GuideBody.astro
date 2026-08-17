@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
+import { FLEET, MAX_SINGLE_VEHICLE, vehicleHref } from '../data/fleet';
 import type { GuideBlock, GuideLink } from '../data/guides';
 
 /**
@@ -239,7 +239,7 @@ const FLEET_NOTE =
                     {FLEET.map((v) => (
                       <tr>
                         <th scope="row">
-                          <a href={`/fleet#${v.slug}`}>{v.name}</a>
+                          <a href={vehicleHref(v)}>{v.name}</a>
                         </th>
                         <td>
                           <span class="ga__seats mono">{v.capacityLabel}</span>
@@ -258,7 +258,7 @@ const FLEET_NOTE =
                   {FLEET.map((v) => (
                     <li>
                       <p class="ga__stack-name">
-                        <a href={`/fleet#${v.slug}`}>{v.name}</a>
+                        <a href={vehicleHref(v)}>{v.name}</a>
                       </p>
                       <p class="ga__stack-seats mono">{v.capacityLabel} passengers</p>
                       <span class="ga__bar" style={`width: ${scaleOf(v.seatsMax)}`} />

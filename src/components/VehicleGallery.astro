@@ -1,0 +1,642 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { VehicleShot } from '../data/fleetPhotos';
+
+/**
+ * The vehicle's photographs, one at a time.
+ *
+ * Same behaviour as the review carousel — same script, same markup contract —
+ * because a site with two carousels that scroll differently has two bugs
+ * waiting. What differs is the payload: a mounted 16:10 plate per slide with
+ * its own caption, so the strip still reads correctly with the script removed
+ * and a caption can never end up describing the wrong frame.
+ */
+interface Props {
+  shots: VehicleShot[];
+  /** Named in the live region and the strip's label. */
+  vehicle: string;
+  /** The opening image of the page it sits on. */
+  eager?: boolean;
+}
+
+const { shots, vehicle, eager = false } = Astro.props;
+const total = shots.length;
+---
+
+{
+  total > 0 && (
+    <div
+      class="gal"
+      role="group"
+      aria-roledescription="carousel"
+      aria-label={`Photographs of the ${vehicle}`}
+      data-carousel
+      data-noun="Photograph"
+    >
+      <ul
+        class="gal__track"
+        data-track
+        tabindex="0"
+        aria-label={`Photographs of the ${vehicle} — use the left and right arrow keys to move between them`}
+      >
+        {shots.map((shot, i) => (
+          <li
+            class="gal__slide"
+            role="group"
+            aria-roledescription="photograph"
+            aria-label={`${i + 1} of ${total}: ${shot.view}`}
+            data-slide
+            data-name={shot.view}
+          >
+            <figure class="gal__fig">
+              {/* The whole frame opens it, because that is where a visitor
+                  clicks; the corner mark is there so they know it will. */}
+              <button
+                type="button"
+                class="gal__plate"
+                data-zoom={i}
+                aria-label={`Expand photograph ${i + 1} of ${total}: ${shot.view}`}
+              >
+                <Image
+                  src={shot.src}
+                  alt={shot.alt}
+                  widths={[520, 900, 1300]}
+                  sizes="(min-width: 82rem) 46rem, (min-width: 60rem) 55vw, 92vw"
+                  loading={eager && i === 0 ? 'eager' : 'lazy'}
+                  fetchpriority={eager && i === 0 ? 'high' : 'auto'}
+                />
+                <span class="gal__mark" aria-hidden="true">
+                  <Icon name="expand" size={18} />
+                </span>
+              </button>
+              <figcaption class="gal__view mono">{shot.view}</figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+
+      {total > 1 && (
+        <div class="gal__foot">
+          <p class="gal__count mono" data-count>
+            {total} photographs
+          </p>
+
+          <div class="gal__marks">
+            {shots.map((shot, i) => (
+              <button
+                type="button"
+                class="gal__bar"
+                data-bar
+                data-go={i}
+                aria-current={i === 0 ? 'true' : 'false'}
+              >
+                <span class="sr-only">{`Show ${shot.view}`}</span>
+              </button>
+            ))}
+          </div>
+
+          <div class="gal__arrows">
+            <button type="button" class="gal__arrow" data-prev aria-label="Previous photograph">
+              <Icon name="arrow" size={16} />
+            </button>
+            <button type="button" class="gal__arrow" data-next aria-label="Next photograph">
+              <Icon name="arrow" size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <p class="sr-only" role="status" aria-live="polite" data-status />
+
+      {/* Expanded view. A native `dialog` rather than a div with a z-index:
+          it traps focus, closes on Escape, makes the page behind it inert and
+          restores focus to the frame that opened it — four behaviours nobody
+          hand-writes correctly, all of them free here. Uncropped, because
+          seeing the whole frame is the entire point of opening it. */}
+      <dialog class="lb" data-lb aria-label={`Photographs of the ${vehicle}, expanded`}>
+        <div class="lb__bar">
+          <p class="lb__count mono" data-lb-count>{`01 / ${String(total).padStart(2, '0')}`}</p>
+          <p class="lb__view mono" data-lb-view>{shots[0].view}</p>
+          <button type="button" class="lb__btn lb__close" data-lb-close aria-label="Close expanded view">
+            <Icon name="close" size={18} />
+          </button>
+        </div>
+
+        {/* The frame is absolutely positioned so its height is definite, which
+            is what lets the photograph's percentage caps resolve. Centred as a
+            grid item they did not, and it overflowed the stage. */}
+        <div class="lb__stage" data-lb-stage>
+          <div class="lb__frame">
+            {shots.map((shot, i) => (
+              <Image
+                class="lb__img"
+                data-lb-slide={i}
+                hidden={i !== 0}
+                src={shot.src}
+                alt={shot.alt}
+                widths={[900, 1400, 1900]}
+                sizes="94vw"
+                loading="lazy"
+              />
+            ))}
+          </div>
+        </div>
+
+        {total > 1 && (
+          <div class="lb__nav">
+            <button type="button" class="lb__btn" data-lb-prev aria-label="Previous photograph">
+              <Icon name="arrow" size={18} />
+            </button>
+            <button type="button" class="lb__btn" data-lb-next aria-label="Next photograph">
+              <Icon name="arrow" size={18} />
+            </button>
+          </div>
+        )}
+      </dialog>
+    </div>
+  )
+}
+
+<style>
+  .gal {
+    min-width: 0;
+  }
+
+  .gal__track {
+    display: flex;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+  }
+
+  /* Hidden only once the buttons exist to replace it. */
+  [data-ready] .gal__track {
+    scrollbar-width: none;
+  }
+
+  [data-ready] .gal__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .gal__track:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 4px;
+  }
+
+  .gal__slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-width: 0;
+  }
+
+  .gal__fig {
+    margin: 0;
+  }
+
+  /* Mounted-Photograph Rule, at the fleet's own 16:10. A button, so the frame
+     itself opens the expanded view — reset to a plate, not styled like one. */
+  .gal__plate {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+    cursor: zoom-in;
+  }
+
+  .gal__plate:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 3px;
+  }
+
+  /* Sits in the corner the way a sign's fixing does — visible enough to promise
+     the frame opens, quiet enough not to compete with what is in it. */
+  .gal__mark {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius);
+    background: var(--scrim-soft);
+    color: var(--signal);
+    transition:
+      background 200ms var(--ease-out),
+      color 200ms var(--ease-out);
+  }
+
+  .gal__plate:hover .gal__mark,
+  .gal__plate:focus-visible .gal__mark {
+    background: var(--hivis);
+    color: var(--enamel-ink);
+  }
+
+  .gal__plate::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .gal__plate :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  /* The caption travels with its own frame rather than being swapped by script,
+     so it can never end up describing the photograph next door. */
+  .gal__view {
+    margin-top: var(--space-2);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .gal__foot {
+    display: none;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--paper-line);
+  }
+
+  [data-ready] .gal__foot {
+    display: flex;
+  }
+
+  .gal__count {
+    flex: none;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gal__marks {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-right: auto;
+  }
+
+  /* A 4px mark inside a 24px target: the mark is the ground's own dash, the
+     button is what a finger has to hit. */
+  .gal__bar {
+    display: flex;
+    align-items: center;
+    width: 28px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .gal__bar::before {
+    content: '';
+    width: 100%;
+    height: 4px;
+    background: var(--paper-line);
+    transition:
+      transform 200ms var(--ease-out),
+      background 200ms var(--ease-out);
+  }
+
+  /* Marks thicken, they do not lengthen — every slot keeps its width, so the
+     run stays evenly spaced and the change is a transform, not a layout. */
+  .gal__bar[aria-current='true']::before {
+    transform: scaleY(1.75);
+    background: var(--hivis);
+  }
+
+  .gal__bar:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 2px;
+  }
+
+  .gal__arrows {
+    display: flex;
+    flex: none;
+    gap: var(--space-2);
+  }
+
+  .gal__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    background: none;
+    color: var(--enamel-ink);
+    cursor: pointer;
+    transition:
+      border-color 200ms var(--ease-out),
+      background 200ms var(--ease-out);
+  }
+
+  .gal__arrow:hover {
+    border-color: var(--enamel-ink);
+    background: var(--paper-lift);
+  }
+
+  /* Ends stop, they do not wrap: a counter implies a finite strip. `aria-disabled`
+     rather than `disabled` so focus is never dropped on the last press. */
+  .gal__arrow[aria-disabled='true'] {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .gal__arrow[aria-disabled='true']:hover {
+    border-color: var(--paper-line);
+    background: none;
+  }
+
+  .gal__arrow:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 2px;
+  }
+
+  .gal__arrow[data-prev] :global(svg) {
+    transform: rotate(180deg);
+  }
+
+  /* ---- Expanded view ---- */
+
+  .lb {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    padding: 0;
+    border: 0;
+    background: var(--enamel-deep);
+    background-image: var(--enamel-pattern);
+    color: var(--signal);
+  }
+
+  .lb::backdrop {
+    background: var(--scrim);
+  }
+
+  .lb[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .lb__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--enamel-line);
+  }
+
+  .lb__count,
+  .lb__view {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .lb__count {
+    color: var(--azure);
+  }
+
+  .lb__view {
+    margin-right: auto;
+    color: var(--signal-dim);
+  }
+
+  .lb__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--enamel-line);
+    border-radius: var(--radius);
+    background: none;
+    color: var(--signal);
+    cursor: pointer;
+    transition:
+      background 200ms var(--ease-out),
+      border-color 200ms var(--ease-out);
+  }
+
+  .lb__btn:hover {
+    border-color: var(--signal);
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  .lb__btn:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 2px;
+  }
+
+  /* The container the photograph is centred in. `contain`, never `cover` —
+     the frame is opened to be seen whole, so nothing here may crop it, and the
+     letterboxing that leaves is the enamel ground rather than a void. */
+  .lb__stage {
+    position: relative;
+    min-height: 0;
+    cursor: zoom-out;
+  }
+
+  /* Absolutely positioned against the stage, which makes its height *definite*.
+     That is the whole reason it exists: `max-height: 100%` on the image needs a
+     resolved height to resolve against, and centring the image in an auto-height
+     grid cell left it uncapped and overflowing the stage on wide screens. The
+     inset is the padding. */
+  .lb__frame {
+    position: absolute;
+    inset: var(--space-5);
+  }
+
+  /* Absolute with `inset: 0` and `margin: auto`, not a centred grid item: as a
+     grid item the percentage `max-height` never resolved and the photograph
+     overflowed the frame on any screen where height was the binding dimension.
+     Positioned this way the containing block is the frame's padding box, which
+     is definite, so both caps resolve and the auto margins centre what is left. */
+  .lb__img {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: var(--radius);
+    cursor: default;
+  }
+
+  /* `display: block` above outranks the user agent's `[hidden] { display: none }`,
+     so `hidden` stops hiding and every photograph renders at once. Any rule that
+     sets `display` on an element that also uses `hidden` has to say this. */
+  .lb__img[hidden] {
+    display: none;
+  }
+
+  .lb__nav {
+    position: absolute;
+    right: var(--space-5);
+    bottom: var(--space-5);
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .lb__nav .lb__btn {
+    background: var(--scrim-soft);
+  }
+
+  .lb__nav [data-lb-prev] :global(svg) {
+    transform: rotate(180deg);
+  }
+
+  .lb__btn[aria-disabled='true'] {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .lb__btn[aria-disabled='true']:hover {
+    border-color: var(--enamel-line);
+    background: var(--scrim-soft);
+  }
+
+  @media (min-width: 48rem) {
+    .lb__bar {
+      padding: var(--space-5) var(--space-8);
+    }
+
+    .lb__frame {
+      inset: var(--space-8);
+    }
+
+    .lb__nav {
+      right: var(--space-8);
+      bottom: var(--space-8);
+    }
+  }
+</style>
+
+<script>
+  import { initCarousels } from '../scripts/carousel';
+  initCarousels();
+
+  /**
+   * The expanded view. `dialog.showModal()` does the hard parts — focus trap,
+   * Escape, inert background, focus restored to the frame that opened it — so
+   * what is left here is only which photograph is showing.
+   *
+   * The strip and the expanded view stay in step through the strip's own
+   * controls: to move it, this clicks its position mark rather than reaching
+   * into the carousel's state. One source of truth, and no second copy of
+   * "which slide is showing" to fall out of sync.
+   */
+  document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((root) => {
+    const dialog = root.querySelector<HTMLDialogElement>('[data-lb]');
+    const stage = root.querySelector<HTMLElement>('[data-lb-stage]');
+    if (!dialog || !stage || typeof dialog.showModal !== 'function') return;
+
+    const zooms = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-zoom]'));
+    const figs = Array.from(root.querySelectorAll<HTMLElement>('[data-lb-slide]'));
+    const bars = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-bar]'));
+    const count = root.querySelector<HTMLElement>('[data-lb-count]');
+    const view = root.querySelector<HTMLElement>('[data-lb-view]');
+    const prev = root.querySelector<HTMLButtonElement>('[data-lb-prev]');
+    const next = root.querySelector<HTMLButtonElement>('[data-lb-next]');
+    const total = figs.length;
+    if (!total) return;
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    let at = 0;
+    let opener: HTMLElement | null = null;
+
+    function show(i: number) {
+      at = Math.max(0, Math.min(total - 1, i));
+      figs.forEach((f, n) => f.toggleAttribute('hidden', n !== at));
+      if (count) count.textContent = `${pad(at + 1)} / ${pad(total)}`;
+      const slide = zooms[at]?.closest<HTMLElement>('[data-slide]');
+      if (view) view.textContent = slide?.dataset.name ?? '';
+      prev?.setAttribute('aria-disabled', String(at === 0));
+      next?.setAttribute('aria-disabled', String(at === total - 1));
+    }
+
+    zooms.forEach((btn, i) =>
+      btn.addEventListener('click', () => {
+        opener = btn;
+        show(i);
+        dialog!.showModal();
+      }),
+    );
+
+    prev?.addEventListener('click', () => {
+      if (prev!.getAttribute('aria-disabled') !== 'true') show(at - 1);
+    });
+
+    next?.addEventListener('click', () => {
+      if (next!.getAttribute('aria-disabled') !== 'true') show(at + 1);
+    });
+
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        show(at + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        show(at - 1);
+      }
+    });
+
+    root.querySelector<HTMLButtonElement>('[data-lb-close]')
+      ?.addEventListener('click', () => dialog!.close());
+
+    // The ground around the photograph closes it; the photograph itself does
+    // not. The frame fills the stage, so both count as ground.
+    stage.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (t === stage || t.classList.contains('lb__frame')) dialog!.close();
+    });
+
+    /**
+     * Leave the strip on whatever was last looked at, and put focus back on the
+     * frame that opened it — on the frame the visitor *ended* on, so tabbing
+     * onward carries on from where they are rather than where they started.
+     * The browser restores focus itself, but only to the element that had it
+     * when `showModal` ran, which is the wrong frame after paging through.
+     */
+    dialog.addEventListener('close', () => {
+      bars[at]?.click();
+      (zooms[at] ?? opener)?.focus();
+    });
+  });
+</script>

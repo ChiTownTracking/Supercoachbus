@@ -222,6 +222,7 @@ A two-ground palette — deep porcelain green and cool concrete — punctuated b
 - **Enamel Line** (`enamel-line`): The hairline on enamel — plate borders inside a field, the services list rules, footer dividers, and the resting color of footer icons. Not the masthead: that band carries no underbar.
 
 ### Secondary
+- **Scrim** (`scrim` at 0.92, `scrim-soft` at 0.72): The ground a modal is laid over, and the wash a control sits on when it has to hold its shape against a photograph. Enamel taken darker than `enamel-deep`, so what covers the page still reads as the brand's own green rather than as neutral black. Two values and no more — a third overlay weight is how a set of modals starts drifting apart.
 - **High-Visibility Amber** (`hivis`): The action color and nothing else. Primary button fill, the focus ring, the current-page nav underline, the arrow inside the destination blade, the recommended vehicle name, arrow tips on hover, the after-hours charter note, and the 3px marked top edge on the footer and the map. It is never a heading color, never a background field, never decoration.
 - **Amber Lift** (`hivis-lift`): The only hover value for the primary action.
 - **Amber Deep** (`hivis-deep`): The darker amber used where amber must sit on concrete and pass as text — the required-field asterisk and the unresolved-placeholder marker and its dashed border.
@@ -481,6 +482,26 @@ One vehicle per row: photographs left, a specification column right, split evenl
 - **A caption only where there is something to distinguish.** Frames are captioned `Exterior` / `Interior` wherever a vehicle has both, and not at all where it has one — under a lone photograph the caption labels the obvious.
 - **16:10 holds for interiors too.** They arrive at 3:2 and 4:3 and lose 3% and 10% of their height respectively, all of it ceiling and floor. One ratio for a fleet photograph wherever it appears is worth more than a frame that changes height halfway down a column.
 - **The first vehicle's exterior loads eagerly.** It is the page's opening image, not something scrolled to.
+
+### Vehicle page — `/fleet/[vehicle]`
+One page per vehicle, reached from the homepage fleet grid, from `View this vehicle` on `/fleet`, and from the comparison table in the size guide. Same parts as a `/fleet` row and the same photographs — a visitor who follows a card must not find a different bus at the other end, which is why `SHOTS` moved out of the page and into `data/fleetPhotos.ts`.
+
+- **The pictures get the wider column here**, `1.15fr` against `/fleet`'s even split. A card on `/fleet` is one of four and has to hold its place in a rhythm; here the vehicle is the whole page, so the photographs get the room the visitor came to give them.
+- **`bestFor` runs on this page and not on `/fleet`.** Four sets of audiences crowded four rows; one set answers the first question a visitor arrives with. Same drawn dash as before — a use is not a fitting.
+- **The over-capacity band renders only on the largest vehicle**, keyed off `seatsMax === MAX_SINGLE_VEHICLE` rather than a slug, so it moves by itself if a bigger coach is ever added.
+- **`Vehicle` structured data, not `Product`.** There is no price, no stock and no offer, and a Product without those is a rich result nobody can earn. The seating capacity goes in as a range from the same field the page prints.
+- **The spec column takes the row's height and drops its buttons to the foot**, as on `/fleet` — and the override has to sit *after* the base `margin-top`, not before it. At equal specificity the later declaration wins, which is why the buttons floated mid-column on the first pass.
+
+### Vehicle gallery — `VehicleGallery.astro`
+The vehicle's photographs, one at a time, on its own page. `/fleet` still stacks the first two frames: a listing runs four rows at one height and a carousel in each would ask a visitor to operate the page before they can scan it.
+
+- **It runs the review carousel's script, not a copy of it.** `src/scripts/carousel.ts` holds the behaviour and both components import it; a site with two carousels that scroll differently has two bugs waiting. The module is idempotent — it skips a root that already has `data-ready` — so two components calling it on one page cannot double-bind. The only thing that varies is `data-noun`, which names one slide in the live region: `Review 2 of 3` against `Photograph 2 of 3`.
+- **The caption travels with its own frame.** A `<figcaption>` inside each slide rather than one line the script rewrites, so it works with the script removed and can never end up describing the photograph next door.
+- **What is not in the gallery is a content decision, not a design one.** The owner's folders hold alternates that are a different vehicle, a manufacturer render, or a frame implying an amenity nobody has confirmed. `data/fleetPhotos.ts` says which and why. **Never show a visitor a bus they are not being quoted.**
+- **Expanded view is a native `<dialog>`.** `showModal()` gives a focus trap, Escape, an inert background and focus restoration for nothing; a div with a `z-index` gives none of them and nobody hand-writes all four correctly. The frame itself opens it — that is where a visitor clicks — with a corner mark so they know it will.
+- **The photograph is `contain`, never `cover`, and centred in its own frame.** Seeing the whole picture is the entire point of opening it, so nothing in the expanded view may crop; the letterboxing that leaves is the enamel ground rather than a void. The frame is absolutely positioned inside the stage, and that is load-bearing: as a centred grid item the image's percentage `max-height` never resolved and it overflowed on any screen where height was the binding dimension. **A percentage cap needs a definite containing block** — `position: absolute; inset: 0; margin: auto` gives it one and centres what is left.
+- **Anything that sets `display` on an element that also uses `hidden` must restate `[hidden] { display: none }`.** `.lb__img { display: block }` outranks the user agent rule, and the whole gallery rendered stacked until the override went back in.
+- **The strip and the expanded view stay in step through the strip's own controls.** To move the strip, the dialog clicks its position mark rather than reaching into carousel state — one source of truth. On close, focus lands on the frame the visitor *ended* on, not the one they started from, so tabbing onward continues from where they are.
 
 ### Review carousel — `Testimonials.astro`
 One review at a time on a marked-edge plate, not three cards side by side. The three real reviews differ in length by a factor of three, so a grid produced three ragged-bottomed cards and set the longest review in the smallest type on the page.

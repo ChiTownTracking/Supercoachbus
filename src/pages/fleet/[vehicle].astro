@@ -1,0 +1,603 @@
+---
+import { Image } from 'astro:assets';
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import SeatPlan from '../../components/SeatPlan.astro';
+import VehicleGallery from '../../components/VehicleGallery.astro';
+import CloseBand from '../../components/CloseBand.astro';
+import Icon from '../../components/Icon.astro';
+import { FLEET, MAX_SINGLE_VEHICLE, otherVehicles, vehicleHref } from '../../data/fleet';
+import { shotsFor } from '../../data/fleetPhotos';
+import { BUSINESS, SITE_ORIGIN } from '../../config/site';
+
+export function getStaticPaths() {
+  return FLEET.map((vehicle) => ({
+    params: { vehicle: vehicle.slug },
+    props: { vehicle },
+  }));
+}
+
+const { vehicle } = Astro.props;
+const path = vehicleHref(vehicle);
+const canonical = new URL(path, SITE_ORIGIN).href;
+const shots = shotsFor(vehicle.slug);
+const others = otherVehicles(vehicle.slug);
+
+/**
+ * A `Vehicle` node rather than a `Product`: there is no price, no stock and no
+ * offer, and a Product without those is a rich result nobody can earn. The
+ * seating capacity is the one measured fact this page carries, so it goes in as
+ * a range — the same range the page prints, from the same field.
+ */
+const vehicleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Vehicle',
+  '@id': `${canonical}#vehicle`,
+  name: vehicle.name,
+  description: vehicle.role,
+  image: shots.map((s) => new URL(s.src.src, SITE_ORIGIN).href),
+  vehicleSeatingCapacity: {
+    '@type': 'QuantitativeValue',
+    minValue: vehicle.seatsMin,
+    maxValue: vehicle.seatsMax,
+    unitText: 'passengers',
+  },
+  provider: { '@id': `${SITE_ORIGIN}/#business` },
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_ORIGIN },
+    { '@type': 'ListItem', position: 2, name: 'Fleet', item: `${SITE_ORIGIN}/fleet` },
+    { '@type': 'ListItem', position: 3, name: vehicle.name, item: canonical },
+  ],
+};
+---
+
+<Layout
+  path={path}
+  title={vehicle.meta.title}
+  description={vehicle.meta.description}
+  ogImage={shots[0]?.src.src}
+  jsonLd={[vehicleSchema, breadcrumbSchema]}
+>
+  <PageHead coordinate={`${vehicle.capacityLabel} passengers`} title={vehicle.name} lede={vehicle.role}>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/fleet">Fleet</a>
+    </nav>
+  </PageHead>
+
+  <div class="section--tight">
+    <div class="shell veh">
+      <div class="veh__figures">
+        <VehicleGallery shots={shots} vehicle={vehicle.name} eager />
+        {/* No photograph yet. The capacity is drawn instead — the one thing
+            about this vehicle that is confirmed — rather than padding the
+            column with a stand-in. */}
+        {
+          shots.length === 0 && (
+            <p class="veh__only">
+              <span class="veh__onlynum">{vehicle.capacityLabel}</span>
+              <span class="veh__onlyunit mono">passengers</span>
+            </p>
+          )
+        }
+      </div>
+
+      <div class="veh__spec">
+        {/* The audiences finally have room here. They are cut from the cards on
+            `/fleet`, where four sets of them crowded four rows, but this page is
+            about one vehicle and the question it answers — is this the size for
+            my group — is the first one a visitor arrives with. */}
+        <h2 class="coordinate coordinate--ink veh__sec">Best for</h2>
+        <ul class="veh__uses">
+          {vehicle.bestFor.map((use) => <li>{use}</li>)}
+        </ul>
+
+        <h2 class="coordinate coordinate--ink veh__sec">On board</h2>
+        {
+          vehicle.amenities.length > 0 ? (
+            <ul class="veh__amenities">
+              {vehicle.amenities.map((a) => (
+                <li>
+                  <Icon name="check" size={15} />
+                  {a}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p class="veh__pending">
+              We have not published a fittings list for this vehicle — call and we
+              will confirm what it carries.
+            </p>
+          )
+        }
+
+        <h2 class="coordinate coordinate--ink veh__sec">Seating</h2>
+        {
+          vehicle.layout ? (
+            <div class="veh__plan">
+              <SeatPlan vehicle={vehicle} />
+            </div>
+          ) : (
+            <p class="veh__pending">
+              No seating plan published for this size yet. The exact seat count is
+              confirmed with your quote.
+            </p>
+          )
+        }
+
+        <div class="veh__actions">
+          <a class="action" href="/#quote-form">
+            Quote this vehicle
+            <Icon name="arrow" size={16} />
+          </a>
+          <a class="action action--ink" href={BUSINESS.phone.href}>
+            <Icon name="phone" size={16} />
+            {BUSINESS.phone.display}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {
+    vehicle.seatsMax === MAX_SINGLE_VEHICLE && (
+      <section class="section--tight field field--deep note">
+        <div class="shell">
+          <h2 class="subtitle note__head">More than {MAX_SINGLE_VEHICLE} passengers?</h2>
+          <p class="lede note__body">
+            Groups above a single {vehicle.name} are handled case by case. Call us
+            with the headcount and date and we will confirm what we can run — we
+            would rather tell you plainly than promise a fleet size we have not
+            committed to you.
+          </p>
+          <a class="action" href="/#quote-form">
+            Start a quote
+            <Icon name="arrow" size={16} />
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section--tight rest">
+    <div class="shell">
+      <div class="rest__top">
+        <h2 class="subtitle">Other sizes</h2>
+        <a class="rest__all" href="/fleet">
+          The whole fleet
+          <Icon name="arrow" size={15} />
+        </a>
+      </div>
+      <ul class="rest__grid">
+        {
+          others.map((other) => {
+            const shot = shotsFor(other.slug)[0];
+            return (
+              <li>
+                <a class="rcard" href={vehicleHref(other)}>
+                  <span class="rcard__frame">
+                    {shot ? (
+                      <Image
+                        src={shot.src}
+                        alt={shot.alt}
+                        widths={[320, 520, 760]}
+                        sizes="(min-width: 64rem) 22rem, (min-width: 44rem) 45vw, 90vw"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span class="rcard__drawn mono">{other.capacityLabel}</span>
+                    )}
+                  </span>
+                  <span class="rcard__cap mono">
+                    <b class="rcard__capnum">{other.capacityLabel}</b> passengers
+                  </span>
+                  <span class="rcard__name gothic">{other.name}</span>
+                  <span class="rcard__go">
+                    View this vehicle
+                    <Icon name="arrow" size={15} />
+                  </span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CloseBand />
+</Layout>
+
+<style>
+  /* ---- Breadcrumb, inside the enamel nameplate ---- */
+
+  .crumbs {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--enamel-line);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--signal-dim);
+  }
+
+  /* The separator takes the row's own colour: at `enamel-line` it measured
+     2.09:1 on the enamel ground and read as a smudge. */
+  .crumbs a,
+  .crumbs span {
+    color: var(--signal-dim);
+  }
+
+  .crumbs a {
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--signal);
+  }
+
+  /* ---- The vehicle itself ---- */
+
+  .veh {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  /* Wider on the pictures than `/fleet` runs them. A card there is one of four
+     and has to hold its place in a rhythm; here the vehicle is the whole page,
+     so the photographs get the room a visitor came to give them. */
+  @media (min-width: 60rem) {
+    .veh {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: var(--space-12);
+    }
+  }
+
+  .veh__figures {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .veh__shot {
+    margin: 0;
+  }
+
+  /* Mounted-Photograph Rule, and 16:10 — the same ratio the fleet grid and
+     `/fleet` use, because a fleet photograph is one object wherever it sits. */
+  .veh__plate {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .veh__plate::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .veh__plate :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+  }
+
+  .veh__view {
+    margin-top: var(--space-2);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .veh__only {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin: 0;
+    padding: var(--space-8) var(--space-6);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    background: var(--paper-lift);
+  }
+
+  .veh__onlynum {
+    font-size: clamp(3.25rem, 8vw, 5rem);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+    color: var(--enamel-ink);
+  }
+
+  .veh__onlyunit {
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  /* ---- Specification ---- */
+
+  .veh__sec {
+    margin-bottom: var(--space-3);
+  }
+
+  .veh__sec:not(:first-child) {
+    margin-top: var(--space-6);
+  }
+
+  .veh__uses {
+    display: grid;
+    gap: var(--space-2) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 30rem) {
+    .veh__uses {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  /* A drawn dash rather than a check: a use is not a fitting. */
+  .veh__uses li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .veh__uses li::before {
+    content: '';
+    flex: none;
+    width: 12px;
+    height: 2px;
+    margin-top: 0.62em;
+    background: var(--enamel-ink);
+  }
+
+  .veh__amenities {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.9375rem;
+  }
+
+  .veh__amenities li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .veh__amenities :global(svg) {
+    flex: none;
+    margin-top: 4px;
+    color: var(--enamel-ink);
+  }
+
+  .veh__pending {
+    max-width: 46ch;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
+  }
+
+  .veh__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-8);
+  }
+
+  /* After the rule above, not before it: at equal specificity the later
+     declaration wins, and `margin-top: var(--space-8)` sitting downstream of
+     `margin-top: auto` is exactly why the buttons floated mid-column on the
+     first pass. The spec column takes the row's height and drops its buttons to
+     the foot, so the page closes on one line with the photographs. */
+  @media (min-width: 60rem) {
+    .veh__spec {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 1.75rem;
+    }
+
+    /* `auto` only pushes the buttons down when there is slack to push into. On a
+       full column it collapses to nothing and the seat plan sits on the quote
+       button, so the padding carries the gap instead: a floor the auto margin
+       cannot eat, and the buttons still finish flush with the photographs. */
+    .veh__actions {
+      margin-top: auto;
+      padding-top: var(--space-8);
+    }
+  }
+
+  /* ---- Over-capacity note ---- */
+
+  .note__head {
+    margin-bottom: var(--space-4);
+  }
+
+  .note__body {
+    max-width: 56ch;
+    margin-bottom: var(--space-8);
+  }
+
+  /* ---- The rest of the fleet ---- */
+
+  .rest {
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .rest__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .rest__all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-bottom: 2px;
+    border-bottom: 2px solid currentColor;
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--enamel-ink);
+    transition: gap 200ms var(--ease-out);
+  }
+
+  .rest__all:hover {
+    gap: var(--space-3);
+    color: var(--hivis-text);
+  }
+
+  .rest__grid {
+    display: grid;
+    gap: var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 44rem) {
+    .rest__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  /* Rows, not gaps: the three "View this vehicle" links sit on one line across
+     the row however the names wrap. */
+  .rcard {
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: var(--space-3);
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .rcard__frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .rcard__frame::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .rcard__frame :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform 320ms var(--ease-out);
+  }
+
+  .rcard:hover .rcard__frame :global(img) {
+    transform: scale(1.03);
+  }
+
+  .rcard__drawn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 16 / 10;
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    color: var(--signal);
+  }
+
+  .rcard__cap {
+    margin-top: var(--space-1);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .rcard__capnum {
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--enamel-ink);
+  }
+
+  .rcard__name {
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+
+  .rcard__go {
+    display: inline-flex;
+    align-items: center;
+    align-self: start;
+    gap: var(--space-2);
+    padding-bottom: 2px;
+    border-bottom: 2px solid currentColor;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--enamel-ink);
+    transition: gap 200ms var(--ease-out);
+  }
+
+  .rcard:hover .rcard__go {
+    gap: var(--space-3);
+    color: var(--hivis-text);
+  }
+
+  .rcard__go :global(svg) {
+    flex: none;
+  }
+
+  .rcard:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 4px;
+    border-radius: 1px;
+  }
+</style>
