@@ -2,11 +2,19 @@
 import Layout from '../../layouts/Layout.astro';
 import PageHead from '../../components/PageHead.astro';
 import Icon from '../../components/Icon.astro';
-import { SERVICES } from '../../data/services';
+import { BESPOKE_SERVICE_PAGES, SERVICES } from '../../data/services';
 import { BUSINESS } from '../../config/site';
 
+/**
+ * Every service except the ones that ship their own page. Weddings is the first:
+ * it sits at the same /services/weddings URL, which is the one the old site's
+ * `#WeddingTransportationServices` anchor resolves to, so it had to stay put
+ * rather than move to /weddings and split the query between two URLs.
+ */
 export function getStaticPaths() {
-  return SERVICES.map((service) => ({
+  return SERVICES.filter(
+    (service) => !(BESPOKE_SERVICE_PAGES as readonly string[]).includes(service.slug)
+  ).map((service) => ({
     params: { service: service.slug },
     props: { service },
   }));

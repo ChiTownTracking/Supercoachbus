@@ -177,10 +177,17 @@ export const SERVICES: Service[] = [
     },
     // The one service where the sister brand is the better answer to a question
     // this fleet cannot answer: there is no trolley in it.
+    //
+    // Deep-linked to their wedding page rather than their homepage — that is the
+    // page that answers this question, and a link to a homepage makes the reader
+    // go and find it again. Weddings now renders its own handoff on
+    // src/pages/services/weddings.astro, in more detail than this line can
+    // carry; this stays the data record of the relationship, and the template
+    // still renders it for any other service that grows one.
     sister: {
       note: 'A trolley is a different kind of arrival, and it is not in this fleet. Our sister company runs them:',
       label: 'ChiTown Trolley',
-      href: 'https://chitowntrolley.com/',
+      href: 'https://chitowntrolley.com/weddings/',
     },
   },
   {
@@ -223,3 +230,13 @@ export const SERVICES: Service[] = [
 export function getService(slug: string): Service | undefined {
   return SERVICES.find((s) => s.slug === slug);
 }
+
+/**
+ * Services that have outgrown the shared template and ship their own page.
+ *
+ * `src/pages/services/[service].astro` skips these so it does not generate a
+ * second route for a path a static page already owns. Named here rather than
+ * as a string literal in the template, because which services have their own
+ * page is a fact about the content, and the two lists must never disagree.
+ */
+export const BESPOKE_SERVICE_PAGES = ['weddings'] as const;

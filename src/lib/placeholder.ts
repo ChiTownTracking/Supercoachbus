@@ -135,4 +135,25 @@ export const OPEN_ITEMS = {
     'USDOT / MC number and insurance coverage',
     'School and corporate procurement often require these. Supply the numbers and they become a real trust block.'
   ),
+  /**
+   * The wedding package on /services/weddings. Nothing on the page is invented —
+   * every figure is published by ChiTown Trolley for this exact joint offer, and
+   * the page says whose vehicle is whose. But those are the sister site's terms
+   * for the coach half, read off their page rather than given to us, so this
+   * stays open until the owner confirms them here. No visible marker: the page
+   * is not making a claim that is unsupported, it is repeating one made
+   * elsewhere by the same owner.
+   */
+  weddingPackage: todo(
+    'wedding.package',
+    'fact',
+    'The trolley-and-coach wedding package terms',
+    'Taken from https://chitowntrolley.com/weddings/ on 17 Aug 2026: coach up to 50 guests for 8 hours, trolley up to 30 for 5, unlimited scheduled stops and mileage, guest shuttle recommended 4:00 pm to midnight. Confirm these are current and that the mileage and stop terms hold for the coach half, or supply the coach\'s own.'
+  ),
+  weddingBeverages: todo(
+    'wedding.beverages',
+    'fact',
+    'Whether guests may bring beverages aboard',
+    'ChiTown Trolley publishes a 21-and-over policy for its trolleys. The wedding FAQ currently answers "tell us in advance and we will confirm for your vehicle and date" rather than restating another vehicle\'s policy as this fleet\'s. Supply the coach policy and the answer becomes a real one.'
+  ),
 } as const;
