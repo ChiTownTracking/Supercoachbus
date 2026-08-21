@@ -127,8 +127,8 @@ export const GUEST_RUN: Stop[] = [
 /**
  * SISTER — the trolley's day, from ChiTown Trolley's wedding page. Kept on this
  * page because the two runs are one timeline, and a couple deciding between
- * them should see both. It ends on the link to their page, which is where it
- * gets booked.
+ * them should see both. The joint package section above carries the handoff to
+ * their page; the run sheet itself stays focused on the route.
  */
 export const PARTY_RUN: Stop[] = [
   {

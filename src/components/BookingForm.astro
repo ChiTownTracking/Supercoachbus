@@ -554,7 +554,11 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
       for (const [key, value] of params) {
         if (!value.trim()) continue;
         const el = form.elements.namedItem(key);
-        if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
+        if (
+          el instanceof HTMLInputElement ||
+          el instanceof HTMLSelectElement ||
+          el instanceof HTMLTextAreaElement
+        ) {
           el.value = value;
         }
       }

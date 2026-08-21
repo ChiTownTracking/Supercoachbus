@@ -1,150 +1,597 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import PageHead from '../../components/PageHead.astro';
+import CloseBand from '../../components/CloseBand.astro';
 import Icon from '../../components/Icon.astro';
 import { SERVICES } from '../../data/services';
+import { SERVICE_PHOTOS } from '../../data/servicePhotos';
+import { FLEET } from '../../data/fleet';
+import { BUSINESS, SITE_ORIGIN, TRUST_CLAIMS } from '../../config/site';
+
+const serviceListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Chicago Super Coach transportation services',
+  itemListElement: SERVICES.map((service, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: service.name,
+    url: new URL(`/services/${service.slug}`, SITE_ORIGIN).href,
+  })),
+};
 ---
 
 <Layout
   path="/services"
   title="Chicago Group Transportation | Charter & Shuttle Services"
-  description="Charter bus and shuttle services in Chicago: corporate transportation, school shuttles, sporting events, weddings and youth groups. Licensed, insured drivers. Call 630-624-3448."
+  description="Charter bus and shuttle services in Chicago for corporate groups, schools, sporting events, weddings and youth groups. Licensed, insured drivers. Call 630-624-3448."
+  jsonLd={[serviceListSchema]}
 >
   <PageHead
-    title="Five jobs, five different worries."
-    lede="A conference shuttle and a school field trip are not the same booking. Each of these pages answers what that particular buyer actually asks us."
-  />
+    coordinate={`13–57 passengers · ${BUSINESS.serviceArea}`}
+    title="One fleet, built around five different kinds of day."
+    lede="A conference shuttle and a school field trip do not have the same run sheet. Start with the trip you are planning; we will match the route, timing and group size to the right vehicle."
+  >
+    <div class="head-actions">
+      <a class="action" href="/#quote-form">
+        Get a quote
+        <Icon name="arrow" size={16} />
+      </a>
+      <a class="head-phone mono" href={BUSINESS.phone.href}>
+        <Icon name="phone" size={15} />
+        {BUSINESS.phone.display}
+      </a>
+    </div>
+  </PageHead>
 
-  <div class="section">
+  <section class="section directory" aria-labelledby="directory-heading">
     <div class="shell">
-      <ul class="svc__list">
+      <div class="directory__intro">
+        <p class="coordinate coordinate--ink">Choose the job</p>
+        <h2 class="title directory__head" id="directory-heading">
+          Where does your group need to be?
+        </h2>
+        <p class="lede directory__lede">
+          Each service page answers the questions that matter for that trip—from
+          district requirements to hotel loops and post-game pickup.
+        </p>
+      </div>
+
+      <ol class="service-list">
         {
-          SERVICES.map((s) => (
+          SERVICES.map((service, index) => {
+            const photo = SERVICE_PHOTOS[service.slug];
+
+            return (
+              <li class="service-item" id={service.slug}>
+                <a class="service-card" href={`/services/${service.slug}`}>
+                  <span class="service-card__media">
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      widths={[440, 720, 1040]}
+                      sizes="(min-width: 62rem) 31rem, (min-width: 44rem) 42vw, 92vw"
+                      loading={index < 2 ? 'eager' : 'lazy'}
+                    />
+                  </span>
+
+                  <div class="service-card__body">
+                    <span class="service-card__route mono">
+                      <b>{String(index + 1).padStart(2, '0')}</b>
+                      {service.destination}
+                    </span>
+                    <h3 class="service-card__name gothic">{service.name}</h3>
+                    <p class="service-card__prop">{service.proposition}</p>
+                    <div class="service-card__concern">
+                      <span class="mono">Common question</span>
+                      {service.concerns[0].label}
+                    </div>
+                    <span class="service-card__link direction">
+                      Plan this trip
+                      <Icon name="arrow" size={15} />
+                    </span>
+                  </div>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section--tight field standards" aria-labelledby="standards-heading">
+    <div class="shell standards__grid">
+      <div>
+        <p class="coordinate">The same standard on every run</p>
+        <h2 class="subtitle standards__head" id="standards-heading">
+          The occasion changes. The operating standard does not.
+        </h2>
+      </div>
+
+      <ul class="standards__list">
+        {
+          TRUST_CLAIMS.map((claim) => (
             <li>
-              <a class="svc" href={`/services/${s.slug}`} id={s.slug}>
-                <span class="svc__dest mono">{s.destination}</span>
-                <span class="svc__name">{s.name}</span>
-                <span class="svc__prop">{s.proposition}</span>
-                <span class="svc__go">
-                  <Icon name="arrow" size={20} />
-                </span>
-              </a>
+              <Icon name="check" size={16} />
+              {claim}
             </li>
           ))
         }
       </ul>
     </div>
-  </div>
+  </section>
+
+  <section class="section planning" aria-labelledby="planning-heading">
+    <div class="shell planning__grid">
+      <div class="planning__main">
+        <p class="coordinate coordinate--ink">From details to run sheet</p>
+        <h2 class="title planning__head" id="planning-heading">
+          Three decisions get the trip moving.
+        </h2>
+
+        <ol class="steps">
+          <li class="step">
+            <span class="step__number mono">01</span>
+            <div>
+              <h3 class="step__head gothic">Tell us the trip</h3>
+              <p>Date, headcount, pickup, destination, timing and any luggage or equipment.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step__number mono">02</span>
+            <div>
+              <h3 class="step__head gothic">Match the vehicle</h3>
+              <p>We confirm the smallest available coach that fits the group and the job.</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step__number mono">03</span>
+            <div>
+              <h3 class="step__head gothic">Set the run sheet</h3>
+              <p>Pickup points, departure times, return windows and vehicle details are agreed before the day.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <aside class="fleet-fit" aria-labelledby="fleet-fit-heading">
+        <p class="coordinate coordinate--ink">Four vehicle sizes</p>
+        <h2 class="subtitle fleet-fit__head" id="fleet-fit-heading">
+          From a Sprinter to a full-size coach.
+        </h2>
+        <ul class="fleet-fit__list">
+          {
+            [...FLEET].reverse().map((vehicle) => (
+              <li>
+                <a href={`/fleet/${vehicle.slug}`}>
+                  <span>
+                    <b class="fleet-fit__cap mono">{vehicle.capacityLabel}</b>
+                    <span class="fleet-fit__unit mono">passengers</span>
+                  </span>
+                  <span class="fleet-fit__name">{vehicle.name}</span>
+                  <Icon name="arrow" size={15} />
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="fleet-fit__all direction" href="/fleet">
+          Compare the full fleet
+          <Icon name="arrow" size={15} />
+        </a>
+      </aside>
+    </div>
+  </section>
+
+  <CloseBand />
 </Layout>
 
 <script>
-  // The old site put three services on anchors of one page rather than on their
-  // own URLs. A server-side 301 never sees a fragment, so those inbound links
-  // are resolved here instead — otherwise years of deep links land on a hub page
-  // with no idea which service the visitor wanted.
+  // Preserve inbound links to the old one-page service anchors. A server never
+  // receives a URL fragment, so the browser performs this last piece of routing.
   import { HASH_REDIRECTS } from '../../data/redirects';
 
   const hash = window.location.hash.slice(1);
   const target = HASH_REDIRECTS[hash];
-  if (target) {
-    window.location.replace(target);
-  }
+  if (target) window.location.replace(target);
 </script>
 
 <style>
-  .svc__list {
+  .head-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-8);
+  }
+
+  .head-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-block: var(--space-2);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: var(--signal);
+    text-underline-offset: 4px;
+  }
+
+  .head-phone:hover {
+    color: var(--hivis);
+  }
+
+  .directory__intro {
+    display: grid;
+    gap: var(--space-4);
+    margin-bottom: var(--space-12);
+  }
+
+  @media (min-width: 62rem) {
+    .directory__intro {
+      grid-template-columns: minmax(0, 1.25fr) minmax(18rem, 0.75fr);
+      align-items: end;
+    }
+
+    .directory__intro .coordinate {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .directory__head {
+    max-width: 18ch;
+  }
+
+  .directory__lede {
+    max-width: 42ch;
+  }
+
+  .service-list {
+    display: grid;
+    gap: var(--space-6);
     margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .service-item {
+    scroll-margin-top: 7rem;
+  }
+
+  .service-card {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    background: var(--paper-lift);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 220ms var(--ease-out);
+  }
+
+  .service-card:hover {
+    border-color: var(--enamel-ink);
+  }
+
+  .service-card:focus-visible {
+    outline: 3px solid var(--hivis);
+    outline-offset: 4px;
+  }
+
+  .service-card__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    min-height: 16rem;
+    background: var(--enamel-deep);
+  }
+
+  .service-card__media::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .service-card__media :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 16rem;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform 500ms var(--ease-out);
+  }
+
+  .service-card:hover .service-card__media :global(img) {
+    transform: scale(1.035);
+  }
+
+  .service-card__body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--space-8);
+  }
+
+  .service-card__route {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .service-card__route b {
+    color: var(--enamel-ink);
+  }
+
+  .service-card__route b::after {
+    content: '';
+    display: inline-block;
+    width: 2rem;
+    height: 1px;
+    margin-left: var(--space-3);
+    vertical-align: middle;
+    background: var(--paper-line);
+  }
+
+  .service-card__name {
+    display: block;
+    margin-top: var(--space-5);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+
+  .service-card__prop {
+    display: block;
+    max-width: 48ch;
+    margin-top: var(--space-4);
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--ink-dim);
+  }
+
+  .service-card__concern {
+    display: grid;
+    gap: var(--space-1);
+    margin-top: var(--space-6);
+    padding-left: var(--space-4);
+    border-left: 3px solid var(--enamel-ink);
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+
+  .service-card__concern .mono {
+    font-size: 0.625rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .service-card__link {
+    margin-top: auto;
+    padding-top: var(--space-8);
+  }
+
+  @media (min-width: 48rem) {
+    .service-card {
+      grid-template-columns: minmax(19rem, 0.9fr) minmax(0, 1.1fr);
+      min-height: 25rem;
+    }
+
+    .service-card__media,
+    .service-card__media :global(img) {
+      min-height: 100%;
+    }
+
+    .service-item:nth-child(even) .service-card__media {
+      grid-column: 2;
+    }
+
+    .service-item:nth-child(even) .service-card__body {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+
+  @media (min-width: 68rem) {
+    .service-card {
+      grid-template-columns: minmax(25rem, 0.88fr) minmax(0, 1.12fr);
+    }
+
+    .service-card__body {
+      padding: var(--space-12);
+    }
+  }
+
+  .standards__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .standards__head {
+    max-width: 23ch;
+    margin-top: var(--space-4);
+  }
+
+  .standards__list {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .standards__list li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--enamel-line);
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  .standards__list :global(svg) {
+    flex: none;
+    color: var(--hivis);
+  }
+
+  @media (min-width: 60rem) {
+    .standards__grid {
+      grid-template-columns: minmax(0, 0.9fr) minmax(30rem, 1.1fr);
+      gap: var(--space-16);
+      align-items: start;
+    }
+
+    .standards__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0 var(--space-8);
+    }
+  }
+
+  .planning__grid {
+    display: grid;
+    gap: var(--space-12);
+  }
+
+  @media (min-width: 62rem) {
+    .planning__grid {
+      grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
+      gap: var(--space-16);
+      align-items: start;
+    }
+  }
+
+  .planning__head {
+    max-width: 16ch;
+    margin-top: var(--space-4);
+  }
+
+  .steps {
+    display: grid;
+    gap: 0;
+    margin: var(--space-12) 0 0;
     padding: 0;
     list-style: none;
     border-top: 1px solid var(--paper-line);
   }
 
-  .svc {
+  .step {
     display: grid;
-    grid-template-columns: 16rem minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-3) var(--space-8);
-    padding: var(--space-8) 0;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: var(--space-5);
+    padding-block: var(--space-6);
     border-bottom: 1px solid var(--paper-line);
-    text-decoration: none;
-    color: var(--ink);
-    scroll-margin-top: 6rem;
-    transition:
-      padding-inline 240ms var(--ease-out),
-      background 240ms var(--ease-out);
   }
 
-  .svc:hover {
-    padding-inline: var(--space-5);
+  .step__number {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--enamel-ink);
+  }
+
+  .step__head {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .step p {
+    max-width: 48ch;
+    margin-top: var(--space-2);
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+
+  .fleet-fit {
+    padding: var(--space-8);
+    border-top: 3px solid var(--enamel-ink);
     background: var(--paper-lift);
   }
 
-  .svc__dest {
-    grid-row: 1 / span 2;
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
+  .fleet-fit__head {
+    margin-top: var(--space-4);
+  }
+
+  .fleet-fit__list {
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .fleet-fit__list a {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--paper-line);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .fleet-fit__list a:hover {
+    color: var(--enamel-ink);
+  }
+
+  .fleet-fit__cap {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--enamel-ink);
+  }
+
+  .fleet-fit__unit {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.5625rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--ink-dim);
-    align-self: start;
-    padding-top: 0.4em;
   }
 
-  .svc__name {
-    font-size: clamp(1.5rem, 3.4vw, 2.25rem);
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
+  .fleet-fit__name {
+    font-size: 0.875rem;
+    font-weight: 700;
   }
 
-  .svc__prop {
-    grid-column: 2;
-    max-width: 56ch;
+  .fleet-fit__list :global(svg) {
     color: var(--ink-dim);
-    line-height: 1.55;
   }
 
-  .svc__go {
-    grid-row: 1 / span 2;
-    grid-column: 3;
-    display: grid;
-    place-items: center;
-    width: 3rem;
-    height: 3rem;
-    border-radius: var(--radius);
-    background: var(--enamel);
-    color: var(--signal);
-    transition: background 200ms var(--ease-out);
+  .fleet-fit__all {
+    margin-top: var(--space-6);
   }
 
-  .svc:hover .svc__go {
-    background: var(--hivis);
-    color: var(--hivis-ink);
+  @media (max-width: 30rem) {
+    .service-card__body,
+    .fleet-fit {
+      padding: var(--space-6);
+    }
+
+    .fleet-fit__list a {
+      grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+      gap: var(--space-3);
+    }
   }
 
-  @media (max-width: 52rem) {
-    .svc {
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: var(--space-2) var(--space-4);
-    }
-    .svc__dest {
-      grid-row: 1;
-      grid-column: 1 / -1;
-      padding-top: 0;
-    }
-    .svc__name {
-      grid-row: 2;
-      grid-column: 1;
-    }
-    .svc__prop {
-      grid-row: 3;
-      grid-column: 1 / -1;
-    }
-    .svc__go {
-      grid-row: 2;
-      grid-column: 2;
-      width: 2.5rem;
-      height: 2.5rem;
+  @media (prefers-reduced-motion: reduce) {
+    .service-card__media :global(img) {
+      transition: none;
     }
   }
 </style>

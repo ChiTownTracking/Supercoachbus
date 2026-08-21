@@ -9,6 +9,7 @@ import CloseBand from '../components/CloseBand.astro';
 import { BUSINESS, TRUST_CLAIMS } from '../config/site';
 import { FLEET, MAX_SINGLE_VEHICLE, vehicleHref } from '../data/fleet';
 import { SERVICES } from '../data/services';
+import { SERVICE_PHOTOS } from '../data/servicePhotos';
 import { GUIDES } from '../data/guides';
 
 import heroCoach from '../assets/images/hero-caoch-bus.png';
@@ -16,24 +17,6 @@ import coachExterior from '../assets/images/coach-exterior.jpg';
 import coachBus44 from '../assets/images/coach-bus-44.png';
 import coachBus28 from '../assets/images/coach-bus-28.png';
 import executiveSprinter from '../assets/images/excutive-sprinter.png';
-import svcCorporate from '../assets/images/svc-corporate.jpg';
-import svcSchool from '../assets/images/svc-school.jpg';
-import svcSporting from '../assets/images/svc-sporting-events.jpg';
-import svcYouth from '../assets/images/svc-youth-groups.jpg';
-import trolleyCoach from '../assets/images/trolley-coach.png';
-
-/**
- * Four of these were recovered from the live site; the wedding row is the
- * owner's own later supply. It is the one row that shows vehicles rather than
- * passengers — see the note on the fleet question in PRODUCT.md.
- */
-const SERVICE_IMAGES: Record<string, { src: ImageMetadata; alt: string }> = {
-  corporate: { src: svcCorporate, alt: 'A business traveller in a suit at a city office building' },
-  school: { src: svcSchool, alt: 'A school group on a museum field trip with their teachers' },
-  'sporting-events': { src: svcSporting, alt: 'Spectators watching a ballgame from the stands at Wrigley Field' },
-  weddings: { src: trolleyCoach, alt: 'A white coach bus and a white trolley parked side by side outside a wedding venue' },
-  'youth-groups': { src: svcYouth, alt: 'A youth group on an outing at a park' },
-};
 
 /** The bottom of the range the fleet covers, read off the data rather than typed. */
 const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
@@ -218,7 +201,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
       <ul class="services__list">
         {
           SERVICES.map((s) => {
-            const img = SERVICE_IMAGES[s.slug];
+            const img = SERVICE_PHOTOS[s.slug];
             return (
               <li>
                 <a class="dest" href={`/services/${s.slug}`}>

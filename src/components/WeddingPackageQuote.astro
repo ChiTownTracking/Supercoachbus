@@ -1,0 +1,294 @@
+---
+import Icon from './Icon.astro';
+import { BUSINESS } from '../config/site';
+import { PASSENGER_OPTIONS } from '../data/formOptions';
+
+const today = new Date().toISOString().slice(0, 10);
+const reserveHref = '/reserve?eventType=Wedding&hours=8&vehicle=more-than-one';
+---
+
+<a
+  class="action"
+  href={reserveHref}
+  aria-haspopup="dialog"
+  aria-controls="wedding-package-quote"
+  data-wedding-quote-open
+>
+  Get Wedding Package Quote
+  <Icon name="arrow" size={16} />
+</a>
+
+<dialog
+  class="wpq"
+  id="wedding-package-quote"
+  aria-labelledby="wedding-package-quote-title"
+  data-wedding-quote
+>
+  <div class="wpq__panel">
+    <header class="wpq__head">
+      <div>
+        <p class="coordinate wpq__tag">Trolley + coach package</p>
+        <h2 class="wpq__title" id="wedding-package-quote-title">
+          Price both vehicles on one timeline.
+        </h2>
+      </div>
+      <button class="wpq__close" type="button" aria-label="Close package quote form" data-wedding-quote-close>
+        <Icon name="close" size={20} />
+      </button>
+    </header>
+
+    <form class="wpq__form" method="get" action="/reserve">
+      <input type="hidden" name="eventType" value="Wedding" />
+      <input type="hidden" name="hours" value="8" />
+      <input type="hidden" name="vehicle" value="more-than-one" />
+      <input type="hidden" name="package" value="Wedding trolley and coach package" />
+
+      <p class="wpq__intro">
+        Send the first version of the day. We’ll price the coach for your guests,
+        the trolley for your wedding party, and the timing that connects them.
+      </p>
+
+      <fieldset class="wpq__set">
+        <legend class="coordinate coordinate--ink">The wedding day</legend>
+        <div class="wpq__grid">
+          <label class="control" data-required>
+            <span>Wedding date</span>
+            <input name="date" type="date" min={today} required />
+          </label>
+          <label class="control" data-required>
+            <span>First pickup time</span>
+            <input name="time" type="time" required />
+          </label>
+          <label class="control wpq__wide" data-required>
+            <span>Hotel pickup location(s)</span>
+            <input name="pickup" required placeholder="Hotel names or addresses" autocomplete="street-address" />
+          </label>
+          <label class="control wpq__wide" data-required>
+            <span>Reception venue</span>
+            <input name="dropoff" required placeholder="Venue name or address" />
+          </label>
+          <label class="control" data-required>
+            <span>Guests riding the coach</span>
+            <select name="passengers" required>
+              <option value="">Select</option>
+              {PASSENGER_OPTIONS.map((count) => <option value={count}>{count}</option>)}
+            </select>
+          </label>
+          <label class="control wpq__wide">
+            <span>Ceremony, photo stops and return plan</span>
+            <textarea
+              name="notes"
+              placeholder="Ceremony address and time, photo locations, reception end time, and any early or late hotel returns"
+            ></textarea>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="wpq__set">
+        <legend class="coordinate coordinate--ink">Where to send the price</legend>
+        <div class="wpq__grid wpq__grid--contact">
+          <label class="control" data-required>
+            <span>Name</span>
+            <input name="name" required autocomplete="name" />
+          </label>
+          <label class="control" data-required>
+            <span>Email</span>
+            <input name="email" type="email" required autocomplete="email" />
+          </label>
+          <label class="control" data-required>
+            <span>Phone</span>
+            <input name="phone" type="tel" required autocomplete="tel" />
+          </label>
+        </div>
+      </fieldset>
+
+      <footer class="wpq__foot">
+        <button class="action" type="submit">
+          Continue to request
+          <Icon name="arrow" size={16} />
+        </button>
+        <p>
+          No obligation. Or call <a href={BUSINESS.phone.href}>{BUSINESS.phone.display}</a>.
+        </p>
+      </footer>
+    </form>
+  </div>
+</dialog>
+
+<style>
+  .wpq {
+    width: min(46rem, calc(100% - 2rem));
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    overflow: auto;
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--paper-lift);
+    color: var(--ink);
+    box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 0.35);
+  }
+
+  .wpq::backdrop {
+    background: var(--scrim);
+    backdrop-filter: blur(3px);
+  }
+
+  .wpq[open] {
+    animation: wpq-in 220ms var(--ease-out);
+  }
+
+  @keyframes wpq-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem) scale(0.985);
+    }
+  }
+
+  .wpq__panel {
+    min-width: 0;
+  }
+
+  .wpq__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-6) var(--space-8);
+    border-bottom: 1px solid var(--enamel-line);
+    background: var(--enamel);
+    background-image: var(--enamel-pattern);
+    color: var(--signal);
+  }
+
+  .wpq__tag {
+    color: var(--azure);
+  }
+
+  .wpq__title {
+    max-width: 24ch;
+    margin-top: var(--space-2);
+    font-size: clamp(1.5rem, 4vw, 2.125rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+  }
+
+  .wpq__close {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid var(--enamel-line);
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+    color: var(--signal);
+    cursor: pointer;
+  }
+
+  .wpq__close:hover,
+  .wpq__close:focus-visible {
+    background: var(--enamel-lift);
+  }
+
+  .wpq__form {
+    display: grid;
+    gap: var(--space-8);
+    padding: var(--space-8);
+  }
+
+  .wpq__intro {
+    max-width: 60ch;
+    color: var(--ink-dim);
+  }
+
+  .wpq__set {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .wpq__set legend {
+    width: 100%;
+    padding: 0;
+  }
+
+  .wpq__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+
+  .wpq__wide {
+    grid-column: 1 / -1;
+  }
+
+  .wpq__grid--contact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .wpq__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4) var(--space-6);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .wpq__foot p {
+    font-size: 0.875rem;
+    color: var(--ink-dim);
+  }
+
+  .wpq__foot a {
+    font-weight: 800;
+    color: var(--ink);
+  }
+
+  @media (max-width: 42rem) {
+    .wpq {
+      width: calc(100% - 1rem);
+      max-height: calc(100dvh - 1rem);
+    }
+
+    .wpq__head,
+    .wpq__form {
+      padding: var(--space-5);
+    }
+
+    .wpq__grid,
+    .wpq__grid--contact {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .wpq__wide {
+      grid-column: auto;
+    }
+  }
+</style>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('[data-wedding-quote]');
+  const opener = document.querySelector<HTMLAnchorElement>('[data-wedding-quote-open]');
+  const closer = dialog?.querySelector<HTMLButtonElement>('[data-wedding-quote-close]');
+
+  if (dialog && opener && typeof dialog.showModal === 'function') {
+    opener.addEventListener('click', (event) => {
+      event.preventDefault();
+      dialog.showModal();
+      dialog.querySelector<HTMLInputElement>('input[name="date"]')?.focus();
+    });
+
+    const close = () => {
+      dialog.close();
+      opener.focus();
+    };
+
+    closer?.addEventListener('click', close);
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) close();
+    });
+  }
+</script>

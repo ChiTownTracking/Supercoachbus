@@ -4,6 +4,7 @@ import Layout from '../../layouts/Layout.astro';
 import PageHead from '../../components/PageHead.astro';
 import CloseBand from '../../components/CloseBand.astro';
 import Icon from '../../components/Icon.astro';
+import WeddingPackageQuote from '../../components/WeddingPackageQuote.astro';
 import { SERVICES, getService } from '../../data/services';
 import { shotsFor } from '../../data/fleetPhotos';
 import { TESTIMONIALS } from '../../data/testimonials';
@@ -18,6 +19,7 @@ import { BUSINESS, SITE_ORIGIN } from '../../config/site';
 
 import trolleyAndCoach from '../../assets/images/wedding/trolley-coach-tall.webp';
 import trolleyAtVenue from '../../assets/images/wedding/trolley-at-venue.webp';
+import trolleyInterior from '../../assets/images/wedding/trolley-interior.webp';
 
 /**
  * Weddings gets a page of its own rather than the five-service template.
@@ -49,6 +51,7 @@ const weddingReview = TESTIMONIALS.find((t) => t.context === 'Wedding');
  * two routes stop reading as one timeline.
  */
 const coachShot = shotsFor('coach')[0];
+const coachInteriorShot = shotsFor('coach')[1];
 
 /**
  * FAQPage, and worth being clear about what it does and does not buy: Google
@@ -149,27 +152,7 @@ const faqSchema = {
         </ul>
 
         <div class="pkg__actions">
-          <a class="action" href="/#quote-form">
-            Get this priced
-            <Icon name="arrow" size={16} />
-          </a>
-          {/*
-            Followed on purpose. `rel="noopener"` closes the `window.opener`
-            hole a `target="_blank"` link opens; it says nothing to a crawler
-            and does not withhold the link. Nothing here carries nofollow,
-            sponsored or ugc, so this passes equity to the sister site — which
-            is what a real editorial recommendation between two companies under
-            one owner should do.
-          */}
-          <a
-            class="action action--outline"
-            href={SISTER.weddings}
-            target="_blank"
-            rel="noopener"
-          >
-            Wedding trolleys at {SISTER.brand}
-            <Icon name="arrow" size={16} />
-          </a>
+          <WeddingPackageQuote />
         </div>
       </div>
     </div>
@@ -186,11 +169,21 @@ const faqSchema = {
       <div class="runs__grid">
         <article class="run run--ours">
           {
-            coachShot && (
-              <span class="run__shot">
+            coachShot && coachInteriorShot && (
+              <span class="run__shot" tabindex="0">
                 <Image
                   src={coachShot.src}
                   alt={coachShot.alt}
+                  class="run__image run__image--exterior"
+                  widths={[360, 560, 1120]}
+                  sizes="(min-width: 60rem) 35rem, (min-width: 44rem) 46vw, 92vw"
+                  loading="lazy"
+                />
+                <Image
+                  src={coachInteriorShot.src}
+                  alt=""
+                  aria-hidden="true"
+                  class="run__image run__image--interior"
                   widths={[360, 560, 1120]}
                   sizes="(min-width: 60rem) 35rem, (min-width: 44rem) 46vw, 92vw"
                   loading="lazy"
@@ -218,20 +211,24 @@ const faqSchema = {
               ))
             }
           </ol>
-          <div class="run__foot">
-          <a class="run__go" href="/fleet/coach">
-            See the Coach Bus
-            <Icon name="arrow" size={15} />
-          </a>
-          </div>
         </article>
 
         <article class="run run--sister">
-          <span class="run__shot">
+          <span class="run__shot" tabindex="0">
             <Image
               src={trolleyAtVenue}
               alt={`${SISTER.brand}'s classic white trolley, parked at the entrance of a wedding venue`}
+              class="run__image run__image--exterior"
               widths={[360, 560, 1122]}
+              sizes="(min-width: 60rem) 35rem, (min-width: 44rem) 46vw, 92vw"
+              loading="lazy"
+            />
+            <Image
+              src={trolleyInterior}
+              alt=""
+              aria-hidden="true"
+              class="run__image run__image--interior"
+              widths={[360, 560, 871]}
               sizes="(min-width: 60rem) 35rem, (min-width: 44rem) 46vw, 92vw"
               loading="lazy"
             />
@@ -257,12 +254,6 @@ const faqSchema = {
               ))
             }
           </ol>
-          <div class="run__foot">
-            <a class="run__go" href={SISTER.weddings} target="_blank" rel="noopener">
-              Book a wedding trolley at {SISTER.brand}
-              <Icon name="arrow" size={15} />
-            </a>
-          </div>
         </article>
       </div>
     </div>
@@ -549,8 +540,7 @@ const faqSchema = {
   }
 
   /* Stretched rather than start-aligned: the two cards hold different numbers
-     of stops, and letting them find their own heights left the shorter one
-     floating with its link halfway up the row. */
+     of stops, and equal card edges keep the paired routes reading together. */
   @media (min-width: 60rem) {
     .runs__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -582,9 +572,11 @@ const faqSchema = {
     position: relative;
     display: block;
     overflow: hidden;
+    aspect-ratio: 16 / 10;
     margin-bottom: var(--space-5);
     border-radius: var(--radius);
     background: var(--enamel-deep);
+    outline-offset: 3px;
   }
 
   .run__shot::after {
@@ -596,12 +588,37 @@ const faqSchema = {
     pointer-events: none;
   }
 
-  .run__shot :global(img) {
+  .run__shot :global(.run__image) {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 10;
+    height: 100%;
     object-fit: cover;
+    transition:
+      opacity 320ms var(--ease-out),
+      transform 520ms var(--ease-out);
+  }
+
+  .run__shot :global(.run__image--exterior) {
+    opacity: 1;
+  }
+
+  .run__shot :global(.run__image--interior) {
+    opacity: 0;
+    transform: scale(1.025);
+  }
+
+  .run__shot:hover :global(.run__image--exterior),
+  .run__shot:focus-visible :global(.run__image--exterior) {
+    opacity: 0;
+    transform: scale(1.025);
+  }
+
+  .run__shot:hover :global(.run__image--interior),
+  .run__shot:focus-visible :global(.run__image--interior) {
+    opacity: 1;
+    transform: scale(1);
   }
 
   .run__tag {
@@ -672,39 +689,6 @@ const faqSchema = {
     font-size: 0.9375rem;
     line-height: 1.6;
     color: var(--ink-dim);
-  }
-
-  /* The wrapper takes the auto margin, not the link: `margin-top: auto` on a
-     link collapses to nothing the moment its column is full, and then the link
-     sits against the last stop. Padding on a wrapper is a floor the auto margin
-     cannot eat, so both cards close on a line however many stops they hold. */
-  .run__foot {
-    margin-top: auto;
-    padding-top: var(--space-8);
-  }
-
-  .run__go {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding-bottom: 2px;
-    border-bottom: 2px solid currentColor;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    text-decoration: none;
-    color: var(--enamel-ink);
-    transition: gap 200ms var(--ease-out);
-  }
-
-  .run__go:hover {
-    gap: var(--space-3);
-    color: var(--hivis-text);
-  }
-
-  .run__go :global(svg) {
-    flex: none;
   }
 
   /* ---- Proof ---- */

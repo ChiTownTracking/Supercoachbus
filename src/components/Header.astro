@@ -72,6 +72,15 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     position: sticky;
     top: 0;
     z-index: 50;
+    background: rgb(237 238 233 / 0.76);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    color: var(--ink);
+    transition: background-color 180ms var(--ease-out);
+  }
+
+  .masthead--stuck {
+    background: var(--paper);
   }
 
   .masthead__inner {
@@ -97,7 +106,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     align-items: center;
     gap: var(--space-4);
     text-decoration: none;
-    color: var(--signal);
+    color: var(--ink);
   }
 
   .mark__plate {
@@ -152,7 +161,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     font-weight: 700;
     letter-spacing: 0.1em;
     text-decoration: none;
-    color: var(--signal);
+    color: var(--ink);
     opacity: 0.82;
     transition: opacity 160ms var(--ease-out);
   }
@@ -196,12 +205,12 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     font-size: 0.875rem;
     font-weight: 700;
     text-decoration: none;
-    color: var(--signal);
+    color: var(--ink);
     white-space: nowrap;
   }
 
   .nav__phone:hover {
-    color: var(--hivis);
+    color: var(--hivis-text);
   }
 
   /* The masthead's width budget.
@@ -249,9 +258,9 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       justify-content: center;
       width: 2.75rem;
       height: 2.75rem;
-      border: 1px solid rgb(255 255 255 / 0.35);
+      border: 1px solid var(--paper-line);
       border-radius: var(--radius);
-      color: var(--signal);
+      color: var(--enamel-ink);
       cursor: pointer;
     }
 
@@ -291,8 +300,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       gap: var(--space-4);
       padding: var(--space-6) max(1.25rem, calc((100vw - var(--shell)) / 2))
         var(--space-16);
-      background: var(--enamel-deep);
-      background-image: var(--enamel-pattern);
+      background: var(--paper);
       display: none;
     }
 
@@ -308,7 +316,7 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
 
     .nav__link {
       padding-block: var(--space-4);
-      border-bottom: 1px solid var(--enamel-line);
+      border-bottom: 1px solid var(--paper-line);
       font-size: 1rem;
     }
 
@@ -336,4 +344,14 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   toggle?.addEventListener("change", () => {
     toggle.setAttribute("aria-expanded", String(toggle.checked));
   });
+
+  // At the top the masthead lets a little of the page ground through. Once it
+  // is pinned during a scroll, it becomes an opaque reading surface.
+  const masthead = document.querySelector<HTMLElement>(".masthead");
+  const syncMasthead = () => {
+    masthead?.classList.toggle("masthead--stuck", window.scrollY > 0);
+  };
+
+  syncMasthead();
+  window.addEventListener("scroll", syncMasthead, { passive: true });
 </script>
