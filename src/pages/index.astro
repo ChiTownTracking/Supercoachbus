@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import QuickQuote from '../components/QuickQuote.astro';
@@ -13,6 +13,7 @@ import { SERVICE_PHOTOS } from '../data/servicePhotos';
 import { GUIDES } from '../data/guides';
 
 import heroCoach from '../assets/images/hero-caoch-bus.png';
+import heroCoachMobile from '../assets/images/hero-coach-mobile-v2.png';
 import coachExterior from '../assets/images/coach-exterior.jpg';
 import coachBus44 from '../assets/images/coach-bus-44.png';
 import coachBus28 from '../assets/images/coach-bus-28.png';
@@ -20,6 +21,14 @@ import executiveSprinter from '../assets/images/excutive-sprinter.png';
 
 /** The bottom of the range the fleet covers, read off the data rather than typed. */
 const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
+
+/** Portrait art direction for the mobile hero, supplied by the owner. */
+const mobileHeroBackground = await getImage({
+  src: heroCoachMobile,
+  width: 942,
+  format: 'webp',
+  quality: 86,
+});
 
 /**
  * Fleet card photography, keyed by slug. All four are the operator's own,
@@ -59,7 +68,10 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
        beside it, and the action is in high-vis. The photograph is the ground of
        the whole band; the copy comes first in source and the photograph last,
        so a screen reader reaches the offer before the description of it. -->
-  <section class="hero">
+  <section
+    class="hero"
+    style={`--hero-mobile-image: url("${mobileHeroBackground.src}")`}
+  >
     <div class="shell hero__inner">
       <div class="hero__lead">
         <p class="coordinate hero__coord">
@@ -69,10 +81,19 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
         <h1 class="display hero__head">Your whole group, one arrival time.</h1>
         <span class="hero__rule" aria-hidden="true"></span>
         <p class="lede hero__lede">
-          Charter bus rental with professional drivers, across{' '}
-          {BUSINESS.serviceArea}. Tell us the date, the headcount and the route —
-          we will confirm the coach and what it costs.
+          <span class="hero__lede-desktop">
+            Charter bus rental with professional drivers, across{' '}
+            {BUSINESS.serviceArea}.
+            <span class="hero__lede-more">
+              {' '}Tell us the date, the headcount and the route — we will confirm
+              the coach and what it costs.
+            </span>
+          </span>
+          <span class="hero__lede-mobile">
+            Trusted name in the ground transportation industry for over 15 years.
+          </span>
         </p>
+
         <div class="hero__actions">
           <a class="action" href="#quote-form">
             Get a quote
@@ -83,12 +104,27 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
             {BUSINESS.phone.display}
           </a>
         </div>
-        <p class="hero__hours mono">
-          <Icon name="clock" size={15} class="hero__ico" />
-          Office {BUSINESS.hours.officeSummary}
+        <div class="hero__hours">
+          <span class="hero__hours-item">
+            <span class="hero__hours-icon">
+              <Icon name="clock" size={20} />
+            </span>
+            <span class="hero__hours-copy">
+              <span>Open daily</span>
+              <strong>{BUSINESS.hours.officeTime}</strong>
+            </span>
+          </span>
           <span class="hero__bar" aria-hidden="true"></span>
-          <em>{BUSINESS.hours.charterNote}</em>
-        </p>
+          <span class="hero__hours-item">
+            <span class="hero__hours-icon">
+              <Icon name="check" size={20} />
+            </span>
+            <span class="hero__hours-copy">
+              <span>Charters</span>
+              <strong>{BUSINESS.hours.charterNote.replace('Charters ', '')}</strong>
+            </span>
+          </span>
+        </div>
       </div>
     </div>
 
@@ -356,6 +392,10 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     margin-bottom: var(--space-8);
   }
 
+  .hero__lede-mobile {
+    display: none;
+  }
+
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
@@ -375,8 +415,20 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     color: var(--ink-dim);
   }
 
-  .hero__hours em {
-    font-style: normal;
+  .hero__hours-item,
+  .hero__hours-copy {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .hero__hours-icon {
+    display: grid;
+    place-items: center;
+    color: var(--enamel-ink);
+  }
+
+  .hero__hours-copy strong {
     font-weight: 700;
     color: var(--enamel-ink);
   }
@@ -414,6 +466,10 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     position: absolute;
     inset: 0;
     z-index: -1;
+    background-image: var(--hero-mobile-image);
+    background-position: center bottom;
+    background-size: cover;
+    background-repeat: no-repeat;
     /* The band carries no bottom border any more, so the photograph must not
        stop at one. Its last sixth dissolves into the ground, below the coach's
        wheels, and the coach reads as standing on the page rather than being cut
@@ -425,7 +481,25 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     mask-image: var(--ramp-foot);
   }
 
+  /* The supplied portrait frame leaves sky behind the mobile copy and places
+     the coach at the foot of the hero. A paper wash keeps the route and offer
+     readable without hiding the vehicle the way the old wide-image mask did. */
+  .hero__media::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgb(237 238 233 / 0.9) 0%,
+      rgb(237 238 233 / 0.8) 54%,
+      rgb(237 238 233 / 0.34) 76%,
+      rgb(237 238 233 / 0.12) 100%
+    );
+    pointer-events: none;
+  }
+
   .hero__media :global(img) {
+    display: none;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -461,10 +535,19 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
       );
     }
 
+    .hero__media {
+      background-image: none;
+    }
+
+    .hero__media::after {
+      display: none;
+    }
+
     /* Pinned right rather than centred: the crop has to come off something, and
        the left of the frame is sky and skyline the ramp mutes anyway. Off the
        right it would take the front bumper. */
     .hero__media :global(img) {
+      display: block;
       object-position: 100% 50%;
     }
   }
@@ -482,6 +565,189 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
         var(--ramp-4) 62%,
         currentColor 74%
       );
+    }
+  }
+
+  /* ---- Mobile hero art direction ----
+     The supplied 942×1674 portrait is the exact aspect of the reference hero
+     below its 5rem masthead. Content stays live and accessible over that frame:
+     copy in the sky, the coach through the middle, and contact details at the
+     foot. */
+  @media (max-width: 63.999rem) {
+    .hero {
+      min-height: 0;
+      padding-block: 2.5rem 2.375rem;
+    }
+
+    .hero__inner {
+      width: min(100% - 3.75rem, var(--shell));
+      height: 34rem;
+    }
+
+    .hero__lead {
+      height: 100%;
+    }
+
+    .hero__lead {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero__coord {
+      margin-bottom: 1.75rem;
+      font-size: clamp(0.6875rem, 2.8vw, 0.875rem);
+      font-weight: 700;
+    }
+
+    .hero__coord::after {
+      display: none;
+    }
+
+    .hero__head {
+      max-width: 12.25ch;
+      font-size: clamp(2.35rem, 9.5vw, 3.15rem);
+      line-height: 0.98;
+    }
+
+    .hero__rule {
+      width: 8.75rem;
+      max-width: none;
+      margin-block: var(--space-5);
+    }
+
+    .hero__lede {
+      max-width: 34ch;
+      margin-bottom: 0;
+      font-size: clamp(0.9375rem, 3.5vw, 1.125rem);
+      font-weight: 800;
+      letter-spacing: 0.045em;
+      line-height: 1.5;
+      text-transform: uppercase;
+      color: var(--enamel-ink);
+    }
+
+    .hero__lede-desktop {
+      display: none;
+    }
+
+    .hero__lede-mobile {
+      display: block;
+    }
+
+    .hero__actions {
+      display: grid;
+      order: 2;
+      width: 100%;
+      margin: 1.25rem 0 0;
+      padding: 0;
+    }
+
+    .hero__actions .action {
+      position: relative;
+      justify-content: center;
+      width: 100%;
+      height: 3rem;
+      min-height: 3rem;
+      padding-block: var(--space-2);
+      font-size: clamp(1rem, 3.8vw, 1.125rem);
+      letter-spacing: 0.15em;
+    }
+
+    .hero__actions .action:first-child {
+      display: none;
+    }
+
+    .hero__actions .action--outline {
+      background: rgb(247 248 245 / 0.9);
+    }
+
+    .hero__actions .action--outline:hover,
+    .hero__actions .action--outline:focus-visible {
+      background: var(--enamel);
+      color: var(--signal);
+      box-shadow: inset 0 0 0 1.5px var(--enamel);
+    }
+
+    .hero__hours {
+      display: grid;
+      order: 1;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-3);
+      width: 100%;
+      margin-top: auto;
+      padding: var(--space-2) var(--space-3);
+      border-left: 3px solid var(--enamel-ink);
+      font-family: var(--font-sans);
+      font-size: clamp(0.8125rem, 3.3vw, 1.0625rem);
+      font-weight: 500;
+      letter-spacing: 0;
+      line-height: 1.45;
+      text-transform: none;
+      color: var(--ink-dim);
+    }
+
+    .hero__hours-item {
+      gap: var(--space-3);
+      min-width: 0;
+    }
+
+    .hero__hours-item:first-child {
+      display: none;
+    }
+
+    .hero__hours-item:last-child {
+      justify-self: start;
+      width: 100%;
+    }
+
+    .hero__hours-icon {
+      flex: none;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 50%;
+      background: rgb(13 86 55 / 0.1);
+    }
+
+    .hero__hours-copy {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0 var(--space-2);
+      min-width: 0;
+    }
+
+    .hero__hours-copy strong {
+      font-weight: 500;
+      color: var(--ink);
+    }
+
+    .hero__bar {
+      display: none;
+    }
+
+    .hero__media {
+      background-image:
+        linear-gradient(
+          0deg,
+          #edeee9 0%,
+          #edeee9e6 14%,
+          transparent 34%,
+          transparent 100%
+        ),
+        linear-gradient(
+          90deg,
+          rgb(237 238 233 / 0.4) 0%,
+          rgb(237 238 233 / 0.16) 45%,
+          transparent 78%,
+          transparent 100%
+        ),
+        var(--hero-mobile-image);
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .hero__media::after {
+      content: none;
+      display: none;
     }
   }
 
