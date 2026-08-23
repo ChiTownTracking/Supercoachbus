@@ -1,8 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import Placeholder from './Placeholder.astro';
 import { BUSINESS } from '../config/site';
-import { OPEN_ITEMS } from '../lib/placeholder';
 import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/formOptions';
 
 /**
@@ -19,16 +17,8 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
  * the fields, so an edit is reflected rather than left stale.
  *
  * Submission: with JavaScript, submit is intercepted, the blade is revealed in
- * place, and the payload is posted to `data-endpoint` — empty until the owner
- * supplies one, which the blade reports plainly rather than claiming a delivery
- * that never happened.
- *
- * Without JavaScript the form GETs to /reserve, which prefills from the query
- * string so nothing is retyped. That used to be /quote; when the quote page was
- * retired /reserve became the only page that can receive the handoff, so the
- * no-JS path now lands on a reservation form rather than a quote form. It is a
- * mismatch, and it is the better of two bad options — GETting back to a
- * homepage that cannot prefill without JavaScript would drop everything typed.
+ * place, and a URL-encoded payload is posted to Netlify Forms. Without
+ * JavaScript the same POST lands on the shared confirmation page.
  */
 ---
 
@@ -36,7 +26,22 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
   <div class="shell qq__inner">
     <h2 class="title qq__head">Tell us the trip. We'll price it.</h2>
 
-    <form class="qq__form" method="get" action="/reserve" data-quick-quote data-endpoint="">
+    <form
+      class="qq__form"
+      name="quote-request"
+      method="post"
+      action="/thanks/"
+      data-quick-quote
+      data-netlify="true"
+      netlify-honeypot="bot-field"
+    >
+      <input type="hidden" name="form-name" value="quote-request" />
+      <p class="sr-only" aria-hidden="true">
+        <label>
+          Do not fill this out if you are human:
+          <input name="bot-field" tabindex="-1" autocomplete="off" />
+        </label>
+      </p>
       <fieldset class="qq__set">
         <legend class="coordinate coordinate--ink">Step 1 of 2 · The trip</legend>
         <div class="qq__grid">
@@ -137,8 +142,6 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
               No obligation. Office replies {BUSINESS.hours.officeSummary} — <em>{BUSINESS.hours.charterNote}</em>.
             </p>
           </div>
-
-          <Placeholder item={OPEN_ITEMS.quoteEndpoint} />
         </div>
       </details>
     </form>
@@ -226,9 +229,15 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
     gap: var(--space-4);
   }
 
-  /* Two up as soon as a phone is wide enough to hold a date field twice, which
-     takes three rows out of the trip block before anyone has scrolled. */
-  @media (min-width: 24rem) {
+  .qq__grid > .control,
+  .qq__grid :is(input, select, textarea) {
+    min-width: 0;
+  }
+
+  /* Keep narrow phones single-column so native date/time controls and longer
+     select values stay readable. Larger phones still get the shorter paired
+     layout once each track has enough room. */
+  @media (min-width: 30rem) {
     .qq__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -362,8 +371,33 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
 
   /* On a phone the button takes the full width — nothing to hunt for. */
   @media (max-width: 34rem) {
+    .qq {
+      padding-block: var(--space-8);
+    }
+
+    .qq__inner,
+    .qq__form {
+      gap: var(--space-6);
+    }
+
+    .qq__bar {
+      display: grid;
+      grid-template-columns: 2.25rem minmax(0, 1fr);
+      gap: var(--space-3);
+      padding: var(--space-4);
+    }
+
+    .qq__bartext {
+      align-self: center;
+    }
+
+    .qq__barhint {
+      font-size: 0.8125rem;
+    }
+
     .qq__cta,
     .qq__hide {
+      grid-column: 1 / -1;
       width: 100%;
       margin-left: 0;
       justify-content: center;
@@ -407,6 +441,27 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
     font-style: normal;
     font-weight: 700;
     color: var(--ink);
+  }
+
+  @media (max-width: 34rem) {
+    .qq__nextbody {
+      gap: var(--space-5);
+      padding-top: var(--space-5);
+    }
+
+    .qq__send {
+      display: grid;
+      gap: var(--space-3);
+    }
+
+    .qq__send .action {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .qq__alt {
+      display: none;
+    }
   }
 
   /* ---- The receipt blade ---- */
@@ -708,19 +763,22 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
       blade.setAttribute('data-shown', '');
       sent = true;
 
-      const endpoint = form.dataset.endpoint?.trim();
-      if (!endpoint) {
-        // No delivery address yet. Say so, rather than implying it was sent.
-        setStatus('This form has no delivery address yet, so nothing was sent:', 'act', true);
-      } else {
-        setStatus('Sending…', 'plain');
-        fetch(endpoint, { method: 'POST', body: new FormData(form) })
-          .then((res) => {
-            if (!res.ok) throw new Error(String(res.status));
-            setStatus('Request received. We reply during office hours.', 'plain');
-          })
-          .catch(() => setStatus('That did not send. Reach us directly:', 'act', true));
+      const body = new URLSearchParams();
+      for (const [key, value] of new FormData(form)) {
+        if (typeof value === 'string') body.append(key, value);
       }
+
+      setStatus('Sending…', 'plain');
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: body.toString(),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(String(res.status));
+          setStatus('Request received. We reply during office hours.', 'plain');
+        })
+        .catch(() => setStatus('That did not send. Reach us directly:', 'act', true));
 
       if (firstReveal) {
         const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -757,9 +815,10 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
       true
     );
 
-    // Opening step two puts the caret in it rather than leaving it to be hunted.
+    // Put the caret in step two on roomier layouts. On a phone, doing this also
+    // summons the software keyboard and obscures the fields just revealed.
     next?.addEventListener('toggle', () => {
-      if (next.open) {
+      if (next.open && window.matchMedia('(min-width: 40rem)').matches) {
         next.querySelector<HTMLInputElement>('input[name="name"]')?.focus({ preventScroll: true });
       }
     });

@@ -1,9 +1,12 @@
 ---
-import { BUSINESS } from '../config/site';
-import { OPEN_ITEMS } from '../lib/placeholder';
-import Placeholder from './Placeholder.astro';
-import Icon from './Icon.astro';
-import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/formOptions';
+import { BUSINESS } from "../config/site";
+import Icon from "./Icon.astro";
+import {
+  EVENT_TYPES,
+  HOURS,
+  PASSENGER_OPTIONS,
+  VEHICLE_OPTIONS,
+} from "../data/formOptions";
 
 /**
  * The reservation form, with the destination blade below it as a receipt.
@@ -15,40 +18,61 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
  * a live preview; it now confirms rather than predicts, matching QuickQuote.
  *
  * It never claims a delivery that did not happen. "Successfully submitted" is
- * printed only when a real endpoint accepts the POST; while `data-endpoint` is
- * empty the blade says plainly that nothing was sent and offers the phone.
+ * printed only when Netlify accepts the URL-encoded POST; a failed request says
+ * so plainly and offers the phone.
  *
  * This asks the same questions in the same order as the homepage QuickQuote, off
  * the same option lists in data/formOptions.ts. Fields may also arrive prefilled
- * from a query string — the homepage form GETs here when JavaScript is
- * unavailable, and the resulting URL is shareable (see the block in the script).
+ * from a query string, including the wedding package planner, and the resulting
+ * URL is shareable (see the block in the script).
  */
 interface Props {
-  mode: 'quote' | 'reserve';
+  mode: "quote" | "reserve";
 }
 
 const { mode } = Astro.props;
-const isReserve = mode === 'reserve';
-const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEndpoint;
+const isReserve = mode === "reserve";
+const formName = isReserve ? "reservation-request" : "quote-request";
 ---
 
 <div class="booking">
-  <!-- The endpoint belongs in both `action` and `data-endpoint`: the first makes
-       the form work without JavaScript, the second lets the script post it and
-       keep the blade on screen. -->
-  <form class="booking__form" data-booking method="post" action="" data-endpoint="">
-    <Placeholder item={endpointItem} />
+  <form
+    class="booking__form"
+    data-booking
+    name={formName}
+    method="post"
+    action="/thanks/"
+    data-netlify="true"
+    netlify-honeypot="bot-field"
+  >
+    <input type="hidden" name="form-name" value={formName} />
+    <p class="sr-only" aria-hidden="true">
+      <label>
+        Do not fill this out if you are human:
+        <input name="bot-field" tabindex="-1" autocomplete="off" />
+      </label>
+    </p>
 
     <fieldset class="booking__set">
       <legend class="coordinate coordinate--ink">The trip</legend>
       <div class="grid">
         <label class="control half" data-required>
           <span>Pickup location</span>
-          <input name="pickup" data-field="from" required placeholder="Hotel, office, school or address" />
+          <input
+            name="pickup"
+            data-field="from"
+            required
+            placeholder="Hotel, office, school or address"
+          />
         </label>
         <label class="control half" data-required>
           <span>Drop-off location</span>
-          <input name="dropoff" data-field="to" required placeholder="Venue, stadium or address" />
+          <input
+            name="dropoff"
+            data-field="to"
+            required
+            placeholder="Venue, stadium or address"
+          />
         </label>
         <label class="control" data-required>
           <span>Passengers</span>
@@ -85,7 +109,11 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
         <label class="control">
           <span>Type of vehicle</span>
           <select name="vehicle">
-            {VEHICLE_OPTIONS.map((v) => <option value={v.value}>{v.label}</option>)}
+            {
+              VEHICLE_OPTIONS.map((v) => (
+                <option value={v.value}>{v.label}</option>
+              ))
+            }
           </select>
         </label>
       </div>
@@ -108,18 +136,131 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
         </label>
         <label class="control full">
           <span>Special notes</span>
-          <textarea name="notes" placeholder="Multiple pickups, return timing, luggage, accessibility needs"></textarea>
+          <textarea
+            name="notes"
+            placeholder="Multiple pickups, return timing, luggage, accessibility needs"
+          ></textarea>
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="booking__set">
+      <legend class="coordinate coordinate--ink">Payment information</legend>
+
+      <div class="grid">
+        <label class="control full" data-required>
+          <span>Name on card</span>
+          <input
+            name="billingName"
+            type="text"
+            required
+            autocomplete="cc-name"
+            placeholder="Name as shown on card"
+          />
+        </label>
+
+        <label class="control full" data-required>
+          <span>Card number</span>
+          <input
+            name="cardNumber"
+            type="text"
+            required
+            inputmode="numeric"
+            autocomplete="cc-number"
+            placeholder="1234 5678 9012 3456"
+          />
+        </label>
+
+        <label class="control pair" data-required>
+          <span>Expiration date</span>
+          <input
+            name="cardExpiration"
+            type="text"
+            required
+            inputmode="numeric"
+            autocomplete="cc-exp"
+            maxlength="5"
+            placeholder="MM/YY"
+            pattern="(0[1-9]|1[0-2])\/[0-9]{2}"
+            oninput="
+          let v = this.value.replace(/\D/g, '').slice(0, 4);
+          if (v.length >= 3) {
+            v = v.slice(0, 2) + '/' + v.slice(2);
+          }
+          this.value = v;
+        "
+          />
+        </label>
+
+        <label class="control pair" data-required>
+          <span>Security code (CVV)</span>
+          <input
+            name="cardCvv"
+            type="text"
+            required
+            inputmode="numeric"
+            autocomplete="cc-csc"
+            maxlength="4"
+            placeholder="123"
+            pattern="[0-9]{3,4}"
+          />
+        </label>
+
+        <label class="control full" data-required>
+          <span>Billing street address</span>
+          <input
+            name="billingAddress"
+            type="text"
+            required
+            autocomplete="billing street-address"
+            placeholder="Street address"
+          />
+        </label>
+
+        <label class="control" data-required>
+          <span>City</span>
+          <input
+            name="billingCity"
+            type="text"
+            required
+            autocomplete="billing address-level2"
+          />
+        </label>
+
+        <label class="control" data-required>
+          <span>State</span>
+          <input
+            name="billingState"
+            type="text"
+            required
+            autocomplete="billing address-level1"
+            maxlength="2"
+            placeholder="IL"
+          />
+        </label>
+
+        <label class="control" data-required>
+          <span>ZIP code</span>
+          <input
+            name="billingZip"
+            type="text"
+            required
+            inputmode="numeric"
+            autocomplete="billing postal-code"
+            placeholder="60007"
+          />
         </label>
       </div>
     </fieldset>
 
     <div class="booking__submit">
       <button class="action" type="submit">
-        {isReserve ? 'Send reservation request' : 'Request my quote'}
+        {isReserve ? "Send reservation request" : "Request my quote"}
         <Icon name="arrow" size={16} />
       </button>
       <p class="booking__alt">
-        Or call <a href={BUSINESS.phone.href}>{BUSINESS.phone.display}</a> — office {BUSINESS.hours.officeSummary}.
+        Or call <a href={BUSINESS.phone.href}>{BUSINESS.phone.display}</a> — office
+        {BUSINESS.hours.officeSummary}.
       </p>
     </div>
   </form>
@@ -130,7 +271,9 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
   <div class="rb blade" hidden data-route-blade aria-live="polite">
     <div class="rb__strip">
       <span class="rb__coord mono">{BUSINESS.address.gridCoordinate}</span>
-      <span class="rb__service mono">{isReserve ? 'Reservation requested' : 'Quote requested'}</span>
+      <span class="rb__service mono"
+        >{isReserve ? "Reservation requested" : "Quote requested"}</span
+      >
     </div>
 
     <p class="rb__route gothic">
@@ -152,7 +295,9 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
       <div class="rb__cell">
         <span class="rb__key mono">Vehicle</span>
         <span class="rb__roll">
-          <span class="rb__vehicle" data-blade-vehicle>Awaiting passenger count</span>
+          <span class="rb__vehicle" data-blade-vehicle
+            >Awaiting passenger count</span
+          >
         </span>
         <span class="rb__detail" data-blade-detail></span>
       </div>
@@ -349,7 +494,7 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
   }
 
   /* Anything the visitor has to act on takes high-vis, same as everywhere. */
-  .rb__status[data-tone='act'] {
+  .rb__status[data-tone="act"] {
     color: var(--hivis);
     font-weight: 700;
   }
@@ -394,14 +539,34 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
   }
 
   .booking__set {
+    min-width: 0;
     margin: 0;
     padding: 0;
     border: 0;
   }
 
+  .booking__set + .booking__set {
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--paper-line);
+  }
+
   .booking__set legend {
-    padding: 0;
     width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .booking__set .control {
+    min-width: 0;
+  }
+
+  .booking__set .control :is(input, select) {
+    min-width: 0;
+    min-height: 3.25rem;
+  }
+
+  .booking__set .control textarea {
+    min-height: 8.5rem;
   }
 
   /* Six tracks, so a row of three short fields and a row of two long ones both
@@ -422,6 +587,10 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
       grid-column: span 3;
     }
 
+    .grid > .pair {
+      grid-column: span 3;
+    }
+
     .grid > .half,
     .grid > .full {
       grid-column: 1 / -1;
@@ -437,6 +606,10 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
       grid-column: span 3;
     }
 
+    .grid > .pair {
+      grid-column: span 3;
+    }
+
     .grid > .full {
       grid-column: 1 / -1;
     }
@@ -447,7 +620,7 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-4) var(--space-6);
-    padding-top: var(--space-2);
+    padding: var(--space-2) var(--space-1) 0;
   }
 
   .booking__alt {
@@ -459,71 +632,141 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
     font-weight: 700;
     color: var(--ink);
   }
+
+  @media (max-width: 39.999rem) {
+    .booking__form {
+      gap: var(--space-8);
+    }
+
+    .booking__set + .booking__set {
+      padding-top: var(--space-6);
+    }
+
+    .booking__set legend {
+      padding: 0;
+      font-size: 0.6875rem;
+    }
+
+    .grid {
+      gap: var(--space-4);
+    }
+
+    .booking__set .control > span {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+
+    .booking__set .control :is(input, select, textarea) {
+      padding-inline: var(--space-3);
+    }
+
+    .booking__submit {
+      display: grid;
+      gap: var(--space-3);
+      width: 100%;
+      padding-inline: 0;
+    }
+
+    .booking__submit .action {
+      justify-content: center;
+      width: 100%;
+      min-height: 3.5rem;
+      padding-inline: var(--space-4);
+      text-align: center;
+    }
+
+    .booking__alt {
+      text-align: center;
+    }
+  }
 </style>
 
 <script>
-  import { recommendVehicle } from '../data/fleet';
+  import { recommendVehicle } from "../data/fleet";
 
-  const blade = document.querySelector<HTMLElement>('[data-route-blade]');
-  const form = document.querySelector<HTMLFormElement>('[data-booking]');
+  const blade = document.querySelector<HTMLElement>("[data-route-blade]");
+  const form = document.querySelector<HTMLFormElement>("[data-booking]");
   if (blade && form) {
     const out = {
-      from: blade.querySelector<HTMLElement>('[data-blade-from]')!,
-      to: blade.querySelector<HTMLElement>('[data-blade-to]')!,
-      count: blade.querySelector<HTMLElement>('[data-blade-count]')!,
-      when: blade.querySelector<HTMLElement>('[data-blade-when]')!,
-      vehicle: blade.querySelector<HTMLElement>('[data-blade-vehicle]')!,
-      detail: blade.querySelector<HTMLElement>('[data-blade-detail]')!,
-      status: blade.querySelector<HTMLElement>('[data-blade-status]')!,
-      call: blade.querySelector<HTMLElement>('[data-blade-call]')!,
+      from: blade.querySelector<HTMLElement>("[data-blade-from]")!,
+      to: blade.querySelector<HTMLElement>("[data-blade-to]")!,
+      count: blade.querySelector<HTMLElement>("[data-blade-count]")!,
+      when: blade.querySelector<HTMLElement>("[data-blade-when]")!,
+      vehicle: blade.querySelector<HTMLElement>("[data-blade-vehicle]")!,
+      detail: blade.querySelector<HTMLElement>("[data-blade-detail]")!,
+      status: blade.querySelector<HTMLElement>("[data-blade-status]")!,
+      call: blade.querySelector<HTMLElement>("[data-blade-call]")!,
     };
     const statusLine = out.status.parentElement!;
 
     const field = (name: string) =>
-      form.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-field="${name}"]`);
-    const named = (name: string) => form.elements.namedItem(name) as HTMLInputElement | null;
+      form.querySelector<HTMLInputElement | HTMLSelectElement>(
+        `[data-field="${name}"]`,
+      );
+    const named = (name: string) =>
+      form.elements.namedItem(name) as HTMLInputElement | null;
 
     const setSlot = (el: HTMLElement, value: string, fallback: string) => {
       const filled = value.trim().length > 0;
       el.textContent = filled ? value.trim() : fallback;
-      el.toggleAttribute('data-set', filled);
+      el.toggleAttribute("data-set", filled);
     };
 
-    const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const MONTHS = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
 
     /**
      * Format the departure without constructing a Date: `yyyy-mm-dd` parses as
      * UTC, which renders the day before in Chicago.
      */
     const departure = (date: string, time: string) => {
-      const [y, m, d] = date.split('-').map(Number);
-      if (!y || !m || !d || !MONTHS[m - 1]) return '—';
+      const [y, m, d] = date.split("-").map(Number);
+      if (!y || !m || !d || !MONTHS[m - 1]) return "—";
       let text = `${d} ${MONTHS[m - 1]} ${y}`;
-      const [hh, mm] = time.split(':').map(Number);
+      const [hh, mm] = time.split(":").map(Number);
       if (Number.isFinite(hh) && Number.isFinite(mm)) {
-        text += ` · ${hh % 12 === 0 ? 12 : hh % 12}:${String(mm).padStart(2, '0')} ${hh >= 12 ? 'pm' : 'am'}`;
+        text += ` · ${hh % 12 === 0 ? 12 : hh % 12}:${String(mm).padStart(2, "0")} ${hh >= 12 ? "pm" : "am"}`;
       }
       return text;
     };
 
     /** `withCall` reveals the phone link, for the states where calling is the fix. */
-    const setStatus = (text: string, tone: 'act' | 'plain', withCall = false) => {
+    const setStatus = (
+      text: string,
+      tone: "act" | "plain",
+      withCall = false,
+    ) => {
       out.status.textContent = text;
-      statusLine.setAttribute('data-tone', tone);
+      statusLine.setAttribute("data-tone", tone);
       out.call.hidden = !withCall;
     };
 
-    let lastVehicle = '';
+    let lastVehicle = "";
 
     const update = () => {
-      setSlot(out.from, field('from')?.value ?? '', 'Pickup');
-      setSlot(out.to, field('to')?.value ?? '', 'Destination');
+      setSlot(out.from, field("from")?.value ?? "", "Pickup");
+      setSlot(out.to, field("to")?.value ?? "", "Destination");
 
       // Print the option's own label so the "58+" overflow reads as chosen.
-      const raw = field('count')?.value ?? '';
+      const raw = field("count")?.value ?? "";
       const count = Number.parseInt(raw, 10);
-      out.count.textContent = Number.isFinite(count) && count > 0 ? raw : '—';
-      out.when.textContent = departure(named('date')?.value ?? '', named('time')?.value ?? '');
+      out.count.textContent = Number.isFinite(count) && count > 0 ? raw : "—";
+      out.when.textContent = departure(
+        named("date")?.value ?? "",
+        named("time")?.value ?? "",
+      );
 
       const { name, detail } = recommendVehicle(count);
 
@@ -536,18 +779,18 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
       if (name !== lastVehicle) {
         out.vehicle.textContent = name;
         // Restart the roll animation.
-        out.vehicle.removeAttribute('data-rolling');
+        out.vehicle.removeAttribute("data-rolling");
         void out.vehicle.offsetWidth;
-        out.vehicle.setAttribute('data-rolling', '');
+        out.vehicle.setAttribute("data-rolling", "");
         lastVehicle = name;
       }
     };
 
     /**
-     * Prefill from the homepage quote form's no-JavaScript handoff, which GETs
-     * here. Whatever the visitor already typed arrives in the query string and
-     * must never be asked for a second time. The resulting URL is also
-     * shareable, so this runs for anyone arriving on one.
+     * Prefill from a planning handoff such as the wedding package form.
+     * Whatever the visitor already typed arrives in the query string and must
+     * never be asked for a second time. The resulting URL is also shareable, so
+     * this runs for anyone arriving on one.
      */
     const params = new URLSearchParams(window.location.search);
     if ([...params.keys()].length > 0) {
@@ -563,41 +806,54 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
         }
       }
       // Send them to the first thing still unanswered rather than the top.
-      const firstEmpty = [...form.querySelectorAll<HTMLInputElement>('[required]')].find(
-        (el) => !el.value.trim()
-      );
+      const firstEmpty = [
+        ...form.querySelectorAll<HTMLInputElement>("[required]"),
+      ].find((el) => !el.value.trim());
       firstEmpty?.focus({ preventScroll: true });
     }
 
     let sent = false;
 
-    form.addEventListener('submit', (event) => {
+    form.addEventListener("submit", (event) => {
       // The submit event only fires once the browser's own validation passes.
       event.preventDefault();
       update();
 
       const firstReveal = blade.hidden;
       blade.hidden = false;
-      blade.setAttribute('data-shown', '');
+      blade.setAttribute("data-shown", "");
       sent = true;
 
-      const endpoint = form.dataset.endpoint?.trim();
-      if (!endpoint) {
-        // No delivery address yet. Say so, rather than implying it was sent.
-        setStatus('This form has no delivery address yet, so nothing was sent:', 'act', true);
-      } else {
-        setStatus('Sending…', 'plain');
-        fetch(endpoint, { method: 'POST', body: new FormData(form) })
-          .then((res) => {
-            if (!res.ok) throw new Error(String(res.status));
-            setStatus('Successfully submitted. We reply during office hours.', 'plain');
-          })
-          .catch(() => setStatus('That did not send. Reach us directly:', 'act', true));
+      const body = new URLSearchParams();
+      for (const [key, value] of new FormData(form)) {
+        if (typeof value === "string") body.append(key, value);
       }
 
+      setStatus("Sending…", "plain");
+      fetch("/", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body.toString(),
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(String(res.status));
+          setStatus(
+            "Successfully submitted. We reply during office hours.",
+            "plain",
+          );
+        })
+        .catch(() =>
+          setStatus("That did not send. Reach us directly:", "act", true),
+        );
+
       if (firstReveal) {
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        blade.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        blade.scrollIntoView({
+          behavior: reduce ? "auto" : "smooth",
+          block: "center",
+        });
       }
     });
 
@@ -606,12 +862,15 @@ const endpointItem = isReserve ? OPEN_ITEMS.reserveEndpoint : OPEN_ITEMS.quoteEn
       if (blade.hidden) return;
       update();
       if (sent) {
-        setStatus('Details changed. Send the request again to update it.', 'act');
+        setStatus(
+          "Details changed. Send the request again to update it.",
+          "act",
+        );
         sent = false;
       }
     };
 
-    form.addEventListener('input', onEdit);
-    form.addEventListener('change', onEdit);
+    form.addEventListener("input", onEdit);
+    form.addEventListener("change", onEdit);
   }
 </script>

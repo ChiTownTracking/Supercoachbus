@@ -19,6 +19,7 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     coordinate={`${SMALLEST}–${MAX_SINGLE_VEHICLE} passengers`}
     title="Four vehicles, by the number that decides."
     lede="Capacity is what decides a charter, so it leads. Pick the size that fits the group and we will confirm the exact seat count when we quote."
+    hideLedeOnMobile
   />
 
   <div class="section--tight">
@@ -116,7 +117,7 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
                   page, so nothing was taken away — a second identical phone
                   button on each of four rows was the least useful thing here. */}
               <div class="v__actions">
-                <a class="action" href="/#quote-form">
+                <a class="action v__quote" href="/#quote-form">
                   Quote this vehicle
                   <Icon name="arrow" size={16} />
                 </a>
@@ -199,6 +200,51 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 
   .v__shot {
     margin: 0;
+  }
+
+  @media (max-width: 59.999rem) {
+    .v {
+      gap: 0;
+    }
+
+    .v__body {
+      display: contents;
+    }
+
+    .v__name {
+      order: 1;
+    }
+
+    .v__cap {
+      order: 2;
+    }
+
+    .v__figure {
+      order: 3;
+      margin-bottom: var(--space-6);
+    }
+
+    .v__role {
+      order: 4;
+    }
+
+    .v__spec {
+      order: 5;
+    }
+
+    .v__actions {
+      order: 6;
+      padding-bottom: 1.75rem;
+    }
+
+    .v__quote {
+      display: none;
+    }
+
+    .v__shot:nth-child(n + 2),
+    .v__view {
+      display: none;
+    }
   }
 
   /* Photographs are mounted like sign plates: square corners, a scribed

@@ -254,4 +254,89 @@ const { address, hours, phone } = BUSINESS;
   .foot__legal a:hover {
     color: var(--signal);
   }
+
+  @media (max-width: 40rem) {
+    .foot {
+      padding-block: var(--space-8) var(--space-6);
+    }
+
+    .foot__top {
+      gap: var(--space-8);
+    }
+
+    .foot__plate {
+      margin-bottom: var(--space-4);
+    }
+
+    .foot__plate :global(img) {
+      height: 3rem;
+    }
+
+    .foot__line {
+      max-width: none;
+      margin-bottom: var(--space-4);
+    }
+
+    .foot__mark > .action {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .foot__sister {
+      max-width: none;
+      margin-top: var(--space-4);
+    }
+
+    .foot__cols {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-8) var(--space-5);
+    }
+
+    .foot__cols > :first-child {
+      grid-column: 1 / -1;
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--enamel-line);
+    }
+
+    .foot__head {
+      margin-bottom: var(--space-2);
+    }
+
+    .foot__list {
+      gap: 0;
+    }
+
+    .foot__list a,
+    .foot__hours {
+      width: 100%;
+      min-height: 2.75rem;
+      align-items: center;
+      padding-block: var(--space-2);
+    }
+
+    .foot__list :global(svg) {
+      margin-top: 0;
+    }
+
+    .foot__bottom {
+      display: grid;
+      justify-items: start;
+      gap: var(--space-3);
+      margin-top: var(--space-8);
+      padding-top: var(--space-5);
+    }
+
+    .foot__legal {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3) var(--space-5);
+      width: 100%;
+    }
+
+    .foot__legal a {
+      display: flex;
+      align-items: center;
+      min-height: 2.75rem;
+    }
+  }
 </style>

@@ -90,30 +90,15 @@ export const OPEN_ITEMS = {
   // used in the header and footer. A vector version would still be preferable
   // for very large renderings, but the raster is sufficient at every size the
   // site uses it and is no longer an unresolved item.
-  quoteEndpoint: todo(
-    'form.quote.endpoint',
-    'endpoint',
-    'Quote form submission handler',
-    'Where quote requests should be delivered — email inbox, CRM, or form service endpoint.'
-  ),
-  reserveEndpoint: todo(
-    'form.reserve.endpoint',
-    'endpoint',
-    'Reservation form submission handler',
-    'Where reservation requests should be delivered, and whether they route differently from quotes.'
-  ),
-  contactEndpoint: todo(
-    'form.contact.endpoint',
-    'endpoint',
-    'Contact form submission handler',
-    'Where general contact messages should be delivered.'
-  ),
-  yearsInBusiness: todo(
-    'about.years',
-    'fact',
-    'Years in operation',
-    'The old site said "thousands of people" with no verifiable number. Supply a real founding year or the claim stays off the site.'
-  ),
+  // form.quote.endpoint / form.reserve.endpoint / form.contact.endpoint —
+  // RESOLVED 23 Aug 2026. All three submission forms are statically detected
+  // and handled by Netlify Forms. Quote and reservation requests retain their
+  // inline receipt through a URL-encoded AJAX POST; the contact form and every
+  // no-JavaScript submission use the shared /thanks/ page.
+  // about.years — RESOLVED 23 Aug 2026. The owner confirmed that Chicago
+  // Super Coach has been a trusted name in ground transportation for over 15
+  // years. The site states that duration directly rather than inventing a
+  // founding year that was not supplied.
   /**
    * The guide photographs. Two of the three are licensed stock standing in for
    * the operator's own work, which is a different kind of open item from the

@@ -12,16 +12,21 @@ interface Props {
   coordinate?: string;
   title: string;
   lede?: string;
+  hideLedeOnMobile?: boolean;
 }
 
-const { coordinate, title, lede } = Astro.props;
+const { coordinate, title, lede, hideLedeOnMobile = false } = Astro.props;
 ---
 
 <section class="head field">
   <div class="shell">
     {coordinate && <p class="coordinate">{coordinate}</p>}
     <h1 class="display head__title">{title}</h1>
-    {lede && <p class="lede head__lede">{lede}</p>}
+    {lede && (
+      <p class:list={['lede', 'head__lede', hideLedeOnMobile && 'head__lede--mobile-hidden']}>
+        {lede}
+      </p>
+    )}
     <slot />
   </div>
 </section>
@@ -45,4 +50,10 @@ const { coordinate, title, lede } = Astro.props;
     max-width: 52ch;
     margin-top: var(--space-6);
   }
+
+@media (max-width: 63.999rem) {
+  .head__lede--mobile-hidden {
+    display: none;
+  }
+}
 </style>

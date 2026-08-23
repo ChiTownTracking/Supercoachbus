@@ -1,99 +1,171 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../layouts/Layout.astro';
 import PageHead from '../components/PageHead.astro';
-import Placeholder from '../components/Placeholder.astro';
 import Testimonials from '../components/Testimonials.astro';
 import Icon from '../components/Icon.astro';
 import { BUSINESS, TRUST_CLAIMS } from '../config/site';
-import { OPEN_ITEMS } from '../lib/placeholder';
 import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
+import coachExterior from '../assets/images/coach-exterior.jpg';
+import coachInterior from '../assets/images/coach-interior.png';
 
-/** Read off the fleet data so this line cannot drift from the fleet page. */
+/** Read off the fleet data so these figures cannot drift from the fleet page. */
 const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 ---
 
 <Layout
   path="/about"
   title="Charter Coach Bus Rental Services | About Us"
-  description="Chicago Super Coach is a Chicago charter bus operator running its own coaches for 13 to 57 passengers, with licensed, insured and drug-tested drivers. Based at 3717 W. Montrose Avenue."
+  description="A trusted name in ground transportation for over 15 years, Chicago Super Coach operates its own buses for local and out-of-state group trips."
+  ogImage={coachExterior.src}
 >
   <PageHead
-    coordinate="3717 W. Montrose Avenue · Chicago"
+    coordinate={`${BUSINESS.address.street} · ${BUSINESS.address.city}`}
     title="We drive our own buses."
-    lede="Chicago Super Coach operates from 3717 W. Montrose Avenue with its own vehicles and drivers who work for us."
+    lede="Chicago Super Coach operates from Montrose Avenue with its own vehicles and drivers who work for us."
   />
 
-  <div class="section">
-    <div class="shell about__grid">
-      <div class="about__body stack">
-        <p class="about__p">
-          Plenty of companies that will sell you a charter do not own a bus. They
-          take the booking, mark it up, and pass it to whoever is free that day —
-          which is how a group ends up on a vehicle nobody described to them,
-          with a driver nobody vetted.
-        </p>
-        <p class="about__p">
-          We are not that. The vehicle on our fleet page is the vehicle you are
-          quoted and the vehicle that turns up. Our drivers are licensed and
-          experienced, insured, and drug tested, and the buses are maintained on
-          a regular schedule.
-        </p>
-        <p class="about__p">
-          It also means the person you speak to can actually answer you. When a
-          timeline shifts, when a game runs long, or when a booking comes in with
-          three days' notice, you are talking to the operator rather than to a
-          call centre passing a message along.
-        </p>
+  <section class="section about" aria-labelledby="about-story">
+    <div class="shell">
+      <div class="about__opening">
+        <div class="about__lead">
+          <p class="coordinate coordinate--ink">
+            {FLEET.length} vehicle sizes · {SMALLEST}–{MAX_SINGLE_VEHICLE} passengers
+          </p>
+          <h2 class="title about__head" id="about-story">
+            One company from the first call to the final drop-off.
+          </h2>
+        </div>
+
+        <figure class="about__media">
+          <span class="photo-plate about__plate">
+            <Image
+              src={coachExterior}
+              alt="A white Chicago Super Coach bus parked with its luggage bays open"
+              widths={[480, 760, 1080, 1400]}
+              sizes="(min-width: 60rem) 53vw, 92vw"
+              loading="eager"
+            />
+          </span>
+          <figcaption class="photo-cap mono">One of the coaches we operate</figcaption>
+        </figure>
+
+        <div class="about__story">
+          <p class="about__legacy">
+            {BUSINESS.experience.claim}
+          </p>
+          <div class="about__body stack">
+            <p class="about__p">
+              Plenty of companies that sell a charter do not own a bus. They
+              take the booking, mark it up, and pass it to whoever is free that
+              day. That is how a group can end up on a vehicle nobody described
+              to them, with a driver nobody vetted.
+            </p>
+            <p class="about__p">
+              We are an operator, not a booking marketplace. The vehicles on our
+              fleet page are the vehicles we quote, maintain, and send to the
+              curb. Our drivers are licensed and experienced, insured, and drug
+              tested.
+            </p>
+          </div>
+        </div>
       </div>
 
-      <aside class="about__facts">
-        <h2 class="coordinate coordinate--ink">The details</h2>
-        <dl class="facts">
-          <div class="fact">
-            <dt>Based</dt>
-            <dd>{BUSINESS.address.street}<br />{BUSINESS.address.city}, {BUSINESS.address.region} {BUSINESS.address.postalCode}</dd>
-          </div>
-          <div class="fact">
-            <dt>Serving</dt>
-            <dd>{BUSINESS.serviceArea}</dd>
-          </div>
-          <div class="fact">
-            <dt>Office hours</dt>
-            <dd>{BUSINESS.hours.officeDays}, {BUSINESS.hours.officeTime}</dd>
-          </div>
-          <div class="fact">
-            <dt>Charters</dt>
-            <dd><strong>{BUSINESS.hours.charterNote}</strong> — the office keeps business hours, the buses do not.</dd>
-          </div>
-          <div class="fact">
-            <dt>Fleet</dt>
-            <dd>
-              {FLEET.length} vehicles, {SMALLEST} to {MAX_SINGLE_VEHICLE} passengers —
-              <a href="/fleet">see the fleet</a>
-            </dd>
-          </div>
-        </dl>
-      </aside>
+      <dl class="about__facts" aria-label="Chicago Super Coach at a glance">
+        <div class="fact">
+          <dt>Experience</dt>
+          <dd><strong>{BUSINESS.experience.summary}</strong> in ground transportation</dd>
+        </div>
+        <div class="fact">
+          <dt>Service reach</dt>
+          <dd>{BUSINESS.serviceReach}</dd>
+        </div>
+        <div class="fact">
+          <dt>Fleet range</dt>
+          <dd><strong>{SMALLEST}–{MAX_SINGLE_VEHICLE}</strong> passengers</dd>
+        </div>
+        <div class="fact">
+          <dt>Availability</dt>
+          <dd>{BUSINESS.hours.charterNote}</dd>
+        </div>
+      </dl>
     </div>
-  </div>
+  </section>
 
-  <section class="section--tight standards">
+  <section class="section field process" aria-labelledby="process-head">
+    <div class="shell process__grid">
+      <div class="process__copy">
+        <p class="coordinate">Before the wheels move</p>
+        <h2 class="title process__head" id="process-head">
+          A smooth pickup starts with a clear plan.
+        </h2>
+        <p class="lede process__lede">
+          The useful details are practical: who is riding, where the bus needs
+          to be, what has to fit, and when everybody needs to arrive.
+        </p>
+
+        <ol class="process__list">
+          <li class="process__step">
+            <span class="process__num mono">01</span>
+            <div>
+              <h3 class="process__name">Build the run</h3>
+              <p>Give us the date, pickup, destination, stops, and return time.</p>
+            </div>
+          </li>
+          <li class="process__step">
+            <span class="process__num mono">02</span>
+            <div>
+              <h3 class="process__name">Match the vehicle</h3>
+              <p>We use the headcount and trip needs to confirm the right size and exact seating.</p>
+            </div>
+          </li>
+          <li class="process__step">
+            <span class="process__num mono">03</span>
+            <div>
+              <h3 class="process__name">Keep the day connected</h3>
+              <p>If the schedule changes, you can speak with the operator responsible for the trip.</p>
+            </div>
+          </li>
+        </ol>
+      </div>
+
+      <figure class="process__media">
+        <span class="photo-plate process__plate">
+          <Image
+            src={coachInterior}
+            alt="Rows of reclining seats inside a Chicago Super Coach bus"
+            widths={[480, 760, 1080, 1400]}
+            sizes="(min-width: 64rem) 50vw, 92vw"
+            loading="lazy"
+          />
+        </span>
+        <figcaption class="photo-cap photo-cap--field mono">Inside one of our coaches</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section--tight standards" aria-labelledby="standards-head">
     <div class="shell">
-      <h2 class="title standards__head">What we hold to on every charter</h2>
+      <p class="coordinate coordinate--ink">Five commitments</p>
+      <h2 class="title standards__head" id="standards-head">
+        What we hold to on every charter.
+      </h2>
+      <p class="lede standards__lede">
+        A well-planned route matters, but the vehicle and the person behind the
+        wheel matter more. These are the standards we bring to every group.
+      </p>
       <ul class="standards__list">
         {
-          TRUST_CLAIMS.map((c) => (
+          TRUST_CLAIMS.map((claim, index) => (
             <li class="standard">
+              <span class="standard__num mono">{String(index + 1).padStart(2, '0')}</span>
               <Icon name="check" size={18} />
-              <span>{c}</span>
+              <span>{claim}</span>
             </li>
           ))
         }
       </ul>
 
-      <div class="standards__gap">
-        <Placeholder item={OPEN_ITEMS.credentials} />
-      </div>
     </div>
   </section>
 
@@ -101,7 +173,10 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 
   <section class="section--tight field field--deep">
     <div class="shell about__cta">
-      <h2 class="subtitle">Tell us where your group needs to be.</h2>
+      <div>
+        <p class="coordinate">Your trip starts here</p>
+        <h2 class="subtitle">Tell us where your group needs to be.</h2>
+      </div>
       <div class="about__actions">
         <a class="action" href="/#quote-form">
           Get a quote
@@ -114,51 +189,107 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 </Layout>
 
 <style>
-  .about__grid {
+  .about__opening {
     display: grid;
-    gap: var(--space-12);
+    gap: var(--space-8);
+    align-items: center;
   }
 
-  @media (min-width: 60rem) {
-    .about__grid {
-      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-      gap: var(--space-16);
-      align-items: start;
-    }
+  .about__media,
+  .process__media {
+    margin: 0;
+  }
+
+  .photo-plate {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--paper-line);
+    background: var(--paper-lift);
+  }
+
+  .photo-plate::after {
+    position: absolute;
+    content: '';
+    inset: 5px;
+    border: 1px solid rgb(255 255 255 / 0.42);
+    pointer-events: none;
+  }
+
+  .photo-plate :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .about__plate {
+    aspect-ratio: 16 / 10;
+  }
+
+  .photo-cap {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .about__head {
+    max-width: 13ch;
+    margin-top: var(--space-5);
   }
 
   .about__body {
-    --flow: var(--space-6);
+    --flow: var(--space-5);
     max-width: var(--measure);
+    margin-top: var(--space-6);
+  }
+
+  .about__legacy {
+    max-width: 32rem;
+    margin-top: 0;
+    padding: var(--space-4) var(--space-5);
+    border-left: 3px solid var(--hivis);
+    background: var(--paper-lift);
+    font-size: 1.125rem;
+    font-weight: 800;
+    line-height: 1.5;
   }
 
   .about__p {
     font-size: 1.0625rem;
-    line-height: 1.7;
+    line-height: 1.68;
   }
 
-  /* Square plate with a marked top edge — one elevation signal, and the corner
-     language the rest of the signage system uses. */
   .about__facts {
-    padding: var(--space-8);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: var(--space-12) 0 0;
     border-top: 3px solid var(--enamel-ink);
     background: var(--paper-lift);
   }
 
-  .facts {
-    display: grid;
-    gap: var(--space-5);
-    margin: 0;
+  .fact {
+    min-width: 0;
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--paper-line);
+  }
+
+  .fact:nth-child(odd) {
+    border-right: 1px solid var(--paper-line);
   }
 
   .fact dt {
+    margin-bottom: var(--space-2);
     font-family: var(--font-mono);
     font-size: 0.6875rem;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--ink-dim);
-    margin-bottom: var(--space-2);
   }
 
   .fact dd {
@@ -167,42 +298,110 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     line-height: 1.5;
   }
 
+  .process__grid {
+    display: grid;
+    gap: var(--space-8);
+    align-items: center;
+  }
+
+  .process__head {
+    max-width: 13ch;
+    margin-top: var(--space-5);
+  }
+
+  .process__lede {
+    max-width: 34rem;
+    margin-top: var(--space-6);
+  }
+
+  .process__list {
+    display: grid;
+    margin: var(--space-8) 0 0;
+    padding: 0;
+    border-top: 1px solid var(--enamel-line);
+    list-style: none;
+  }
+
+  .process__step {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--enamel-line);
+  }
+
+  .process__num {
+    padding-top: 0.2rem;
+    color: var(--azure);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  .process__name {
+    margin: 0 0 var(--space-2);
+    font-size: 1.0625rem;
+  }
+
+  .process__step p {
+    margin: 0;
+    color: var(--signal-dim);
+    line-height: 1.55;
+  }
+
+  .process__plate {
+    aspect-ratio: 4 / 3;
+    border-color: var(--enamel-line);
+    background: var(--enamel-deep);
+  }
+
+  .photo-cap--field {
+    color: var(--signal-dim);
+  }
+
   .standards {
     border-top: 1px solid var(--paper-line);
   }
 
   .standards__head {
-    max-width: 20ch;
-    margin-bottom: var(--space-8);
+    max-width: 17ch;
+    margin-top: var(--space-5);
+  }
+
+  .standards__lede {
+    max-width: 42rem;
+    margin-top: var(--space-6);
   }
 
   .standards__list {
     display: grid;
     gap: var(--space-4);
-    margin: 0 0 var(--space-12);
+    margin: var(--space-8) 0 var(--space-12);
     padding: 0;
     list-style: none;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   }
 
   .standard {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-4) var(--space-5);
     border: 1px solid var(--paper-line);
     border-radius: var(--radius);
-    font-weight: 700;
     font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  .standard__num {
+    color: var(--ink-dim);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
   }
 
   .standard :global(svg) {
     flex: none;
     color: var(--enamel-ink);
-  }
-
-  .standards__gap {
-    max-width: 46rem;
   }
 
   .about__cta {
@@ -213,9 +412,92 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     gap: var(--space-8);
   }
 
+  .about__cta .subtitle {
+    margin-top: var(--space-4);
+  }
+
   .about__actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-4);
+  }
+
+  @media (min-width: 48rem) {
+    .about__facts {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .fact,
+    .fact:nth-child(odd) {
+      border-right: 1px solid var(--paper-line);
+      border-bottom: 0;
+    }
+
+    .fact:last-child {
+      border-right: 0;
+    }
+
+    .standards__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .about__opening {
+      grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+      grid-template-areas:
+        'media lead'
+        'media story';
+      column-gap: var(--space-16);
+      row-gap: 0;
+    }
+
+    .about__lead {
+      grid-area: lead;
+    }
+
+    .about__media {
+      grid-area: media;
+      align-self: center;
+    }
+
+    .about__story {
+      grid-area: story;
+    }
+
+    .about__legacy {
+      margin-top: var(--space-6);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .process__grid {
+      grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+      gap: var(--space-16);
+    }
+
+    .standards__list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 35rem) {
+    .about__facts {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .fact,
+    .fact:nth-child(odd) {
+      border-right: 0;
+    }
+
+    .about__actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .about__actions .action {
+      justify-content: center;
+    }
   }
 </style>

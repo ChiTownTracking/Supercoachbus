@@ -61,6 +61,11 @@ export const BUSINESS = {
   },
 
   serviceArea: 'Chicago and surrounding suburbs',
+  serviceReach: 'Chicago, surrounding suburbs, and out-of-state trips',
+  experience: {
+    summary: 'Over 15 years',
+    claim: 'Trusted name in the ground transportation industry for over 15 years.',
+  },
 } as const;
 
 /** Trust claims carried over from the live site. All owner-confirmed; none invented. */

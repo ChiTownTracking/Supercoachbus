@@ -34,20 +34,11 @@ const STEPS = [
 >
   <PageHead
     title="Already know the trip? Book it."
-    lede="This is the form for a settled plan. If the date or the vehicle is still moving, a quote request is the better starting point."
   />
 
   <div class="section">
     <div class="shell reserve__body">
       <BookingForm mode="reserve" />
-
-      <p class="reserve__alt">
-        Not ready to commit?
-        <a class="direction" href="/#quote-form">
-          Request a quote instead
-          <Icon name="arrow" size={15} />
-        </a>
-      </p>
     </div>
   </div>
 
@@ -131,7 +122,7 @@ const STEPS = [
     content: '';
     position: absolute;
     top: 8px;
-    left: 7px;
+    left: 15px;
     width: 1px;
     height: calc(100% + var(--space-8));
     background: var(--paper-line);
@@ -179,6 +170,13 @@ const STEPS = [
     color: var(--ink-dim);
   }
 
+  @media (max-width: 51.999rem) {
+    .step:not(:last-child)::before {
+      top: 16px;
+      left: 7px;
+    }
+  }
+
   @media (min-width: 52rem) {
     .steps__list {
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -210,17 +208,6 @@ const STEPS = [
   .reserve__body {
     display: grid;
     gap: var(--space-8);
-  }
-
-  .reserve__alt {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--space-4);
-    padding-top: var(--space-6);
-    border-top: 1px solid var(--paper-line);
-    font-size: 0.9375rem;
-    color: var(--ink-dim);
   }
 
   .call {

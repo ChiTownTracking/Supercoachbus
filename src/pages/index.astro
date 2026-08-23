@@ -6,7 +6,7 @@ import QuickQuote from '../components/QuickQuote.astro';
 import Testimonials from '../components/Testimonials.astro';
 import GuideCard from '../components/GuideCard.astro';
 import CloseBand from '../components/CloseBand.astro';
-import { BUSINESS, TRUST_CLAIMS } from '../config/site';
+import { BUSINESS, SITE_ORIGIN, TRUST_CLAIMS } from '../config/site';
 import { FLEET, MAX_SINGLE_VEHICLE, vehicleHref } from '../data/fleet';
 import { SERVICES } from '../data/services';
 import { SERVICE_PHOTOS } from '../data/servicePhotos';
@@ -18,9 +18,6 @@ import coachExterior from '../assets/images/coach-exterior.jpg';
 import coachBus44 from '../assets/images/coach-bus-44.png';
 import coachBus28 from '../assets/images/coach-bus-28.png';
 import executiveSprinter from '../assets/images/excutive-sprinter.png';
-
-/** The bottom of the range the fleet covers, read off the data rather than typed. */
-const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
 
 /** Portrait art direction for the mobile hero, supplied by the owner. */
 const mobileHeroBackground = await getImage({
@@ -57,12 +54,49 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     alt: 'The Executive Sprinter Van, a black high-roof Mercedes-Benz Sprinter, seen from the front and side',
   },
 };
+
+const HOME_TITLE = 'Chicago Charter Bus Rental | Chicago Super Coach';
+const HOME_DESCRIPTION =
+  'Chicago charter bus rental for 13–57 passengers. Choose a coach bus or Sprinter van with a professional driver for local and out-of-state group trips.';
+
+/**
+ * Homepage-only entities. The layout owns the business node; these two nodes
+ * identify the site name and the service this URL is primarily about without
+ * duplicating the LocalBusiness record on every page.
+ */
+const homeJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE_ORIGIN}/#website`,
+    url: SITE_ORIGIN,
+    name: BUSINESS.name,
+    alternateName: 'Chicago Super Coach Bus',
+    publisher: { '@id': `${SITE_ORIGIN}/#business` },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${SITE_ORIGIN}/#charter-bus-rental`,
+    name: 'Chicago Charter Bus Rental',
+    serviceType: 'Charter bus rental and group transportation',
+    description: HOME_DESCRIPTION,
+    provider: { '@id': `${SITE_ORIGIN}/#business` },
+    areaServed: [
+      { '@type': 'City', name: 'Chicago' },
+      { '@type': 'AdministrativeArea', name: 'Chicago metropolitan area' },
+    ],
+  },
+];
 ---
 
 <Layout
   path="/"
-  title="Shuttle Bus Service | Charter Bus Service in Chicago IL"
-  description="Chicago Super Coach — charter bus rental for group transportation. Get a free quote on a coach bus or Sprinter van for 13 to 57 passengers, with licensed, insured drivers. Call 630-624-3448."
+  title={HOME_TITLE}
+  description={HOME_DESCRIPTION}
+  ogImage={heroCoach.src}
+  ogImageAlt="Chicago Super Coach bus parked with the Chicago skyline in the background"
+  jsonLd={homeJsonLd}
 >
   <!-- Thesis viewport: the coach carries the proof, the offer runs in one line
        beside it, and the action is in high-vis. The photograph is the ground of
@@ -76,21 +110,16 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
       <div class="hero__lead">
         <p class="coordinate hero__coord">
           <Icon name="pin" size={15} class="hero__ico" />
-          {BUSINESS.address.gridCoordinate} · Chicago, Illinois
+          {BUSINESS.address.street} · {BUSINESS.address.city}, {BUSINESS.address.region}
         </p>
-        <h1 class="display hero__head">Your whole group, one arrival time.</h1>
+        <h1 class="display hero__head">Chicago charter buses. One group, one arrival.</h1>
         <span class="hero__rule" aria-hidden="true"></span>
         <p class="lede hero__lede">
           <span class="hero__lede-desktop">
-            Charter bus rental with professional drivers, across{' '}
-            {BUSINESS.serviceArea}.
-            <span class="hero__lede-more">
-              {' '}Tell us the date, the headcount and the route — we will confirm
-              the coach and what it costs.
-            </span>
+            {BUSINESS.experience.claim}
           </span>
           <span class="hero__lede-mobile">
-            Trusted name in the ground transportation industry for over 15 years.
+            {BUSINESS.experience.claim}
           </span>
         </p>
 
@@ -137,7 +166,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
         src={heroCoach}
         alt="The Chicago Super Coach executive coach bus parked with its luggage bays open, the Chicago skyline across the water behind it"
         widths={[720, 1100, 1600, 1916]}
-        sizes="(min-width: 64rem) 100vw, 200vw"
+        sizes="(min-width: 27.501rem) 100vw, 200vw"
         loading="eager"
         fetchpriority="high"
       />
@@ -156,13 +185,9 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
   <section class="section fleet" id="fleet">
     <div class="shell">
       <p class="coordinate coordinate--ink fleet__coord">
-        {SMALLEST}–{MAX_SINGLE_VEHICLE} passengers
+        Chicago coach bus fleet
       </p>
-      <h2 class="title fleet__head">Four sizes, so the group fits the vehicle.</h2>
-      <p class="lede measure fleet__lede">
-        We are not a broker reselling somebody else's bus. This is the vehicle
-        you are quoted and the vehicle that turns up.
-      </p>
+      <h2 class="title fleet__head">Coach buses and a Sprinter van for 13–57 passengers.</h2>
 
       <ul class="fleet__grid">
         {
@@ -232,7 +257,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
   <!-- Services: each row carries its own photograph. -->
   <section class="section field services">
     <div class="shell">
-      <h2 class="title services__head">Five things we are booked for</h2>
+      <h2 class="title services__head">Chicago group transportation for five kinds of day</h2>
 
       <ul class="services__list">
         {
@@ -511,7 +536,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     mask-image: var(--ramp);
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 27.501rem) {
     /* Held to half the band so the copy column ends in the same place at every
        desktop width — the wash below is pinned to percentages, and a column that
        slid right at narrow widths would slide out from under it. */
@@ -573,7 +598,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
      below its 5rem masthead. Content stays live and accessible over that frame:
      copy in the sky, the coach through the middle, and contact details at the
      foot. */
-  @media (max-width: 63.999rem) {
+  @media (max-width: 27.5rem) {
     .hero {
       min-height: 0;
       padding-block: 2.5rem 2.375rem;
@@ -782,6 +807,12 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     flex: none;
   }
 
+  @media (max-width: 45.999rem) {
+    .trust {
+      display: none;
+    }
+  }
+
   /* ---- Fleet ---- */
 
   .fleet__coord {
@@ -790,7 +821,7 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
 
   .fleet__head {
     max-width: 20ch;
-    margin-bottom: var(--space-4);
+    margin-bottom: var(--space-12);
   }
 
   .fleet__lede {
@@ -1133,5 +1164,13 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
   .guides__all:hover {
     gap: var(--space-3);
     color: var(--hivis-text);
+  }
+
+  @media (max-width: 43.999rem) {
+    .guides__all {
+      display: flex;
+      width: max-content;
+      margin-inline: auto;
+    }
   }
 </style>

@@ -7,9 +7,8 @@ import Icon from './Icon.astro';
  * after an article is the same ask the homepage closes with, in the same words.
  * Two copies of that would drift the moment either one was edited.
  *
- * The quote link is absolute rather than a bare `#quote-form`: from a guide the
- * fragment has to carry the path with it, and from the homepage the browser
- * still treats it as same-document navigation.
+ * The footer already carries the site's closing quote action, so this band
+ * advances visitors who are ready to move ahead to the reservation form.
  */
 ---
 
@@ -18,15 +17,14 @@ import Icon from './Icon.astro';
     <div>
       <h2 class="title close__head">Give us a date and a headcount.</h2>
       <p class="lede close__lede">
-        Most quotes need nothing more than that, the route, and a return time.
+        Ready to move ahead? Send the route and return time to start your reservation.
       </p>
     </div>
     <div class="close__actions">
-      <a class="action" href="/#quote-form">
-        Get a quote
+      <a class="action" href="/reserve">
+        Reserve now
         <Icon name="arrow" size={16} />
       </a>
-      <a class="action action--ghost" href="/reserve">Reserve online</a>
     </div>
   </div>
 </section>

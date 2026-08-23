@@ -1,10 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import PageHead from '../components/PageHead.astro';
-import Placeholder from '../components/Placeholder.astro';
 import Icon from '../components/Icon.astro';
 import { BUSINESS } from '../config/site';
-import { OPEN_ITEMS } from '../lib/placeholder';
 
 const { address, hours, phone } = BUSINESS;
 const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
@@ -66,8 +64,21 @@ const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
           questions. This one is for everything else.
         </p>
 
-        <form class="cform" method="post" action="">
-          <Placeholder item={OPEN_ITEMS.contactEndpoint} />
+        <form
+          class="cform"
+          name="contact-message"
+          method="post"
+          action="/thanks/"
+          data-netlify="true"
+          netlify-honeypot="bot-field"
+        >
+          <input type="hidden" name="form-name" value="contact-message" />
+          <p class="sr-only" aria-hidden="true">
+            <label>
+              Do not fill this out if you are human:
+              <input name="bot-field" tabindex="-1" autocomplete="off" />
+            </label>
+          </p>
 
           <div class="cform__grid">
             <label class="control" data-required>
@@ -143,6 +154,16 @@ const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
   .contact__grid {
     display: grid;
     gap: var(--space-12);
+  }
+
+  @media (max-width: 63.999rem) {
+    .contact__form {
+      order: 1;
+    }
+
+    .contact__methods {
+      order: 2;
+    }
   }
 
   @media (min-width: 64rem) {

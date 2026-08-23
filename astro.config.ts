@@ -39,6 +39,7 @@ function migrationArtifacts() {
 
 /** Old paths exist only as redirect stubs — they must never enter the sitemap. */
 const REDIRECT_PATHS = new Set(REDIRECTS.map((r) => r.from));
+const NOINDEX_PATHS = new Set(['/404', '/thanks']);
 
 export default defineConfig({
   site: SITE_ORIGIN,
@@ -47,7 +48,7 @@ export default defineConfig({
     sitemap({
       filter: (page) => {
         const path = new URL(page).pathname.replace(/\/$/, '') || '/';
-        return !REDIRECT_PATHS.has(path);
+        return !REDIRECT_PATHS.has(path) && !NOINDEX_PATHS.has(path);
       },
     }),
     migrationArtifacts(),
