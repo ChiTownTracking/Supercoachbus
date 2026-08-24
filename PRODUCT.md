@@ -73,10 +73,10 @@ Distinct from sister brand **ChiTown Trolley**, which sells an occasion (wedding
 ## Brand Commitments
 
 - **Name:** Chicago Super Coach
-- **Address:** 3717 W. Montrose Avenue, Chicago, IL 60618
+- **Address:** 330 Crossen Ave, Elk Grove Village, IL 60007, USA
 - **Phone:** 630-624-3448
 - **Email:** info@chicagosupercoach.com
-- **Google Business Profile:** existing Maps listing at `41.9609337,-87.7234321` — must be preserved and carried over.
+- **Map location:** `42.021727097231,-87.967816250384` for the Elk Grove Village address.
 - **Logo:** `src/assets/images/logo.png` (409×202), supplied by the owner. A horizontal lockup: a three-chevron mark carrying a navy-to-green gradient, beside the name set in three lines of navy. Colours sampled from the file — navy `#204878`, teal `#087070`, green `#14945f`. The navy measures 1.35:1 against the site's enamel ground, so the mark is never placed directly on a dark field; it sits on a signal-white plate. A vector version would still be welcome for large-format use.
 - **Voice:** professional and functional. This is a corporate/group-charter brand — plain, specific, competent. Not celebratory, not luxury-aspirational; that register belongs to ChiTown Trolley.
 - Sister-brand rule: distinct value proposition per page, no templated duplication with ChiTown Trolley.

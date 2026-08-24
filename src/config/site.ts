@@ -27,22 +27,22 @@ export const BUSINESS = {
   email: 'info@chicagosupercoach.com',
 
   address: {
-    street: '3717 W. Montrose Avenue',
-    city: 'Chicago',
+    street: '330 Crossen Ave',
+    city: 'Elk Grove Village',
     region: 'IL',
-    postalCode: '60618',
+    postalCode: '60007',
     country: 'US',
-    /** Grid coordinate for W. Montrose Ave in Chicago's numbered street system. */
-    gridCoordinate: '4400 N',
+    /** Compact wayfinding coordinate used on quote receipts and map fallback. */
+    gridCoordinate: '60007',
   },
 
-  /** From the existing Google Business Profile listing — preserve on migration. */
+  /** Point address coordinates for the business location. */
   geo: {
-    latitude: 41.9609337,
-    longitude: -87.7234321,
+    latitude: 42.021727097231,
+    longitude: -87.967816250384,
   },
   googleMapsUrl:
-    'https://www.google.com/maps/place/Chicago+Super+Coach/@41.9609337,-87.7234321,17z/',
+    'https://www.google.com/maps/search/?api=1&query=330%20Crossen%20Ave%2C%20Elk%20Grove%20Village%2C%20IL%2060007%2C%20USA',
 
   /**
    * Resolved conflict: the old site claimed "24 hours a day" on About while
