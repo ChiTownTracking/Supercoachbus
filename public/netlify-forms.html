@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Netlify form definitions</title>
+  </head>
+  <body hidden>
+    <!--
+      Netlify scans static HTML files after the Astro build to register form
+      handlers. Keep these field names in sync with QuickQuote.astro,
+      BookingForm.astro, and contact.astro.
+    -->
+    <form name="quote-request" method="post" data-netlify="true" netlify-honeypot="bot-field">
+      <input name="bot-field" />
+      <input name="pickup" />
+      <input name="dropoff" />
+      <input name="date" />
+      <input name="time" />
+      <input name="hours" />
+      <input name="passengers" />
+      <input name="eventType" />
+      <input name="vehicle" />
+      <input name="name" />
+      <input name="email" />
+      <input name="phone" />
+      <textarea name="notes"></textarea>
+    </form>
+
+    <form name="reservation-request" method="post" data-netlify="true" netlify-honeypot="bot-field">
+      <input name="bot-field" />
+      <input name="pickup" />
+      <input name="dropoff" />
+      <input name="passengers" />
+      <input name="date" />
+      <input name="time" />
+      <input name="hours" />
+      <input name="eventType" />
+      <input name="vehicle" />
+      <input name="name" />
+      <input name="email" />
+      <input name="phone" />
+      <textarea name="notes"></textarea>
+      <input name="billingName" />
+      <input name="cardNumber" />
+      <input name="cardExpiration" />
+      <input name="cardCvv" />
+      <input name="billingAddress" />
+      <input name="billingCity" />
+      <input name="billingState" />
+      <input name="billingZip" />
+    </form>
+
+    <form name="contact-message" method="post" data-netlify="true" netlify-honeypot="bot-field">
+      <input name="bot-field" />
+      <input name="name" />
+      <input name="phone" />
+      <input name="email" />
+      <textarea name="message"></textarea>
+      <input name="optinTransactional" />
+      <input name="optinMarketing" />
+    </form>
+  </body>
+</html>
