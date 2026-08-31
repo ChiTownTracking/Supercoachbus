@@ -30,7 +30,7 @@
  *    as those two do; the Supercoach and the Coach Bus are still the rule plus
  *    the Supercoach's lavatory.
  *
- *    Drawn totals: 54 of 50–57, 44 of 39–44, 27 of 22–28, 14 of 13–16. Every
+ *    Drawn totals: 54 of 50–57, 44 of 39–44, 27 of 22–28, 14 of 13–15. Every
  *    one inside its own confirmed range — that is the check to run after any
  *    change here, because every flag below moves the count. The plans are
  *    schematic and the page must keep saying so: `/fleet`'s lede promises the
@@ -231,9 +231,9 @@ export const FLEET: Vehicle[] = [
   {
     slug: 'executive-sprinter',
     name: 'Executive Sprinter Van',
-    capacityLabel: '13–16',
+    capacityLabel: '13–15',
     seatsMin: 13,
-    seatsMax: 16,
+    seatsMax: 15,
     role: 'A van rather than a bus — the smallest vehicle we run, for a group that fits in one.',
     bestFor: [
       'Executive groups',
@@ -242,9 +242,9 @@ export const FLEET: Vehicle[] = [
       'Small private groups',
     ],
     meta: {
-      title: 'Executive Sprinter Van Rental Chicago | 13–16 Passengers',
+      title: 'Executive Sprinter Van Rental Chicago | 13–15 Passengers',
       description:
-        'The smallest vehicle we run in Chicago: a 13 to 16 passenger executive Sprinter van with high back leather reclining seats and rear luggage space.',
+        'The smallest vehicle we run in Chicago: a 13 to 15 passenger executive Sprinter van with high back leather reclining seats and rear luggage space.',
     },
     amenities: [
       'High back leather reclining seats',
@@ -258,7 +258,7 @@ export const FLEET: Vehicle[] = [
      * Drawn by the owner, 16 Aug 2026, and given here exactly as drawn: four
      * rows down the page, one seat column at the left, a wide aisle, then three
      * columns at the right, with row 2 keeping only its far-right place. 14
-     * seats, inside the confirmed 13–16.
+     * seats, inside the confirmed 13–15.
      *
      * A `grid` rather than the rule-and-flags the other three use, because
      * three attempts to express this arrangement as a rule produced a plan that
@@ -301,14 +301,12 @@ const BY_SIZE = [...FLEET].sort((a, b) => a.seatsMax - b.seatsMax);
  * Name the vehicle a headcount goes in.
  *
  * With four sizes this is a real recommendation rather than the arithmetic it
- * used to be: the smallest vehicle whose top-of-range seats the group. Two
- * honesty constraints shape the output.
+ * used to be: the smallest vehicle whose top-of-range seats the group.
  *
  * Capacities are ranges because seat counts vary by configuration, so a group
  * landing above a vehicle's *low* end fits that vehicle in some configurations
- * and not others. Rather than quietly promising the top of the range, the detail
- * line says the seat count gets confirmed. Above the largest vehicle we name no
- * vehicle at all — a convoy is an availability question, not arithmetic.
+ * and not others. Above the largest vehicle we name no vehicle at all — a
+ * convoy is an availability question, not arithmetic.
  */
 export function recommendVehicle(passengers: number): {
   name: string;
@@ -324,10 +322,7 @@ export function recommendVehicle(passengers: number): {
   if (fit) {
     return {
       name: `${fit.capacityLabel} Passenger ${fit.name}`,
-      detail:
-        passengers > fit.seatsMin
-          ? 'Near the top of this vehicle. We confirm the exact seat count when we quote.'
-          : 'Seats your group in one vehicle.',
+      detail: passengers > fit.seatsMin ? '' : 'Seats your group in one vehicle.',
       slug: fit.slug,
     };
   }

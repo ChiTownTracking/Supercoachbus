@@ -4,7 +4,7 @@ import { BUSINESS } from '../config/site';
 import { PASSENGER_OPTIONS } from '../data/formOptions';
 
 const today = new Date().toISOString().slice(0, 10);
-const reserveHref = '/reserve?eventType=Wedding&hours=8&vehicle=more-than-one';
+const reserveHref = '/reserve?eventType=Wedding+Guest+Shuttle&hours=8+Hours&vehicle=wedding-package';
 ---
 
 <a
@@ -38,9 +38,9 @@ const reserveHref = '/reserve?eventType=Wedding&hours=8&vehicle=more-than-one';
     </header>
 
     <form class="wpq__form" method="get" action="/reserve">
-      <input type="hidden" name="eventType" value="Wedding" />
-      <input type="hidden" name="hours" value="8" />
-      <input type="hidden" name="vehicle" value="more-than-one" />
+      <input type="hidden" name="eventType" value="Wedding Guest Shuttle" />
+      <input type="hidden" name="hours" value="8 Hours" />
+      <input type="hidden" name="vehicle" value="wedding-package" />
       <input type="hidden" name="package" value="Wedding trolley and coach package" />
 
       <p class="wpq__intro">
@@ -51,25 +51,25 @@ const reserveHref = '/reserve?eventType=Wedding&hours=8&vehicle=more-than-one';
       <fieldset class="wpq__set">
         <legend class="coordinate coordinate--ink">The wedding day</legend>
         <div class="wpq__grid">
-          <label class="control" data-required>
+          <label class="control">
             <span>Wedding date</span>
-            <input name="date" type="date" min={today} required />
+            <input name="date" type="date" min={today} />
           </label>
-          <label class="control" data-required>
+          <label class="control">
             <span>First pickup time</span>
-            <input name="time" type="time" required />
+            <input name="time" type="time" />
           </label>
-          <label class="control wpq__wide" data-required>
+          <label class="control wpq__wide">
             <span>Hotel pickup location(s)</span>
-            <input name="pickup" required placeholder="Hotel names or addresses" autocomplete="street-address" />
+            <input name="pickup" placeholder="Hotel names or addresses" autocomplete="street-address" />
           </label>
-          <label class="control wpq__wide" data-required>
+          <label class="control wpq__wide">
             <span>Reception venue</span>
-            <input name="dropoff" required placeholder="Venue name or address" />
+            <input name="dropoff" placeholder="Venue name or address" />
           </label>
-          <label class="control" data-required>
+          <label class="control">
             <span>Guests riding the coach</span>
-            <select name="passengers" required>
+            <select name="passengers">
               <option value="">Select</option>
               {PASSENGER_OPTIONS.map((count) => <option value={count}>{count}</option>)}
             </select>
@@ -87,17 +87,17 @@ const reserveHref = '/reserve?eventType=Wedding&hours=8&vehicle=more-than-one';
       <fieldset class="wpq__set">
         <legend class="coordinate coordinate--ink">Where to send the price</legend>
         <div class="wpq__grid wpq__grid--contact">
-          <label class="control" data-required>
+          <label class="control">
             <span>Name</span>
-            <input name="name" required autocomplete="name" />
+            <input name="name" autocomplete="name" />
           </label>
           <label class="control" data-required>
             <span>Email</span>
             <input name="email" type="email" required autocomplete="email" />
           </label>
-          <label class="control" data-required>
+          <label class="control">
             <span>Phone</span>
-            <input name="phone" type="tel" required autocomplete="tel" />
+            <input name="phone" type="tel" autocomplete="tel" />
           </label>
         </div>
       </fieldset>

@@ -22,6 +22,30 @@ export interface Service {
   body: string[];
   /** The specific worry this buyer has, and how it is answered. */
   concerns: { label: string; answer: string }[];
+  /**
+   * Fleet slugs, largest first, for the vehicle strip on the service page.
+   *
+   * Editorial rather than derived: it is where a group of this kind usually
+   * starts, not a promise of which coach turns up. The headcount decides that,
+   * the page says so in as many words, and every capacity shown is read from
+   * data/fleet.ts rather than typed here — so this list can never contradict a
+   * vehicle's real range. Slugs must exist in FLEET; an unknown one renders
+   * nothing rather than an empty card.
+   */
+  vehicles?: string[];
+  /**
+   * Questions this page answers, emitted as FAQPage structured data.
+   *
+   * Every answer restates something this site already publishes — the driver
+   * standards in `body`, the capacities in data/fleet.ts, the office hours in
+   * config/site.ts, the lead times in the booking guide. Nothing here may be
+   * the only place a fact appears: an answer nobody can check against the rest
+   * of the site is exactly the kind of claim the fleet file forbids.
+   *
+   * Weddings ships its own page with its own FAQ (data/weddings.ts), which is
+   * why this is optional rather than required on all five.
+   */
+  faq?: { q: string; a: string }[];
   meta: { title: string; description: string };
   /**
    * An outbound pointer to the sister property, where that brand answers the
@@ -65,6 +89,25 @@ export const SERVICES: Service[] = [
           'Loop timing, pickup points and return times can be adjusted with us directly — you are talking to the operator, not a booking desk.',
       },
     ],
+    vehicles: ['coach', 'small-coach', 'executive-sprinter'],
+    faq: [
+      {
+        q: 'Can the coach run a loop all day, or is it one transfer?',
+        a: 'Either. We run continuous shuttle loops between hotels, venues and offices — a loop every thirty minutes across an all-day event is normal — or one-way transfers on a fixed schedule. Tell us the pattern and we run it.',
+      },
+      {
+        q: 'How many people fit in one vehicle?',
+        a: 'Four sizes, from a 13–15 passenger Executive Sprinter Van to a 50–57 passenger Supercoach Bus. Above 57 we run more than one vehicle and confirm availability directly.',
+      },
+      {
+        q: 'Our schedule will change. Can the booking change with it?',
+        a: 'Loop timing, pickup points and return times are adjusted with us directly. You are talking to the operator rather than a booking desk, which is the difference that matters the week of an event.',
+      },
+      {
+        q: 'How does this get expensed?',
+        a: 'One charter invoice for the vehicle, instead of reimbursing dozens of individual rides on dozens of expense reports.',
+      },
+    ],
     meta: {
       title: 'Corporate Charter Bus & Staff Shuttle Service | Chicago Super Coach',
       description:
@@ -100,6 +143,25 @@ export const SERVICES: Service[] = [
           'Return times are part of the booking, not an afterthought. Tell us the bell schedule and we build around it.',
       },
     ],
+    vehicles: ['supercoach', 'coach', 'small-coach'],
+    faq: [
+      {
+        q: 'Who will be driving my students?',
+        a: 'Licensed, experienced, insured drivers who are drug tested. We can provide driver details in advance for district records.',
+      },
+      {
+        q: 'Does every seat have a seatbelt?',
+        a: 'Yes — seatbelts on all seats, on a regularly maintained fleet. It is the same vehicle and the same standard we put a corporate client on.',
+      },
+      {
+        q: 'We have to be back before the last bell. Is that in the booking?',
+        a: 'Return times are part of the booking rather than an afterthought. Send the bell schedule with the request and the run sheet is built around it.',
+      },
+      {
+        q: 'How large a group travels in one vehicle?',
+        a: 'Up to 50–57 in the Supercoach Bus, with three smaller sizes below it. A grade level larger than that travels in more than one vehicle, which we confirm on availability rather than assume.',
+      },
+    ],
     meta: {
       title: 'School Bus Charter & Student Group Transportation | Chicago Super Coach',
       description:
@@ -133,6 +195,25 @@ export const SERVICES: Service[] = [
         label: 'Games run long',
         answer:
           'Extra innings and overtime happen. Talk to us about the return window when you book and we plan for it.',
+      },
+    ],
+    vehicles: ['supercoach', 'coach', 'small-coach'],
+    faq: [
+      {
+        q: 'Where does the coach actually drop us?',
+        a: 'Close in at the venue, then the coach parks in the charter lot rather than circling for street parking. Your group walks from the drop-off, not from wherever a garage had space.',
+      },
+      {
+        q: 'What happens if the game runs long?',
+        a: 'Extra innings and overtime happen. Raise the return window when you book and we plan the end of the night around it rather than around a scheduled finish.',
+      },
+      {
+        q: 'Which venues do you run to?',
+        a: 'Cubs, White Sox, Bears, Bulls and Blackhawks games — the Chicago venues where game-day parking is the whole problem. Tell us the fixture and the tip-off or first-pitch time.',
+      },
+      {
+        q: 'Is the driver waiting when we come out?',
+        a: 'The coach is in position when the game ends, which is the part that matters — that is the moment everyone else starts walking to their cars.',
       },
     ],
     meta: {
@@ -217,6 +298,25 @@ export const SERVICES: Service[] = [
         label: 'Parents will ask about the driver',
         answer:
           'Licensed, insured and drug-tested drivers, seatbelts on all seats, regularly maintained vehicles.',
+      },
+    ],
+    vehicles: ['supercoach', 'coach', 'small-coach'],
+    faq: [
+      {
+        q: 'Will the gear fit?',
+        a: 'Overhead racks on every coach, plus undercarriage luggage on request. Equipment bags and overnight luggage travel with the team instead of in a parent convoy behind it.',
+      },
+      {
+        q: 'Parents will ask about the driver. What do we tell them?',
+        a: 'Licensed, insured and drug-tested drivers, seatbelts on all seats, and regularly maintained vehicles — the same standard we hold for school district work.',
+      },
+      {
+        q: 'How do we keep the headcount right?',
+        a: 'One vehicle, one count, at every stop. Chaperones are counting a group rather than tracking a convoy across a car park.',
+      },
+      {
+        q: 'Do you run overnight and out-of-state trips?',
+        a: 'Yes. Out-of-state is an option on the quote form — tell us the days and the nights away, and the quote is built on the vehicle and driver held for that whole stretch.',
       },
     ],
     meta: {

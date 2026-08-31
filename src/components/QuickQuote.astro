@@ -1,7 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import { BUSINESS } from '../config/site';
-import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/formOptions';
+import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/formOptions';
 
 /**
  * The quote form that sits under the hero.
@@ -45,39 +45,49 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
       <fieldset class="qq__set">
         <legend class="coordinate coordinate--ink">Step 1 of 2 · The trip</legend>
         <div class="qq__grid">
-          <label class="control qq__span" data-required>
+          <label class="control qq__span">
             <span>Pickup location</span>
-            <input name="pickup" data-qq-field="from" required placeholder="Hotel, office, school or address" autocomplete="off" />
+            <input name="pickup" data-qq-field="from" placeholder="Hotel, office, school or address" autocomplete="off" />
           </label>
-          <label class="control qq__span" data-required>
+          <label class="control qq__span">
             <span>Drop-off location</span>
-            <input name="dropoff" data-qq-field="to" required placeholder="Venue, stadium or address" autocomplete="off" />
+            <input name="dropoff" data-qq-field="to" placeholder="Venue, stadium or address" autocomplete="off" />
           </label>
-          <label class="control" data-required>
+          <label class="control">
             <span>Date of service</span>
-            <input name="date" data-qq-field="date" type="date" required />
+            <input name="date" data-qq-field="date" type="date" />
           </label>
-          <label class="control" data-required>
+          <label class="control">
             <span>Pickup time</span>
-            <input name="time" data-qq-field="time" type="time" required />
+            <input name="time" data-qq-field="time" type="time" />
           </label>
-          <label class="control" data-required>
+          <label class="control">
             <span>Hours needed</span>
-            <select name="hours" required>
+            <select name="hours">
               <option value="">Select</option>
-              {HOURS.map((h) => <option value={h}>{h}</option>)}
+              {HOURS.map((h) => (
+                <option value={h} data-out-of-state={h === OUT_OF_STATE ? '' : undefined}>{h}</option>
+              ))}
             </select>
           </label>
-          <label class="control" data-required>
+          <!-- Only asked for an out-of-state trip, which is quoted in days rather
+               than in a block of hours. The reveal is CSS off the live selection,
+               so it still works with JavaScript unavailable; the script only
+               clears the count when the answer moves back to hours. -->
+          <label class="control control--days">
+            <span>Number of days needed</span>
+            <input name="days" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 3" />
+          </label>
+          <label class="control">
             <span>Passengers</span>
-            <select name="passengers" data-qq-field="count" required>
+            <select name="passengers" data-qq-field="count">
               <option value="">Select</option>
               {PASSENGER_OPTIONS.map((p) => <option value={p}>{p}</option>)}
             </select>
           </label>
-          <label class="control" data-required>
+          <label class="control">
             <span>Event type</span>
-            <select name="eventType" required>
+            <select name="eventType">
               <option value="">Select</option>
               {EVENT_TYPES.map((e) => <option value={e}>{e}</option>)}
             </select>
@@ -115,17 +125,17 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
 
         <div class="qq__nextbody">
           <div class="qq__grid">
-            <label class="control" data-required>
+            <label class="control">
               <span>Name</span>
-              <input name="name" required autocomplete="name" />
+              <input name="name" autocomplete="name" />
             </label>
             <label class="control" data-required>
               <span>Email</span>
               <input name="email" type="email" required autocomplete="email" />
             </label>
-            <label class="control" data-required>
+            <label class="control">
               <span>Phone</span>
-              <input name="phone" type="tel" required autocomplete="tel" />
+              <input name="phone" type="tel" autocomplete="tel" />
             </label>
             <label class="control qq__span--all">
               <span>Special notes</span>
@@ -232,6 +242,17 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
   .qq__grid > .control,
   .qq__grid :is(input, select, textarea) {
     min-width: 0;
+  }
+
+  /* The day count is a question only for the out-of-state answer, so it is not
+     in the layout until that answer is picked. `:has` reads the live selection,
+     which means the field appears without the script having to run. */
+  .control--days {
+    display: none;
+  }
+
+  .qq__grid:has(option[data-out-of-state]:checked) .control--days {
+    display: flex;
   }
 
   /* Keep narrow phones single-column so native date/time controls and longer
@@ -751,6 +772,21 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
       }
     };
 
+    /**
+     * The day count is revealed in CSS, but a stale value is not something CSS
+     * can clear. A field hidden again after being filled must not submit the
+     * number underneath it, so the answer is cleared on the way out.
+     */
+    const hours = form.elements.namedItem('hours') as HTMLSelectElement | null;
+    const days = form.elements.namedItem('days') as HTMLInputElement | null;
+    const syncDays = () => {
+      if (!hours || !days) return;
+      const outOfState = hours.selectedOptions[0]?.hasAttribute('data-out-of-state') ?? false;
+      if (!outOfState) days.value = '';
+    };
+    syncDays();
+    form.addEventListener('change', syncDays);
+
     let sent = false;
 
     form.addEventListener('submit', (event) => {
@@ -800,9 +836,10 @@ import { EVENT_TYPES, HOURS, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/
     form.addEventListener('change', onEdit);
 
     /**
-     * Step two is folded away, and a required field inside a closed <details> is
-     * one the browser cannot focus to report. Unfold it first — this also covers
-     * pressing Enter in step one, which submits implicitly.
+     * Step two is folded away, and the email field — the one field the form
+     * still requires — lives inside it. A required field inside a closed
+     * <details> is one the browser cannot focus to report, so unfold it first.
+     * This also covers pressing Enter in step one, which submits implicitly.
      * `invalid` does not bubble, hence the capture phase.
      */
     const next = form.querySelector<HTMLDetailsElement>('[data-qq-next]');

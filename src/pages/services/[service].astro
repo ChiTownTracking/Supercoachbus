@@ -1,9 +1,15 @@
 ---
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import PageHead from '../../components/PageHead.astro';
+import GuideCard from '../../components/GuideCard.astro';
 import Icon from '../../components/Icon.astro';
 import { BESPOKE_SERVICE_PAGES, SERVICES } from '../../data/services';
-import { BUSINESS } from '../../config/site';
+import { SERVICE_PHOTOS } from '../../data/servicePhotos';
+import { FLEET, type Vehicle } from '../../data/fleet';
+import { listingShotsFor } from '../../data/fleetPhotos';
+import { GUIDES } from '../../data/guides';
+import { BUSINESS, SITE_ORIGIN } from '../../config/site';
 
 /**
  * Every service except the ones that ship their own page. Weddings is the first:
@@ -21,17 +27,104 @@ export function getStaticPaths() {
 }
 
 const { service } = Astro.props;
+const path = `/services/${service.slug}`;
+const canonical = new URL(path, SITE_ORIGIN).href;
 const others = SERVICES.filter((s) => s.slug !== service.slug);
+const photo = SERVICE_PHOTOS[service.slug];
+
+/**
+ * The vehicle strip. Slugs are resolved against FLEET rather than trusted, and
+ * the photograph is the fleet's own listing frame — the same picture /fleet
+ * shows for that vehicle, so a visitor who follows the card does not find a
+ * different bus at the other end. A vehicle whose pictures have not arrived
+ * still gets a card, because a capacity and a link are the useful part.
+ */
+const rigs = (service.vehicles ?? [])
+  .map((slug) => FLEET.find((v) => v.slug === slug))
+  .filter((v): v is Vehicle => Boolean(v))
+  .map((vehicle) => ({ vehicle, shot: listingShotsFor(vehicle.slug)[0] }));
+
+/**
+ * Structured data, and only what this page can honestly claim.
+ *
+ * `Service` names the offering and points `provider` at the LocalBusiness node
+ * the layout already emits — one company, one node, referenced by id rather
+ * than described twice. `FAQPage` is emitted only where the questions are
+ * genuinely on the page, in this order; it earns no rich result for an ordinary
+ * commercial site, and it is here because it is accurate.
+ */
+const serviceSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  '@id': `${canonical}#service`,
+  name: service.headline,
+  serviceType: service.name,
+  description: service.meta.description,
+  url: canonical,
+  image: new URL(photo.src.src, SITE_ORIGIN).href,
+  provider: { '@id': `${SITE_ORIGIN}/#business` },
+  areaServed: [
+    { '@type': 'City', name: 'Chicago' },
+    { '@type': 'AdministrativeArea', name: 'Chicago metropolitan area' },
+  ],
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_ORIGIN },
+    { '@type': 'ListItem', position: 2, name: 'Services', item: `${SITE_ORIGIN}/services` },
+    { '@type': 'ListItem', position: 3, name: service.name, item: canonical },
+  ],
+};
+
+const faqSchema = service.faq && {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  '@id': `${canonical}#faq`,
+  mainEntity: service.faq.map((item) => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+
+const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [])];
 ---
 
 <Layout
-  path={`/services/${service.slug}`}
+  path={path}
   title={service.meta.title}
   description={service.meta.description}
+  ogImage={photo.src.src}
+  ogImageAlt={photo.alt}
+  jsonLd={schema}
 >
-  <PageHead coordinate={service.destination} title={service.headline} lede={service.proposition} />
+  <PageHead coordinate={service.destination} title={service.headline} lede={service.proposition}>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">/</span>
+      <a href="/services">Services</a>
+    </nav>
+  </PageHead>
 
+  {/* The photograph and the copy are one section, not two: a band boundary
+      between them reads as a subject change, and a section's own padding either
+      side of the plate opens a gap wide enough to look like a mistake. */}
   <div class="section">
+    <div class="shell">
+      <figure class="shot">
+        <Image
+          src={photo.src}
+          alt={photo.alt}
+          widths={[720, 1100, 1600]}
+          sizes="(min-width: 82rem) 78rem, 92vw"
+          loading="eager"
+        />
+      </figure>
+    </div>
+
     <div class="shell svc__grid">
       <div class="svc__body stack">
         {service.body.map((p) => <p class="svc__p">{p}</p>)}
@@ -65,6 +158,87 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
     </div>
   </div>
 
+  {
+    rigs.length > 0 && (
+      <section class="section--tight rigs" aria-labelledby="rigs-head">
+        <div class="shell">
+          <p class="coordinate coordinate--ink">Where this group sits</p>
+          <h2 class="subtitle rigs__head" id="rigs-head">
+            The sizes this trip usually takes.
+          </h2>
+          <p class="lede rigs__lede">
+            A starting point, not the answer — the headcount decides the vehicle,
+            and we confirm the smallest one that seats the group and the job.
+          </p>
+
+          <ul class="rigs__list">
+            {rigs.map(({ vehicle, shot }) => (
+              <li>
+                <a class="rig" href={`/fleet/${vehicle.slug}`}>
+                  {shot && (
+                    <span class="rig__frame">
+                      <Image
+                        src={shot.src}
+                        alt={shot.alt}
+                        widths={[360, 540, 760]}
+                        sizes="(min-width: 64rem) 21rem, (min-width: 44rem) 44vw, 90vw"
+                        loading="lazy"
+                      />
+                    </span>
+                  )}
+                  <span class="rig__cap mono">
+                    <b>{vehicle.capacityLabel}</b> passengers
+                  </span>
+                  <span class="rig__name gothic">{vehicle.name}</span>
+                  <span class="rig__role">{vehicle.role}</span>
+                  <span class="rig__link direction">
+                    See this vehicle
+                    <Icon name="arrow" size={15} />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    service.faq && (
+      <section class="section--tight field faq" aria-labelledby="faq-head">
+        <div class="shell">
+          <p class="coordinate">Before you send the request</p>
+          <h2 class="subtitle faq__head" id="faq-head">
+            Questions we get about this trip.
+          </h2>
+          <dl class="faq__list">
+            {service.faq.map((item) => (
+              <div class="faq__item">
+                <dt class="faq__q">{item.q}</dt>
+                <dd class="faq__a">{item.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+    )
+  }
+
+  {/* Guides sit between the questions and the call, so the two enamel bands do
+      not run together into one green block. Paper, enamel, paper, enamel — the
+      alternation is what gives each band an edge to be read against. */}
+  <section class="section--tight" aria-labelledby="reading-head">
+    <div class="shell">
+      <h2 class="coordinate coordinate--ink" id="reading-head">Worth reading first</h2>
+      <div class="reading">
+        {GUIDES.map((guide) => <GuideCard guide={guide} />)}
+      </div>
+    </div>
+  </section>
+
+  {/* `field` is load-bearing, not decoration: the ghost button is outlined in
+      white and is invisible on paper. The band and the button are one design. */}
   <section class="section--tight field cta">
     <div class="shell cta__inner">
       <div>
@@ -106,6 +280,77 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
 </Layout>
 
 <style>
+  /* ---- Breadcrumb, inside the enamel nameplate ---- */
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--enamel-line);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--signal-dim);
+  }
+
+  .crumbs a {
+    color: var(--signal-dim);
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--signal);
+  }
+
+  /* ---- Lead photograph, mounted as a plate ---- */
+
+  .shot {
+    position: relative;
+    margin: 0 0 var(--space-12);
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .shot::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  /* The plate widens as the viewport does, and gets slimmer with it. A phone
+     reads the photograph as a picture and wants its height; a 78rem desktop
+     reads the same crop as a wall, and 3:2 at that width pushes the opening
+     paragraph below the fold. Three steps rather than one breakpoint, because
+     the middle widths are where a single ratio always looks wrong. */
+  .shot :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+  }
+
+  @media (min-width: 44rem) {
+    .shot :global(img) {
+      aspect-ratio: 5 / 2;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .shot :global(img) {
+      aspect-ratio: 4 / 1;
+    }
+  }
+
   .svc__grid {
     display: grid;
     gap: var(--space-12);
@@ -173,6 +418,141 @@ const others = SERVICES.filter((s) => s.slug !== service.slug);
     font-size: 0.9375rem;
     line-height: 1.6;
     color: var(--ink-dim);
+  }
+
+  /* ---- The sizes this trip takes ---- */
+
+  .rigs__head {
+    margin-top: var(--space-2);
+  }
+
+  .rigs__lede {
+    max-width: 52ch;
+    margin-top: var(--space-3);
+  }
+
+  .rigs__list {
+    display: grid;
+    gap: var(--space-6);
+    margin: var(--space-10) 0 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
+  /* The vehicle's own listing frame, mounted the way /fleet mounts it: a plate
+     with a scribed keyline, type on the ground below rather than in a panel. */
+  .rig {
+    display: grid;
+    gap: var(--space-2);
+    height: 100%;
+    align-content: start;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .rig__frame {
+    position: relative;
+    display: block;
+    margin-bottom: var(--space-3);
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .rig__frame::after {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid var(--keyline);
+    border-radius: 1px;
+    pointer-events: none;
+  }
+
+  .rig__frame :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    transition: transform 400ms var(--ease-out);
+  }
+
+  .rig:hover .rig__frame :global(img) {
+    transform: scale(1.03);
+  }
+
+  .rig__cap {
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .rig__cap b {
+    color: var(--enamel-ink);
+    font-size: 0.8125rem;
+  }
+
+  .rig__name {
+    font-size: 1.125rem;
+    letter-spacing: -0.01em;
+  }
+
+  .rig__role {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+
+  .rig__link {
+    margin-top: var(--space-2);
+  }
+
+  .rig:hover .rig__link {
+    color: var(--hivis-text);
+  }
+
+  /* ---- Questions, on the enamel band ---- */
+
+  .faq__head {
+    margin-top: var(--space-2);
+  }
+
+  .faq__list {
+    display: grid;
+    gap: var(--space-8) var(--space-12);
+    margin: var(--space-10) 0 0;
+  }
+
+  @media (min-width: 56rem) {
+    .faq__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .faq__q {
+    margin-bottom: var(--space-3);
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .faq__a {
+    margin: 0;
+    max-width: 58ch;
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: var(--signal-dim);
+  }
+
+  /* ---- Guides ---- */
+
+  .reading {
+    display: grid;
+    gap: var(--space-8);
+    margin-top: var(--space-6);
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   }
 
   .cta__inner {

@@ -613,7 +613,7 @@ export const GUIDES: Guide[] = [
     },
     meta: {
       title: 'What Size Charter Bus Do You Need? | Chicago Super Coach',
-      description: 'The largest vehicle we run seats up to 57 and the smallest is a 13–16 passenger van. Match a Chicago group to one by luggage, gear and time in the seat.',
+      description: 'The largest vehicle we run seats up to 57 and the smallest is a 13–15 passenger van. Match a Chicago group to one by luggage, gear and time in the seat.',
     },
   },
   {
