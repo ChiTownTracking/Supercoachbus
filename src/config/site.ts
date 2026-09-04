@@ -16,6 +16,9 @@ export const SITE_ORIGIN = 'https://www.chicagosupercoachbus.com';
 /** GA4 measurement ID for the Google tag loaded in the shared layout head. */
 export const GA_MEASUREMENT_ID = 'G-WGL6C1FNX9';
 
+/** Microsoft Clarity project ID, loaded alongside the Google tag. */
+export const CLARITY_PROJECT_ID = 'ycvelkswtc';
+
 export const BUSINESS = {
   name: 'Chicago Super Coach',
   legalName: 'Chicago Super Coach',
