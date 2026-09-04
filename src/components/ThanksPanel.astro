@@ -1,0 +1,80 @@
+---
+import Icon from './Icon.astro';
+import { BUSINESS } from '../config/site';
+
+/**
+ * The body of a confirmation page. Every form has its own success page now —
+ * the Google Ads quote conversion has to be able to tell a quote apart from a
+ * contact message — so the part that does not change lives here rather than
+ * being copied four times.
+ */
+---
+
+<section class="section">
+  <div class="shell thanks">
+    <div>
+      <h2 class="subtitle">Need an answer sooner?</h2>
+      <p class="thanks__copy">
+        Call the office and tell us you have already sent the form so we can
+        find the request quickly.
+      </p>
+    </div>
+    <div class="thanks__actions">
+      <a class="action action--ink" href={BUSINESS.phone.href}>
+        <Icon name="phone" size={16} />
+        {BUSINESS.phone.display}
+      </a>
+      <a class="direction thanks__home" href="/">
+        Return home
+        <Icon name="arrow" size={15} />
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .thanks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+  }
+
+  .thanks__copy {
+    max-width: 48ch;
+    margin-top: var(--space-4);
+    line-height: 1.65;
+    color: var(--ink-dim);
+  }
+
+  .thanks__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .thanks__home {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--enamel-ink);
+  }
+
+  @media (max-width: 35rem) {
+    .thanks__actions {
+      width: 100%;
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    .thanks__actions .action {
+      justify-content: center;
+    }
+  }
+</style>

@@ -39,7 +39,13 @@ function migrationArtifacts() {
 
 /** Old paths exist only as redirect stubs — they must never enter the sitemap. */
 const REDIRECT_PATHS = new Set(REDIRECTS.map((r) => r.from));
-const NOINDEX_PATHS = new Set(['/404', '/thanks']);
+/**
+ * Matched as subtrees: every confirmation page under /thanks is noindex, and a
+ * new one must not have to be remembered here to stay out of the sitemap.
+ */
+const NOINDEX_PREFIXES = ['/404', '/thanks'];
+const isNoindex = (path: string) =>
+  NOINDEX_PREFIXES.some((p) => path === p || path.startsWith(`${p}/`));
 
 export default defineConfig({
   site: SITE_ORIGIN,
@@ -48,7 +54,7 @@ export default defineConfig({
     sitemap({
       filter: (page) => {
         const path = new URL(page).pathname.replace(/\/$/, '') || '/';
-        return !REDIRECT_PATHS.has(path) && !NOINDEX_PATHS.has(path);
+        return !REDIRECT_PATHS.has(path) && !isNoindex(path);
       },
     }),
     migrationArtifacts(),

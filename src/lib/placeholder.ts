@@ -93,8 +93,10 @@ export const OPEN_ITEMS = {
   // form.quote.endpoint / form.reserve.endpoint / form.contact.endpoint —
   // RESOLVED 23 Aug 2026. All three submission forms are statically detected
   // and handled by Netlify Forms. Quote and reservation requests retain their
-  // inline receipt through a URL-encoded AJAX POST; the contact form and every
-  // no-JavaScript submission use the shared /thanks/ page.
+  // inline receipt through a URL-encoded AJAX POST until Netlify confirms it,
+  // then land on their own confirmation page — /thanks/quote, which counts the
+  // Google Ads quote conversion, or /thanks/reservation. The contact form and
+  // every no-JavaScript submission are redirected there by Netlify itself.
   // about.years — RESOLVED 23 Aug 2026. The owner confirmed that Chicago
   // Super Coach has been a trusted name in ground transportation for over 15
   // years. The site states that duration directly rather than inventing a

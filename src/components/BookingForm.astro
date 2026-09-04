@@ -34,6 +34,14 @@ interface Props {
 const { mode } = Astro.props;
 const isReserve = mode === "reserve";
 const formName = isReserve ? "reservation-request" : "quote-request";
+/**
+ * Each form has its own success page, because /thanks/quote/ is what fires the
+ * Google Ads quote conversion and a reservation is not a quote. The script
+ * reads this back off the form's action, so the scripted and unscripted paths
+ * cannot diverge.
+ */
+const successPath = isReserve ? "/thanks/reservation" : "/thanks/quote";
+const requested = isReserve ? "Reservation requested" : "Quote requested";
 ---
 
 <div class="booking">
@@ -42,7 +50,7 @@ const formName = isReserve ? "reservation-request" : "quote-request";
     data-booking
     name={formName}
     method="post"
-    action="/thanks/"
+    action={successPath}
     data-netlify="true"
     netlify-honeypot="bot-field"
   >
@@ -286,8 +294,8 @@ const formName = isReserve ? "reservation-request" : "quote-request";
   <div class="rb blade" hidden data-route-blade aria-live="polite">
     <div class="rb__strip">
       <span class="rb__coord mono">{BUSINESS.address.gridCoordinate}</span>
-      <span class="rb__service mono"
-        >{isReserve ? "Reservation requested" : "Quote requested"}</span
+      <span class="rb__service mono" data-blade-service data-requested={requested}
+        >{requested}</span
       >
     </div>
 
@@ -722,7 +730,10 @@ const formName = isReserve ? "reservation-request" : "quote-request";
       detail: blade.querySelector<HTMLElement>("[data-blade-detail]")!,
       status: blade.querySelector<HTMLElement>("[data-blade-status]")!,
       call: blade.querySelector<HTMLElement>("[data-blade-call]")!,
+      service: blade.querySelector<HTMLElement>("[data-blade-service]")!,
     };
+    /** "Reservation requested" or "Quote requested", per the form's mode. */
+    const requested = out.service.dataset.requested ?? out.service.textContent!;
     const statusLine = out.status.parentElement!;
 
     const field = (name: string) =>
@@ -768,15 +779,22 @@ const formName = isReserve ? "reservation-request" : "quote-request";
       return text;
     };
 
-    /** `withCall` reveals the phone link, for the states where calling is the fix. */
+    /**
+     * `withCall` reveals the phone link, for the states where calling is the fix.
+     * `service` is the strip line at the top of the blade: it is the state of
+     * the request, so it moves with the status rather than claiming a request
+     * that never left the browser.
+     */
     const setStatus = (
       text: string,
       tone: "act" | "plain",
       withCall = false,
+      service = requested,
     ) => {
       out.status.textContent = text;
       statusLine.setAttribute("data-tone", tone);
       out.call.hidden = !withCall;
+      out.service.textContent = service;
     };
 
     let lastVehicle = "";
@@ -883,7 +901,7 @@ const formName = isReserve ? "reservation-request" : "quote-request";
         if (typeof value === "string") body.append(key, value);
       }
 
-      setStatus("Sending…", "plain");
+      setStatus("Sending…", "plain", false, "Sending");
       fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -895,9 +913,18 @@ const formName = isReserve ? "reservation-request" : "quote-request";
             "Successfully submitted. We reply during office hours.",
             "plain",
           );
+          // Only a confirmed submission moves the browser: the quote success
+          // page counts a Google Ads conversion, so a click, a send still in
+          // flight or a failed send must never reach it.
+          window.location.assign(form.getAttribute("action") || "/thanks");
         })
         .catch(() =>
-          setStatus("That did not send. Reach us directly:", "act", true),
+          setStatus(
+            "That did not send. Reach us directly:",
+            "act",
+            true,
+            "Not sent",
+          ),
         );
 
       if (firstReveal) {
@@ -919,6 +946,8 @@ const formName = isReserve ? "reservation-request" : "quote-request";
         setStatus(
           "Details changed. Send the request again to update it.",
           "act",
+          false,
+          "Not sent",
         );
         sent = false;
       }

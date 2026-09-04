@@ -2,7 +2,13 @@
 import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { BUSINESS, CLARITY_PROJECT_ID, GA_MEASUREMENT_ID, SITE_ORIGIN } from '../config/site';
+import {
+  BUSINESS,
+  CLARITY_PROJECT_ID,
+  GA_MEASUREMENT_ID,
+  GOOGLE_ADS_ID,
+  SITE_ORIGIN,
+} from '../config/site';
 import logo from '../assets/images/logo.png';
 
 interface Props {
@@ -129,13 +135,23 @@ const schema = {
       is:inline
       async
       src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}></script>
-    <script is:inline define:vars={{ GA_MEASUREMENT_ID }}>
+    {/*
+      `define:vars` wraps the body in an IIFE, so a bare `function gtag()` here
+      would be scoped to it and every later caller — the conversion page below
+      the fold, most of all — would get `gtag is not defined`. The stub is put
+      on `window` deliberately, and the conditional keeps a second parse from
+      replacing a queue that already has entries in it.
+    */}
+    <script is:inline define:vars={{ GA_MEASUREMENT_ID, GOOGLE_ADS_ID }}>
       window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
+      window.gtag =
+        window.gtag ||
+        function () {
+          window.dataLayer.push(arguments);
+        };
       gtag('js', new Date());
       gtag('config', GA_MEASUREMENT_ID);
+      gtag('config', GOOGLE_ADS_ID);
     </script>
     {/* Microsoft Clarity — session recording and heatmaps. */}
     <script is:inline define:vars={{ CLARITY_PROJECT_ID }}>

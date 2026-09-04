@@ -1,0 +1,21 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import ThanksPanel from '../../components/ThanksPanel.astro';
+import { BUSINESS } from '../../config/site';
+---
+
+<Layout
+  path="/thanks/contact"
+  title="Message Received | Chicago Super Coach"
+  description="Your message was sent to Chicago Super Coach."
+  noindex
+>
+  <PageHead
+    coordinate="Message received"
+    title="Thank you. We have your message."
+    lede={`We reply during office hours: ${BUSINESS.hours.officeSummary}. For a priced charter, the quote form asks the questions we need answered.`}
+  />
+
+  <ThanksPanel />
+</Layout>

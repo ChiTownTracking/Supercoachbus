@@ -1,0 +1,33 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import PageHead from '../../components/PageHead.astro';
+import ThanksPanel from '../../components/ThanksPanel.astro';
+import { BUSINESS, QUOTE_CONVERSION } from '../../config/site';
+---
+
+<Layout
+  path="/thanks/quote"
+  title="Quote Request Received | Chicago Super Coach"
+  description="Your quote request was sent to Chicago Super Coach."
+  noindex
+>
+  <PageHead
+    coordinate="Quote request received"
+    title="Your quote request is in."
+    lede={`We price it and reply during office hours: ${BUSINESS.hours.officeSummary}. A quote is not a held vehicle until we confirm it with you directly.`}
+  />
+
+  <ThanksPanel />
+</Layout>
+
+{/*
+  Event snippet for the Supercoach quote-form conversion. This page is reached
+  only after Netlify has accepted a quote-request submission, which is what
+  makes the page load a safe proxy for the conversion. It is deliberately the
+  only page on the site carrying it — see the note on QUOTE_CONVERSION.
+*/}
+<script is:inline define:vars={{ QUOTE_CONVERSION }}>
+  if (typeof window.gtag === 'function') {
+    window.gtag('event', 'conversion', { send_to: QUOTE_CONVERSION });
+  }
+</script>

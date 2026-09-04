@@ -19,6 +19,16 @@ export const GA_MEASUREMENT_ID = 'G-WGL6C1FNX9';
 /** Microsoft Clarity project ID, loaded alongside the Google tag. */
 export const CLARITY_PROJECT_ID = 'ycvelkswtc';
 
+/**
+ * Google Ads. The gtag.js loader in the layout head carries the GA4 ID, but a
+ * conversion only counts if the Ads account is `config`-ed on the same tag —
+ * hence both IDs, one loader. `QUOTE_CONVERSION` is the `send_to` for the
+ * quote-form conversion fired on /thanks/quote — the one page reached only by
+ * a quote submission Netlify has already accepted.
+ */
+export const GOOGLE_ADS_ID = 'AW-17907076689';
+export const QUOTE_CONVERSION = 'AW-17907076689/wPQwCJq__u0cENGc4dpC';
+
 export const BUSINESS = {
   name: 'Chicago Super Coach',
   legalName: 'Chicago Super Coach',

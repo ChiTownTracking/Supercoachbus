@@ -17,8 +17,11 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
  * the fields, so an edit is reflected rather than left stale.
  *
  * Submission: with JavaScript, submit is intercepted, the blade is revealed in
- * place, and a URL-encoded payload is posted to Netlify Forms. Without
- * JavaScript the same POST lands on the shared confirmation page.
+ * place, and a URL-encoded payload is posted to Netlify Forms. Only once
+ * Netlify accepts it does the browser move to /thanks/quote — that page is
+ * what fires the Google Ads quote conversion, so it must be reachable by a
+ * confirmed submission and by nothing else. A failed POST stays here and says
+ * so. Without JavaScript the form's own action lands on the same page.
  */
 ---
 
@@ -30,7 +33,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
       class="qq__form"
       name="quote-request"
       method="post"
-      action="/thanks/"
+      action="/thanks/quote"
       data-quick-quote
       data-netlify="true"
       netlify-honeypot="bot-field"
@@ -160,7 +163,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
     <div class="qb blade" hidden data-qq-blade aria-live="polite">
       <div class="qb__strip">
         <span class="qb__coord mono">{BUSINESS.address.gridCoordinate}</span>
-        <span class="qb__service mono">Quote requested</span>
+        <span class="qb__service mono" data-qq-service>Quote requested</span>
       </div>
 
       <p class="qb__route gothic">
@@ -707,6 +710,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
       detail: blade.querySelector<HTMLElement>('[data-qq-detail]')!,
       status: blade.querySelector<HTMLElement>('[data-qq-status]')!,
       call: blade.querySelector<HTMLElement>('[data-qq-call]')!,
+      service: blade.querySelector<HTMLElement>('[data-qq-service]')!,
     };
     const statusLine = out.status.parentElement!;
 
@@ -736,11 +740,22 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
       return text;
     };
 
-    /** `withCall` reveals the phone link, for the states where calling is the fix. */
-    const setStatus = (text: string, tone: 'act' | 'plain', withCall = false) => {
+    /**
+     * `withCall` reveals the phone link, for the states where calling is the fix.
+     * `service` is the strip line at the top of the blade: it is the state of
+     * the request, so it moves with the status rather than sitting on "Quote
+     * requested" over a request that never left the browser.
+     */
+    const setStatus = (
+      text: string,
+      tone: 'act' | 'plain',
+      withCall = false,
+      service = 'Quote requested'
+    ) => {
       out.status.textContent = text;
       statusLine.setAttribute('data-tone', tone);
       out.call.hidden = !withCall;
+      out.service.textContent = service;
     };
 
     let lastVehicle = '';
@@ -804,7 +819,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
         if (typeof value === 'string') body.append(key, value);
       }
 
-      setStatus('Sending…', 'plain');
+      setStatus('Sending…', 'plain', false, 'Sending');
       fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -813,8 +828,15 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
         .then((res) => {
           if (!res.ok) throw new Error(String(res.status));
           setStatus('Request received. We reply during office hours.', 'plain');
+          // Read off the form's own action so the scripted and unscripted
+          // paths cannot land on different pages. Only here: the success page
+          // is what counts the conversion, so a click, a send in flight or a
+          // failed send must never reach it.
+          window.location.assign(form.getAttribute('action') || '/thanks/quote');
         })
-        .catch(() => setStatus('That did not send. Reach us directly:', 'act', true));
+        .catch(() =>
+          setStatus('That did not send. Reach us directly:', 'act', true, 'Not sent')
+        );
 
       if (firstReveal) {
         const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -827,7 +849,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
       if (blade.hidden) return;
       update();
       if (sent) {
-        setStatus('Details changed. Send the request again to update it.', 'act');
+        setStatus('Details changed. Send the request again to update it.', 'act', false, 'Not sent');
         sent = false;
       }
     };
