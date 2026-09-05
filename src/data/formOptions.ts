@@ -46,21 +46,6 @@ export const OUT_OF_STATE = 'Out of State Trip';
 export const HOURS = [OUT_OF_STATE, '3 Hours', '5 Hours', '8 Hours'];
 
 /**
- * Headcounts, as the fleet's own capacity bands rather than a run of every
- * number from one. A charter is sold by the vehicle a group fits in, so the
- * bands are the four `capacityLabel`s read small to large — they cannot drift
- * from data/fleet.ts, and a re-ranged vehicle re-ranges this list with it.
- *
- * The top band carries the `+`: above the largest vehicle the answer is more
- * than one vehicle, which is an availability question rather than a headcount.
- * A group between two bands — or under the smallest — picks the band above it,
- * which is the vehicle that would carry them anyway.
- */
-export const PASSENGER_OPTIONS = [...FLEET]
-  .reverse()
-  .map((v, i, all) => (i === all.length - 1 ? `${v.capacityLabel}+` : v.capacityLabel));
-
-/**
  * Vehicle, asked as a preference rather than a requirement.
  *
  * With four sizes this is a real choice, but it opens unanswered — the empty

@@ -101,7 +101,7 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
   ogImageAlt={photo.alt}
   jsonLd={schema}
 >
-  <PageHead coordinate={service.destination} title={service.headline} lede={service.proposition}>
+  <PageHead coordinate={service.destination} title={service.headline}>
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span aria-hidden="true">/</span>
@@ -287,7 +287,9 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
     flex-wrap: wrap;
     align-items: baseline;
     gap: var(--space-3);
-    margin-top: var(--space-8);
+    /* Was a step wider, to clear the lede that used to sit above it. With the
+       band carrying the nameplate alone, that distance read as a hole. */
+    margin-top: var(--space-6);
     padding-top: var(--space-4);
     border-top: 1px solid var(--enamel-line);
     font-family: var(--font-mono);

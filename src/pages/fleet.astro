@@ -18,8 +18,6 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
   <PageHead
     coordinate={`${SMALLEST}–${MAX_SINGLE_VEHICLE} passengers`}
     title="Four vehicles, by the number that decides."
-    lede="Capacity is what decides a charter, so it leads. Pick the size that fits the group and we will confirm the exact seat count when we quote."
-    hideLedeOnMobile
   />
 
   <div class="section--tight">
@@ -111,18 +109,20 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
                 </div>
               </div>
 
-              {/* Quote stays the amber one: this is a listing, and the page it
-                  lists toward is not the conversion. The phone number it
-                  replaced is still in the masthead and in the footer of every
-                  page, so nothing was taken away — a second identical phone
-                  button on each of four rows was the least useful thing here. */}
+              {/* View leads now, because the whole row is that link: the
+                  anchor below is stretched over the card (see .v__open), so a
+                  click anywhere on the vehicle opens its page. Quote follows
+                  and keeps the amber — this is a listing, and the page it lists
+                  toward is not the conversion. The phone number it replaced is
+                  still in the masthead and in the footer of every page, so
+                  nothing was taken away. */}
               <div class="v__actions">
-                <a class="action v__quote" href="/#quote-form">
-                  Quote this vehicle
+                <a class="action action--ink v__open" href={vehicleHref(v)}>
+                  View this vehicle
                   <Icon name="arrow" size={16} />
                 </a>
-                <a class="action action--ink" href={vehicleHref(v)}>
-                  View this vehicle
+                <a class="action v__quote" href="/#quote-form">
+                  Quote this vehicle
                   <Icon name="arrow" size={16} />
                 </a>
               </div>
@@ -163,6 +163,7 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
      rows sit this close: the boundary is drawn, so it does not have to be a
      gap wide enough to read as one. */
   .v {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: var(--space-6);
@@ -415,6 +416,34 @@ const SMALLEST = Math.min(...FLEET.map((v) => v.seatsMin));
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-4);
+  }
+
+  /* The whole row is the link to the vehicle. It is done by stretching the
+     "View this vehicle" anchor over the card rather than wrapping the row in
+     one or handing it a click script: the page keeps a single real link per
+     destination, the keyboard target stays where it is visible, and it holds
+     with JavaScript unavailable. */
+  .v__open::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius);
+  }
+
+  /* .action lifts on hover and presses on click. Here that transform would
+     make the anchor the containing block for the sheet above, collapsing it
+     onto the button itself the moment the pointer entered the card — the
+     overlay would flicker in and out under a still pointer. The button keeps
+     its colour and shadow response; only the movement goes. */
+  .v__open:hover,
+  .v__open:active {
+    transform: none;
+  }
+
+  /* Quote has its own destination, so it stands above the sheet. */
+  .v__quote {
+    position: relative;
+    z-index: 1;
   }
 
   .note__head {

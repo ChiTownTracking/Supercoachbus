@@ -1,7 +1,7 @@
 ---
 import Icon from './Icon.astro';
 import { BUSINESS } from '../config/site';
-import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } from '../data/formOptions';
+import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formOptions';
 
 /**
  * The quote form that sits under the hero.
@@ -83,10 +83,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, PASSENGER_OPTIONS, VEHICLE_OPTIONS } 
           </label>
           <label class="control">
             <span>Passengers</span>
-            <select name="passengers" data-qq-field="count">
-              <option value="">Select</option>
-              {PASSENGER_OPTIONS.map((p) => <option value={p}>{p}</option>)}
-            </select>
+            <input name="passengers" data-qq-field="count" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 45" />
           </label>
           <label class="control">
             <span>Event type</span>

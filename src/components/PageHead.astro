@@ -7,26 +7,37 @@
  * The coordinate line is optional and must carry real information — an address,
  * a capacity, a phone number, a destination. A line that merely restates the
  * heading below it is a kicker, and the heading carries its own weight.
+ *
+ * There is no lede here any more. The nameplate names the page and hands the
+ * reader straight down to the content; page copy that used to sit in the band
+ * belongs in the section it introduces, not in the header.
+ */
+/**
+ * `capacity` is the passenger range, set inside the heading itself — a vehicle
+ * is named by what it carries, so the number belongs to the nameplate rather
+ * than to a kicker above it. A page passing it should not also pass a
+ * coordinate repeating it.
  */
 interface Props {
   coordinate?: string;
   title: string;
-  lede?: string;
-  hideLedeOnMobile?: boolean;
+  capacity?: string;
 }
 
-const { coordinate, title, lede, hideLedeOnMobile = false } = Astro.props;
+const { coordinate, title, capacity } = Astro.props;
 ---
 
 <section class="head field">
   <div class="shell">
     {coordinate && <p class="coordinate">{coordinate}</p>}
-    <h1 class="display head__title">{title}</h1>
-    {lede && (
-      <p class:list={['lede', 'head__lede', hideLedeOnMobile && 'head__lede--mobile-hidden']}>
-        {lede}
-      </p>
-    )}
+    <h1 class="display head__title">
+      {title}
+      {capacity && (
+        <span class="head__cap mono">
+          <span class="head__capnum">{capacity}</span> passengers
+        </span>
+      )}
+    </h1>
     <slot />
   </div>
 </section>
@@ -38,7 +49,7 @@ const { coordinate, title, lede, hideLedeOnMobile = false } = Astro.props;
      to spend on it. A page's nameplate, not a hero — it should hand the reader
      down to the content, not occupy a viewport doing it. */
   .head {
-    padding-block: clamp(var(--space-8), 4.5vw, var(--space-12));
+    padding-block: clamp(var(--space-6), 3vw, var(--space-8));
   }
 
   .head__title {
@@ -46,14 +57,27 @@ const { coordinate, title, lede, hideLedeOnMobile = false } = Astro.props;
     max-width: 18ch;
   }
 
-  .head__lede {
-    max-width: 52ch;
-    margin-top: var(--space-6);
+  /* Set the way the fleet cards set a capacity under the vehicle name — the
+     number large in mono, the unit small beside it — so the same fact wears
+     the same face on the listing and on the vehicle's own page. It is a block
+     because it is a second line of the nameplate, not a suffix to the name. */
+  .head__cap {
+    display: block;
+    margin-top: var(--space-4);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--signal-dim);
   }
 
-@media (max-width: 63.999rem) {
-  .head__lede--mobile-hidden {
-    display: none;
+  .head__capnum {
+    display: inline-block;
+    margin-right: var(--space-2);
+    font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--signal);
+    vertical-align: -0.15em;
   }
-}
 </style>

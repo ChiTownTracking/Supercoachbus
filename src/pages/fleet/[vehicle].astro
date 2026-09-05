@@ -63,7 +63,7 @@ const breadcrumbSchema = {
   ogImage={shots[0]?.src.src}
   jsonLd={[vehicleSchema, breadcrumbSchema]}
 >
-  <PageHead coordinate={`${vehicle.capacityLabel} passengers`} title={vehicle.name} lede={vehicle.role}>
+  <PageHead title={vehicle.name} capacity={vehicle.capacityLabel}>
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span aria-hidden="true">/</span>
@@ -221,7 +221,9 @@ const breadcrumbSchema = {
     display: flex;
     align-items: baseline;
     gap: var(--space-3);
-    margin-top: var(--space-8);
+    /* Was a step wider, to clear the lede that used to sit above it. With the
+       band carrying the nameplate alone, that distance read as a hole. */
+    margin-top: var(--space-6);
     padding-top: var(--space-4);
     border-top: 1px solid var(--enamel-line);
     font-family: var(--font-mono);

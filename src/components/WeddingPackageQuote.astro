@@ -1,7 +1,6 @@
 ---
 import Icon from './Icon.astro';
 import { BUSINESS } from '../config/site';
-import { PASSENGER_OPTIONS } from '../data/formOptions';
 
 const today = new Date().toISOString().slice(0, 10);
 const reserveHref = '/reserve?eventType=Wedding+Guest+Shuttle&hours=8+Hours&vehicle=wedding-package';
@@ -69,10 +68,7 @@ const reserveHref = '/reserve?eventType=Wedding+Guest+Shuttle&hours=8+Hours&vehi
           </label>
           <label class="control">
             <span>Guests riding the coach</span>
-            <select name="passengers">
-              <option value="">Select</option>
-              {PASSENGER_OPTIONS.map((count) => <option value={count}>{count}</option>)}
-            </select>
+            <input name="passengers" type="number" min="1" step="1" inputmode="numeric" placeholder="e.g. 45" />
           </label>
           <label class="control wpq__wide">
             <span>Ceremony, photo stops and return plan</span>
