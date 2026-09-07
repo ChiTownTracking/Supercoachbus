@@ -38,6 +38,41 @@ resolved client-side in [`src/pages/services/index.astro`](src/pages/services/in
 | `/shuttle-bus-services#WeddingTransportationServices` | `/services/weddings` |
 | `/shuttle-bus-services#YouthGroupTransportation` | `/services/youth-groups` |
 
+## URL policy
+
+One policy, and every artifact has to spell it the same way: **`https`, apex
+host, no trailing slash.**
+
+| Artifact | Source |
+|---|---|
+| Canonical tags, `og:url`, JSON-LD `@id` | `SITE_ORIGIN` in `src/config/site.ts` |
+| Sitemap entries | `site` + `trailingSlash` in `astro.config.ts` |
+| `Sitemap:` line in `robots.txt` | generated from `SITE_ORIGIN` at build time |
+| Redirect targets | `src/data/redirects.ts` |
+| Internal links | written slash-less throughout `src/` |
+| Served URLs | `build.format: 'file'` in `astro.config.ts` |
+
+Two of those disagreed with the host in production, and between them they
+account for most of what Search Console reported:
+
+- **Host.** Netlify's primary domain for this site is the **apex**, so
+  `www.chicagosupercoachbus.com` answers `301`. `SITE_ORIGIN` said `www`, so
+  every canonical tag, `og:url` and sitemap entry named a hostname that
+  redirects away from the page doing the naming.
+- **Trailing slash.** Netlify canonicalises a request toward whichever shape
+  exists on disk. Directory output (`fleet/index.html`) made it answer `/fleet`
+  with a `301` to `/fleet/` — while `trailingSlash: 'never'` had every link,
+  canonical and sitemap entry pointing at the slash-less form. `build.format:
+  'file'` emits `fleet.html`, and Netlify then canonicalises the other way, onto
+  the URL this repo already declares.
+
+Verified against the live site before the change: `/netlify-forms/` and `/404/`
+(both flat files) answered `301` to the slash-less form, while `/fleet` (a
+directory) answered `301` to the slashed one.
+
+The `robots.txt` is generated rather than kept in `public/` for the same reason:
+a hand-maintained absolute URL is the thing that drifts, and it did.
+
 ## How the redirects are implemented
 
 Two layers, because static hosting varies:
@@ -47,6 +82,21 @@ Two layers, because static hosting varies:
    a meta-refresh passes less signal than a real 301.
 2. **`dist/_redirects`** — generated at build time. Netlify and Cloudflare Pages
    read this and issue genuine `301` responses.
+
+**The rules are forced (`301!`), and that is load-bearing.** Netlify and
+Cloudflare Pages apply an unforced rule *only when no file exists at that path* —
+and layer 1 writes a stub at exactly these paths. Unforced, layer 1 shadowed
+layer 2 completely: `/shuttle-bus-fleet` answered `200` with a
+`<meta name="robots" content="noindex">` meta-refresh page instead of a `301`.
+Those stubs are where Search Console's "Excluded by `noindex` tag" entries came
+from. Forcing the rule puts the real 301 back in front and leaves the stub as the
+fallback for hosts that read no rules file.
+
+Each source is emitted twice, bare and with a trailing slash, because the slashed
+form is the one Google crawled under the old directory-shaped build.
+
+`/sitemap.xml` — the conventional path, which `@astrojs/sitemap` does not use —
+`301`s to `/sitemap-index.xml` rather than 404ing.
 
 If the site lands somewhere else, translate the same table:
 
@@ -127,9 +177,21 @@ Deliberately improved:
 - [ ] **Google Search Console** — keep the existing property, submit
       `/sitemap-index.xml`, and watch Coverage for 404 spikes for the first
       month.
-- [ ] **Canonical host** — confirmed as `www.chicagosupercoachbus.com`. Make sure
-      the apex domain 301s to `www` (or the reverse) so only one host is indexed.
+- [x] **Canonical host** — resolved to the **apex**, `chicagosupercoachbus.com`,
+      because that is Netlify's primary domain for this site and `www` already
+      301s to it. `SITE_ORIGIN` now matches the host instead of contradicting it.
 - [ ] **Verify each old URL** returns a real 301 after deploy, not a soft 404.
+      This could not be verified before deploy: `astro preview` is a plain static
+      server and reads neither `_redirects` nor Netlify's URL normalisation, so
+      old paths serve the meta-refresh stub locally. Check with
+      `curl -sSI https://chicagosupercoachbus.com/contact-us`.
+- [ ] **Verify the trailing-slash variants** of the four hub pages — `/fleet/`,
+      `/services/`, `/guides/`, `/thanks/` — answer `301` to the slash-less form
+      rather than `404`. These are the one case the pre-deploy check could not
+      cover: a flat file that has a same-named sibling directory. If any of them
+      404s, add a forced rule for that path in the build hook — but test one
+      first, because if Netlify strips the trailing slash while *matching* rule
+      sources, `/fleet/ -> /fleet` becomes a redirect loop.
 - [ ] **Crawl the old site before switching DNS** so there is a reference list if
       an inbound URL was missed. The map above covers every path found in the
       live navigation, but old backlinks can point at pages the nav no longer

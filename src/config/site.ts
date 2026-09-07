@@ -10,8 +10,18 @@
  * Canonical origin. Confirmed: chicagosupercoachbus.com keeps the ranking
  * equity, so it stays canonical even though the contact email is on
  * chicagosupercoach.com. Changing domains later is a one-line change here.
+ *
+ * Apex, not `www`. This is not a preference — it is what the host actually
+ * serves. Netlify's primary domain for this site is the apex, so
+ * `https://www.chicagosupercoachbus.com/anything` answers `301` to the apex.
+ * While this constant said `www`, every canonical tag, `og:url`, sitemap entry
+ * and the `Sitemap:` line in robots.txt named a hostname that redirects away,
+ * which is what put the whole site into Search Console's "Page with redirect"
+ * and "Alternate page with proper canonical tag" buckets. The origin here and
+ * the host's primary domain have to agree; if the primary domain is ever moved
+ * to `www`, this line moves with it.
  */
-export const SITE_ORIGIN = 'https://www.chicagosupercoachbus.com';
+export const SITE_ORIGIN = 'https://chicagosupercoachbus.com';
 
 /** GA4 measurement ID for the Google tag loaded in the shared layout head. */
 export const GA_MEASUREMENT_ID = 'G-WGL6C1FNX9';

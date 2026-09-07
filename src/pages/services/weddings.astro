@@ -79,9 +79,12 @@ const faqSchema = {
   ogImage={trolleyAndCoach.src}
   jsonLd={[faqSchema]}
 >
+  {/* Two lines, because the day is two jobs: the bridal party's own vehicle
+      and the shuttle that moves the guest list. Naming both in the heading is
+      what a visitor arrives searching for. */}
   <PageHead
     coordinate={service.destination}
-    title={service.headline}
+    title={[service.headline, 'Wedding Guest Shuttle']}
   />
 
   {/* ---- Two vehicles, two companies, one day ---- */}
@@ -111,7 +114,7 @@ const faqSchema = {
 
       <div class="pkg__body">
         <p class="subtitle pkg__head" id="package-head">
-          The wedding party rides a trolley. Everybody else rides the coach.
+          The Wedding Package: Trolley &amp; Coach Bus
         </p>
         <p class="pkg__lede">
           Most Chicago weddings need two vehicles doing two different jobs, and

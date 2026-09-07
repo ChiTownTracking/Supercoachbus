@@ -226,7 +226,7 @@ export const SERVICES: Service[] = [
     slug: 'weddings',
     name: 'Wedding Transportation',
     destination: 'Ceremony · Photos · Reception',
-    headline: 'Wedding guest shuttles and party transportation',
+    headline: 'Bridal Party Transportation',
     proposition:
       'The date does not move. Guest shuttles run on the timeline you already built, including the late return nobody plans for.',
     body: [

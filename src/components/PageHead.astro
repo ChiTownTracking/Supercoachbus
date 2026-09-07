@@ -20,18 +20,28 @@
  */
 interface Props {
   coordinate?: string;
-  title: string;
+  /**
+   * A string sets its own line breaks off the measure. An array breaks where
+   * the page says it does — for a heading carrying two named things rather
+   * than one sentence, where the wrap point is the meaning.
+   */
+  title: string | string[];
   capacity?: string;
 }
 
 const { coordinate, title, capacity } = Astro.props;
+const titleLines = Array.isArray(title) ? title : [title];
 ---
 
 <section class="head field">
   <div class="shell">
     {coordinate && <p class="coordinate">{coordinate}</p>}
-    <h1 class="display head__title">
-      {title}
+    <h1 class:list={['display', 'head__title', titleLines.length > 1 && 'head__title--lines']}>
+      {
+        titleLines.length > 1
+          ? titleLines.map((line) => <span class="head__line">{line}</span>)
+          : titleLines[0]
+      }
       {capacity && (
         <span class="head__cap mono">
           <span class="head__capnum">{capacity}</span> passengers
@@ -55,6 +65,35 @@ const { coordinate, title, capacity } = Astro.props;
   .head__title {
     font-size: clamp(2.5rem, 6vw, 4.5rem);
     max-width: 18ch;
+  }
+
+  /* A given break, not a wrapped one: each line is its own line and carries the
+     heading's own size and weight. The measure comes off with them — 18ch is a
+     wrap point for a sentence, and it would break these lines a second time,
+     which is the one thing a stated break is asking not to happen. A phone is
+     still narrower than the longest line and wraps it; nothing can hold two
+     lines of this size at 390px. */
+  .head__title--lines {
+    max-width: none;
+  }
+
+  .head__line {
+    display: block;
+  }
+
+  /* The display line-height is 0.95, which is right for one phrase running on
+     and wrong for two standing together: with nothing between them the last
+     word of the first and the first word of the second read as a line. The gap
+     opens where it is needed most — narrow enough that each line wraps, and
+     the phrase boundary is the only thing telling a reader where one ends. */
+  .head__line + .head__line {
+    margin-top: 0.14em;
+  }
+
+  @media (max-width: 47rem) {
+    .head__line + .head__line {
+      margin-top: 0.34em;
+    }
   }
 
   /* Set the way the fleet cards set a capacity under the vehicle name — the
