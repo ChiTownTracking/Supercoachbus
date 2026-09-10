@@ -84,7 +84,7 @@ export const OPEN_ITEMS = {
     'fleet.layouts',
     'fact',
     'Real row arrangements behind the four seating diagrams',
-    'Every plan on /fleet is derived, not supplied: two-and-two across an aisle at floor(max seats / 4) rows. Confirm each vehicle\'s actual arrangement — and whether the Supercoach is the coach the old site listed at 54–57, which is the assumption its amenity list and lavatory rest on.'
+    'Every plan on /fleet is derived, not supplied: two-and-two across an aisle at floor(max seats / 4) rows. Confirm each vehicle\'s actual arrangement — and whether the Supercoach is the coach the old site listed at 54–57, which is the assumption its amenity list rests on. The lavatory is no longer part of that assumption: the owner has since stated it is fitted to select coaches and booked on request, and both the amenity line and the caption on the seating plan now say so.'
   ),
   // brand.logo — RESOLVED. The owner supplied src/assets/images/logo.png, now
   // used in the header and footer. A vector version would still be preferable

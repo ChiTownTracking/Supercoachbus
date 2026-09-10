@@ -28,7 +28,7 @@
  *    by the owner and no longer follow it — the Small Coach Bus and the
  *    Executive Sprinter Van. **Say on the entry when an arrangement is real**,
  *    as those two do; the Supercoach and the Coach Bus are still the rule plus
- *    the Supercoach's lavatory.
+ *    the Supercoach's lavatory, which is drawn with the condition on it.
  *
  *    Drawn totals: 54 of 50–57, 44 of 39–44, 27 of 22–28, 14 of 13–15. Every
  *    one inside its own confirmed range — that is the check to run after any
@@ -83,6 +83,12 @@ export interface Vehicle {
    *    motorcoach carries one, and takes the two places it stands in out of the
    *    seat run. It follows the amenity: a vehicle that does not list a
    *    lavatory must not have one drawn.
+   *  - `lavatoryNote` qualifies that fixture in the caption, for a vehicle
+   *    whose amenity line carries a condition. It is how a conditional
+   *    lavatory gets drawn honestly: the plan shows where the fixture sits
+   *    when the coach has one, and the caption says it is not on every coach.
+   *    Without it the drawing would promise a fixture on every vehicle of that
+   *    size. Only meaningful alongside `lavatory`.
    *  - `entrance` is a doorway forward on the curbside, so the frontmost places
    *    in that band are the stairwell rather than seats.
    *  - `rearBench` runs the back row across the aisle, which adds the one seat
@@ -97,6 +103,8 @@ export interface Vehicle {
     leftPerRow?: number;
     rightPerRow?: number;
     lavatory?: boolean;
+    /** Qualifies `lavatory` in the caption, e.g. when it is fitted on request. */
+    lavatoryNote?: string;
     entrance?: boolean;
     rearBench?: boolean;
     /**
@@ -143,11 +151,11 @@ export const FLEET: Vehicle[] = [
     meta: {
       title: 'Supercoach Bus Rental Chicago | 50–57 Passengers',
       description:
-        'The largest coach we run in Chicago: 50 to 57 passengers, high back reclining seats, a lavatory, and overhead and undercarriage luggage space.',
+        'The largest coach we run in Chicago: 50 to 57 passengers, high back reclining seats, and overhead and undercarriage luggage space. Lavatory on select coaches.',
     },
     amenities: [
       'High back leather reclining seats',
-      'Lavatory',
+      'Lavatory on select coaches (upon request)',
       'Overhead luggage space',
       'Undercarriage luggage available on request',
       'Sound system',
@@ -155,7 +163,25 @@ export const FLEET: Vehicle[] = [
       'Seatbelts on all seats',
       'USB charging port',
     ],
-    layout: { rows: 14, leftPerRow: 2, rightPerRow: 2, lavatory: true },
+    /**
+     * The lavatory stays on the plan, and `lavatoryNote` carries the condition
+     * the amenity line states. Where a coach has one it is at the rear of the
+     * curbside band, and that is worth showing — an organizer planning a
+     * long run wants to see where it sits, not be left to guess. The caption
+     * is what keeps the drawing honest: it says the fixture is on select
+     * coaches and booked on request, so the plan never reads as a promise that
+     * every Supercoach carries one.
+     *
+     * With the fixture drawn, the two places it stands in come out of the seat
+     * run: 54 seats drawn of a confirmed 50–57.
+     */
+    layout: {
+      rows: 14,
+      leftPerRow: 2,
+      rightPerRow: 2,
+      lavatory: true,
+      lavatoryNote: 'On select coaches, by request',
+    },
   },
   {
     slug: 'coach',

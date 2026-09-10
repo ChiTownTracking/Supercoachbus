@@ -19,7 +19,7 @@ const { vehicle } = Astro.props;
  * exactly what this build refuses to do — callers render this only when there is
  * something real to draw, and this guard is the backstop.
  */
-const { lavatory, entrance, rearBench, omit, grid } = vehicle.layout ?? {};
+const { lavatory, lavatoryNote, entrance, rearBench, omit, grid } = vehicle.layout ?? {};
 const rows = vehicle.layout?.rows ?? 0;
 const leftPerRow = vehicle.layout?.leftPerRow ?? 0;
 const rightPerRow = vehicle.layout?.rightPerRow ?? 0;
@@ -176,8 +176,16 @@ const partition =
  * entry stairwell said "Entry door at the front right" until the owner asked
  * for it off on 16 Aug 2026, and the Sprinter's open pair never had a line
  * because nobody has said what stands there.
+ *
+ * `lavatoryNote` follows the fixture as a second note rather than replacing the
+ * first, so the caption reads as a fact and then its condition — the drawing
+ * still says where the lavatory sits, and the caption says which coaches have
+ * one. A vehicle whose lavatory is unconditional passes no note and reads
+ * exactly as it always has.
  */
-const notes = [lav && 'Lavatory at the rear'].filter(Boolean) as string[];
+const notes = [lav && 'Lavatory at the rear', lav && lavatoryNote].filter(
+  Boolean
+) as string[];
 
 const label = `Schematic seating plan, ${vehicle.capacityLabel} passengers${
   notes.length ? `. ${notes.join('. ')}.` : ''
