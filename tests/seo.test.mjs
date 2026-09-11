@@ -25,6 +25,9 @@ const slash = (s) => s.split('\\').join('/');
 /** Files that are deliberately not pages of the site. */
 const NON_PAGE = new Set(['/netlify-forms']);
 
+/** Dedicated tracking URLs can be shared directly without a marketing-site link. */
+const DIRECT_ENTRY_PAGES = new Set(['/the-mart-bus']);
+
 /**
  * Paths that must never be indexable. `/404` is the not-found document itself;
  * everything under `/thanks` is a confirmation page reached only by submitting
@@ -334,13 +337,13 @@ describe('internal links', () => {
     assert.deepEqual(slashed.map(([p]) => p), []);
   });
 
-  test('every indexable page is reachable from at least one other page', () => {
+  test('every indexable page is linked internally or is a dedicated direct-entry page', () => {
     // Orphaned pages are a repo-side cause of "Crawled – currently not indexed".
     const linked = new Set();
     for (const [path] of collect()) linked.add(path.replace(/\/$/, '') || '/');
     const orphans = indexablePages()
       .map(([route]) => route)
-      .filter((route) => route !== '/' && !linked.has(route));
+      .filter((route) => route !== '/' && !DIRECT_ENTRY_PAGES.has(route) && !linked.has(route));
     assert.deepEqual(orphans, []);
   });
 });

@@ -1,0 +1,53 @@
+---
+import { SITE_ORIGIN } from '../config/site';
+
+const canonical = new URL('/the-mart-bus', SITE_ORIGIN).href;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Mart Bus | Chicago Super Coach</title>
+    <meta
+      name="description"
+      content="Track The Mart Bus live with Chicago Super Coach."
+    />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:url" content={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <iframe
+      src="https://chitowntracking.com/trip/the-mart-bus"
+      title="The Mart Bus live tracking map"
+      loading="eager"
+    ></iframe>
+  </body>
+</html>
+
+<style>
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  iframe {
+    display: block;
+    width: 100%;
+    height: 100vh;
+    border: 0;
+  }
+
+  /* Follow mobile browser chrome while retaining the fallback in the build. */
+  @supports (height: 100dvh) {
+    iframe {
+      height: 100dvh;
+    }
+  }
+</style>
