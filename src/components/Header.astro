@@ -1,11 +1,29 @@
 ---
 import { Image } from 'astro:assets';
-import { BUSINESS, NAV } from '../config/site';
+import { BUSINESS } from '../config/site';
+import { PRIMARY_NAV } from '../data/navigation';
 import logo from '../assets/images/logo.png';
 import Icon from './Icon.astro';
 
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
-const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`);
+interface Props { bookingHref?: string }
+const { bookingHref } = Astro.props;
+
+/**
+ * The site builds flat files (`build.format: 'file'`), so the pathname arrives
+ * as `/fleet.html` rather than `/fleet`. Without the extension off, an item
+ * only ever matched a page *under* it — `/services/corporate` lit Services up
+ * while `/services` itself lit nothing.
+ */
+const path =
+  Astro.url.pathname.replace(/(?:\/index)?\.html$/, '').replace(/\/$/, '') || '/';
+const under = (href: string) => path === href || path.startsWith(`${href}/`);
+/**
+ * A menu lights up for its own directory and for anything under it, plus any
+ * extra prefixes it names — `More` owns no page of its own, so it is current
+ * when About or Guides is.
+ */
+const isCurrent = (item: { href?: string; match?: string[] }) =>
+  (item.href ? under(item.href) : false) || (item.match ?? []).some(under);
 ---
 
 <header class="masthead field">
@@ -40,15 +58,60 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     <nav class="nav" id="primary-nav" aria-label="Primary">
       <ul class="nav__list">
         {
-          NAV.map((item) => (
-            <li>
-              <a
-                href={item.href}
-                class="nav__link gothic"
-                aria-current={isCurrent(item.href) ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
+          PRIMARY_NAV.map((item) => (
+            <li class="nav__item">
+              {item.menu ? (
+                /* A details element, so the menus open with JavaScript
+                   unavailable and answer the keyboard without being taught to.
+                   The script below only closes them — on Escape, on a click
+                   outside, and when a sibling opens. */
+                <details class:list={['menu', !item.menu.wide && 'menu--anchored']} data-nav-menu>
+                  <summary class="nav__link nav__link--menu gothic" aria-current={isCurrent(item) ? 'page' : undefined}>
+                    {item.label}
+                    <Icon name="chevron" size={14} class="menu__chevron" />
+                  </summary>
+                  <div class:list={['menu__panel', item.menu.wide && 'menu__panel--wide']}>
+                    <div class:list={['menu__grid', item.menu.wide && 'menu__grid--wide']}>
+                      {item.menu.columns.map((column) => (
+                        <div class="menu__col">
+                          <p class="menu__heading mono">{column.heading}</p>
+                          {column.links && (
+                            <ul class="menu__links">
+                              {column.links.map((link) => (
+                                <li>
+                                  <a class="menu__link" href={link.href} aria-current={under(link.href) ? 'page' : undefined}>
+                                    <span class="menu__label">{link.label}</span>
+                                    {link.note && <span class="menu__note">{link.note}</span>}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {column.items && (
+                            <ul class="menu__items">
+                              {column.items.map((place) => <li>{place}</li>)}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    {item.menu.footer && (
+                      <a class="menu__all direction" href={item.menu.footer.href}>
+                        {item.menu.footer.label}
+                        <Icon name="arrow" size={15} />
+                      </a>
+                    )}
+                  </div>
+                </details>
+              ) : (
+                <a
+                  href={item.href}
+                  class="nav__link gothic"
+                  aria-current={isCurrent(item) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              )}
             </li>
           ))
         }
@@ -58,8 +121,8 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
           <Icon name="phone" size={16} />
           {BUSINESS.phone.display}
         </a>
-        <a class="action" href="/reserve">
-          Reserve now
+        <a class="action" href={bookingHref ?? '/reserve'}>
+          {bookingHref ? 'Get a quote' : 'Reserve now'}
           <Icon name="arrow" size={16} />
         </a>
       </div>
@@ -192,6 +255,155 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
     opacity: 1;
   }
 
+  /* ---- Menus ----
+     The panel is positioned against the masthead rather than the trigger, so a
+     wide one can sit across the bar instead of hanging off the right edge from
+     an item that is already near it. Nothing between the two is positioned. */
+
+  .nav__item {
+    display: flex;
+    align-items: center;
+  }
+
+  .menu > summary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Safari draws its own marker through the `list-style` above. */
+  .menu > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .menu__chevron {
+    transition: transform 180ms var(--ease-out);
+  }
+
+  .menu[open] > summary .menu__chevron {
+    transform: rotate(180deg);
+  }
+
+  .menu[open] > summary {
+    opacity: 1;
+  }
+
+  .menu[open] > summary::after {
+    transform: scaleX(1);
+  }
+
+  /* A wide panel is centred on the bar, because at 56rem it is wider than the
+     space to the right of the item that opens it and would hang off the edge.
+     A narrow one has no such problem and belongs under its own trigger — see
+     .menu--anchored below. */
+  .menu__panel {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 60;
+    width: max-content;
+    max-width: min(22rem, calc(100vw - 2rem));
+    padding: var(--space-6);
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    box-shadow: 0 18px 40px rgb(16 32 26 / 0.14);
+  }
+
+  /* An explicit width, not max-content: the column grid below is auto-fit on
+     fractions, and under max-content sizing it collapses to one narrow column
+     and takes the panel down with it. The wide panel is a stated size. */
+  .menu__panel--wide {
+    width: min(56rem, calc(100vw - 2rem));
+    max-width: none;
+    padding: var(--space-8);
+  }
+
+  /* The element itself becomes the containing block, so the panel hangs from
+     the trigger rather than from the masthead. Only the narrow menus do this:
+     a wide one left-aligned to an item this far along the bar would run off
+     the right of the viewport. */
+  .menu--anchored {
+    position: relative;
+  }
+
+  .menu--anchored .menu__panel {
+    left: 0;
+    transform: none;
+  }
+
+  .menu__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .menu__grid--wide {
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  }
+
+  .menu__col {
+    min-width: 0;
+  }
+
+  .menu__heading {
+    margin: 0 0 var(--space-4);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .menu__links,
+  .menu__items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .menu__link {
+    display: block;
+    padding-block: var(--space-2);
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  .menu__label {
+    display: block;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .menu__note {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--ink-dim);
+  }
+
+  .menu__link:hover .menu__label,
+  .menu__link[aria-current='page'] .menu__label {
+    color: var(--hivis-text);
+  }
+
+  /* Places served, not pages. Set as a list of facts rather than as targets, so
+     nothing here looks like a link that failed to work. */
+  .menu__items {
+    font-size: 0.8125rem;
+    line-height: 1.9;
+    color: var(--ink-dim);
+  }
+
+  .menu__all {
+    margin-top: var(--space-6);
+    font-size: 0.75rem;
+  }
+
   .nav__actions {
     display: flex;
     align-items: center;
@@ -314,10 +526,39 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
       gap: 0;
     }
 
+    .nav__item {
+      display: block;
+    }
+
     .nav__link {
       padding-block: var(--space-4);
       border-bottom: 1px solid var(--paper-line);
       font-size: 1rem;
+    }
+
+    /* In the drawer a menu is an accordion, not an overlay: the panel returns
+       to the flow and pushes the items below it down, which is the one place a
+       floating panel has nowhere to float to. */
+    .menu > summary {
+      justify-content: space-between;
+    }
+
+    .menu__panel {
+      position: static;
+      transform: none;
+      width: auto;
+      max-width: none;
+      padding: var(--space-5) 0 var(--space-6);
+      background: none;
+      border: 0;
+      border-bottom: 1px solid var(--paper-line);
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .menu__grid--wide {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-6);
     }
 
     .nav__actions {
@@ -344,6 +585,46 @@ const isCurrent = (href: string) => path === href || path.startsWith(`${href}/`)
   toggle?.addEventListener("change", () => {
     toggle.setAttribute("aria-expanded", String(toggle.checked));
   });
+
+  /*
+   * The menus open and close on their own — they are details elements. What is
+   * added here is everything a details element does not know about its
+   * neighbours: only one stands open at a time, Escape closes the open one and
+   * puts focus back on the control that opened it, and a click anywhere else
+   * closes it. The drawer is left alone: down there they are accordions, and
+   * two open sections are not a problem to solve.
+   */
+  const menus = Array.from(
+    document.querySelectorAll<HTMLDetailsElement>("[data-nav-menu]"),
+  );
+  const inDrawer = () => window.matchMedia("(max-width: 60rem)").matches;
+  const closeAll = (except?: HTMLDetailsElement) => {
+    for (const menu of menus) if (menu !== except) menu.open = false;
+  };
+
+  for (const menu of menus) {
+    menu.addEventListener("toggle", () => {
+      if (menu.open && !inDrawer()) closeAll(menu);
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    if (inDrawer()) return;
+    const target = event.target as Node;
+    if (!menus.some((menu) => menu.contains(target))) closeAll();
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const open = menus.find((menu) => menu.open);
+    if (!open) return;
+    open.open = false;
+    open.querySelector("summary")?.focus();
+  });
+
+  // A menu left open behind a resize into the drawer would be an overlay with
+  // nothing under it.
+  window.addEventListener("resize", () => closeAll(), { passive: true });
 
   // At the top the masthead lets a little of the page ground through. Once it
   // is pinned during a scroll, it becomes an opaque reading surface.

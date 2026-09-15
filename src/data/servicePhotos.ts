@@ -1,5 +1,6 @@
 import type { ImageMetadata } from 'astro';
 
+import outOfState from '../assets/images/services/super-coach-bus-exterior-interior.png';
 import corporate from '../assets/images/services/corporate-conference-pexels.jpg';
 import school from '../assets/images/svc-school.jpg';
 import sporting from '../assets/images/services/wrigley-field-crowd-pexels.jpg';
@@ -17,6 +18,10 @@ export interface ServicePhoto {
 }
 
 export const SERVICE_PHOTOS: Record<string, ServicePhoto> = {
+  'long-distance-charter-bus-rental': {
+    src: outOfState,
+    alt: 'A coach seen from outside beside a view down its aisle of reclining seats',
+  },
   corporate: {
     src: corporate,
     alt: 'Conference attendees seated in an auditorium before a presentation',

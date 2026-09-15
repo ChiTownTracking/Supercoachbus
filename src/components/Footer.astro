@@ -2,8 +2,11 @@
 import { Image } from 'astro:assets';
 import logo from '../assets/images/logo.png';
 import { BUSINESS, FOOTER_NAV, LEGAL_NAV } from '../config/site';
-import { SERVICES } from '../data/services';
+import { LISTED_SERVICES } from '../data/services';
 import Icon from './Icon.astro';
+
+interface Props { bookingHref?: string }
+const { bookingHref } = Astro.props;
 
 const year = new Date().getFullYear();
 const { address, hours, phone } = BUSINESS;
@@ -21,7 +24,7 @@ const { address, hours, phone } = BUSINESS;
             BUSINESS.serviceArea
           }.
         </p>
-        <a class="action" href="/#quote-form">
+        <a class="action" href={bookingHref ?? '/#quote-form'}>
           Get a quote
           <Icon name="arrow" size={16} />
         </a>
@@ -73,7 +76,7 @@ const { address, hours, phone } = BUSINESS;
         <nav class="foot__col" aria-label="Footer">
           <h2 class="foot__head mono">Site</h2>
           <ul class="foot__list">
-            {FOOTER_NAV.map((i) => <li><a href={i.href}>{i.label}</a></li>)}
+            {FOOTER_NAV.map((i) => <li><a href={bookingHref && (i.href === '/#quote-form' || i.href === '/reserve') ? bookingHref : i.href}>{bookingHref && i.href === '/reserve' ? 'Start a Booking' : i.label}</a></li>)}
           </ul>
         </nav>
 
@@ -81,7 +84,7 @@ const { address, hours, phone } = BUSINESS;
           <h2 class="foot__head mono">Services</h2>
           <ul class="foot__list">
             {
-              SERVICES.map((s) => (
+              LISTED_SERVICES.map((s) => (
                 <li>
                   <a href={`/services/${s.slug}`}>{s.name}</a>
                 </li>

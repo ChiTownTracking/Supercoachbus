@@ -14,6 +14,8 @@ export interface Testimonial {
   quote: string;
   /** What the trip was — inferred from the quote's own content, not invented. */
   context: string;
+  /** Original Google review URL for a verified, verbatim excerpt. */
+  googleUrl?: string;
 }
 
 export const TESTIMONIALS: Testimonial[] = [
@@ -34,5 +36,26 @@ export const TESTIMONIALS: Testimonial[] = [
     quote:
       'Incredibly accommodating. Made a few changes within the week leading up to our event and they were more than happy to make things work to our benefit!',
     context: 'Event with changing plans',
+  },
+];
+
+/** Homepage selection, verified against the owner's two Google review links.
+ * Excerpts preserve the reviewers' wording; an ellipsis marks an internal cut.
+ * Keep these separate so the about and wedding pages retain their selections.
+ */
+export const HOME_TESTIMONIALS: Testimonial[] = [
+  {
+    name: 'Colleen Ungurean',
+    quote:
+      'Our driver, Maythem was so professional, so friendly and very safe. We felt like royalty! Best decision ever to use Chicago Super Coach!',
+    context: 'Wedding shuttle',
+    googleUrl: 'https://share.google/GW5RKj9Fa7r0IspQQ',
+  },
+  {
+    name: 'Adam Quintana',
+    quote:
+      'my company used shuttle service during McCormick conference and we were really happy with Chicago Supercoach fleet. … Will highly recommend for corporate transportation.',
+    context: 'Conference transportation',
+    googleUrl: 'https://share.google/6Eo4Crse8GBDEV4qM',
   },
 ];

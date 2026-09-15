@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import lavatory from '../assets/images/out-of-state/supercoach-lavatory.png';
+import milwaukee from '../assets/images/out-of-state/milwaukee-waterfront-pexels.jpg';
+import indianapolis from '../assets/images/out-of-state/indianapolis-skyline-pexels.jpg';
+
+const planning = [
+  { title: 'Map the full itinerary', text: 'List every pickup, destination, hotel, and return stop. Include local transfers at the destination, such as travel between a hotel and a tournament venue, so those runs are part of the quote.' },
+  { title: 'Allow time between stops', text: 'Share fixed arrival times, check-in windows, and event finish times. Leave room for loading luggage, traffic, meals, and rest stops. Your manager will review the schedule with you before booking.' },
+  { title: 'Plan each driver’s schedule', text: 'Longer journeys must allow for required driving limits and rest. Some itineraries need additional drivers. Confirm driver arrangements, overnight accommodation, and any associated charges with your reservation manager.', href: 'https://www.fmcsa.dot.gov/safety/carrier-safety/hours-service-motor-carriers-passengers', linkLabel: 'Passenger-carrier driving rules' },
+];
+const destinations = [
+  { title: 'Chicago to Milwaukee, Wisconsin', image: milwaukee, alt: 'Milwaukee Art Museum and waterfront buildings beside Lake Michigan', position: '50% 78%', text: 'For a group outing or event, share the venue address, any sightseeing stops, and your return window. Let us know whether the trip returns the same day or includes an overnight stay.' },
+  { title: 'Chicago to Indianapolis, Indiana', image: indianapolis, alt: 'An aerial view of the downtown Indianapolis skyline at dusk', position: '50% 50%', text: 'For a conference or tournament weekend, include hotel addresses and the daily event schedule. Tell us whether your group needs transfers at the destination as well as the journey there and back.' },
+];
+const costs = [
+  { title: 'Vehicle and luggage needs', text: 'The passenger count, vehicle configuration, and space for suitcases or equipment help determine the right coach and its price.' },
+  { title: 'Travel dates and trip length', text: 'Include every day you need transportation, including the return date. Availability is checked across the full reservation.' },
+  { title: 'Mileage, pickups, and stops', text: 'The complete route matters, including additional pickups, detours, hotel transfers, and sightseeing stops.' },
+  { title: 'Driver arrangements and other charges', text: 'Ask whether additional drivers, driver lodging, tolls, or parking apply to your trip and which are included. Driver gratuity is generally separate.' },
+];
+---
+
+<section class="section--tight distance comfort" id="onboard-comfort" aria-labelledby="comfort-heading">
+  <div class="shell comfort__grid">
+    <div class="comfort__intro">
+      <p class="coordinate coordinate--ink">Onboard comfort</p>
+      <h2 class="title distance__heading" id="comfort-heading">Lavatories on Select Supercoach Buses</h2>
+      <p class="lede">An onboard restroom can make a longer journey more comfortable. Let us know you need one when requesting your quote.</p>
+    </div>
+    <figure class="comfort__photo">
+      <Image src={lavatory} alt="Onboard coach lavatory with a toilet, compact sink, and grab rail" widths={[480, 768, 1080]} sizes="(min-width: 60rem) 40vw, 90vw" loading="lazy" />
+      <figcaption>Available on select Supercoach buses by request. Confirm availability before booking.</figcaption>
+    </figure>
+    <div class="comfort__copy">
+      <p><strong>Lavatories are available on select Supercoach buses.</strong> They are not standard on every vehicle. Your reservation manager will confirm a restroom-equipped coach for your dates before you book. The photo shows an example of the onboard lavatory; the layout may vary by vehicle.</p>
+      <p>Our coaches offer reclining seats, seatbelts, overhead storage, and USB charging. Describe your luggage and any requests for Wi-Fi, PA equipment, or wheelchair-accessible transportation so we can check the right configuration. Planned meal and rest stops remain part of the itinerary, even with a restroom on board.</p>
+      <a class="direction" href="/fleet/supercoach">View the Supercoach<Icon name="arrow" size={16} /></a>
+    </div>
+  </div>
+</section>
+
+<section class="section--tight distance" id="trip-planning" aria-labelledby="planning-heading">
+  <div class="shell">
+    <div class="distance__intro">
+      <p class="coordinate coordinate--ink">One itinerary, every travel day</p>
+      <h2 class="title distance__heading" id="planning-heading">Plan Your Overnight or Multi-Day Trip</h2>
+      <p class="lede">The time spent at your destination matters as much as the drive. Include the whole trip so your quote covers the transportation your group needs.</p>
+    </div>
+    <ol class="planning__list">
+      {planning.map((item, index) => <li><span class="mono planning__number" aria-hidden="true">0{index + 1}</span><h3>{item.title}</h3><p>{item.text}</p>{item.href && <a href={item.href}>{item.linkLabel}</a>}</li>)}
+    </ol>
+    <div class="destinations__intro">
+      <h3 class="subtitle">Where is your group headed?</h3>
+      <p>These are examples of interstate itineraries to discuss with our team. Share your own destination and dates; each route and schedule is confirmed individually.</p>
+    </div>
+    <div class="destinations">
+      {destinations.map((destination) => <article class="destination">
+        <Image src={destination.image} alt={destination.alt} widths={[480, 800, 1200]} sizes="(min-width: 52rem) 43vw, 90vw" loading="lazy" style={`object-position: ${destination.position}`} />
+        <div class="destination__copy"><h4>{destination.title}</h4><p>{destination.text}</p></div>
+      </article>)}
+    </div>
+    <p class="planning__connection">Flying into Chicago before the road trip? Include your flight and arrival details so we can discuss <a href="/services/ohare-airport">O’Hare group transportation</a> or <a href="/services/midway-airport">Midway airport transfers</a> as part of the itinerary.</p>
+  </div>
+</section>
+
+<section class="section--tight field distance pricing" id="trip-cost" aria-labelledby="cost-heading">
+  <div class="shell pricing__grid">
+    <div>
+      <p class="coordinate">Price the complete journey</p>
+      <h2 class="title distance__heading" id="cost-heading">What Does a Long Distance Charter Bus Rental Cost?</h2>
+      <p class="lede">There is no single price for every interstate journey. We quote your group’s vehicle, travel dates, and complete itinerary so you can review the cost before confirming.</p>
+      <p>A trip to one event with a direct return needs a different plan from a three-day tour with hotel transfers and several stops. Include both the travel days and the transportation you need in between.</p>
+      <a class="action" href="#quote-form">Get My Long-Distance Trip Quote<Icon name="arrow" size={16} /></a>
+      <a class="pricing__guide" href="/guides/charter-bus-cost-chicago">Read our guide to rental pricing<Icon name="arrow" size={15} /></a>
+    </div>
+    <dl class="pricing__factors">
+      {costs.map((item) => <div><dt>{item.title}</dt><dd>{item.text}</dd></div>)}
+    </dl>
+  </div>
+</section>
+
+<style>
+  .distance { border-top: 1px solid var(--paper-line); scroll-margin-top: 7rem; }
+  .distance__heading { font-size: clamp(1.75rem, 3vw, 2.5rem); margin-block: var(--space-3) var(--space-5); }
+  .distance:not(.field) .distance__heading { color: var(--enamel-ink); }
+  .distance p { line-height: 1.65; }
+  .distance p:not(.coordinate, .lede) { font-size: 1rem; }
+  .distance:not(.field) p:not(.coordinate) { color: var(--ink-dim); }
+  .distance strong { color: var(--enamel-ink); }
+  .distance__intro { max-width: 74ch; }
+  .comfort { background: var(--paper-lift); }
+  .comfort__grid { display: grid; gap: var(--space-8); align-items: center; }
+  .comfort__copy > p:not(.coordinate) { margin-bottom: var(--space-5); }
+  .comfort__copy .direction { margin-top: var(--space-3); color: var(--enamel-ink); }
+  .comfort__photo { margin: 0; min-width: 0; }
+  .comfort__photo :global(img) { width: 100%; height: auto; border-radius: var(--radius); }
+  .comfort__photo figcaption { margin-top: var(--space-3); font-size: .8125rem; line-height: 1.5; color: var(--ink-dim); }
+  .planning__list { display: grid; gap: var(--space-6); list-style: none; padding: 0; margin: var(--space-8) 0 var(--space-12); }
+  .planning__list li { border-top: 2px solid var(--enamel-ink); padding-top: var(--space-4); }
+  .planning__number { display: block; color: var(--enamel-ink); font-weight: 700; font-size: 1.25rem; margin-bottom: var(--space-4); }
+  .planning__list h3 { color: var(--enamel-ink); font-size: 1.125rem; margin-bottom: var(--space-3); }
+  .planning__list a { display: inline-block; margin-top: var(--space-3); color: var(--enamel-ink); font-size: .875rem; font-weight: 700; text-underline-offset: 4px; }
+  .destinations__intro { max-width: 70ch; margin-bottom: var(--space-6); }
+  .destinations__intro h3 { margin-bottom: var(--space-3); color: var(--enamel-ink); }
+  .destinations { display: grid; gap: var(--space-6); }
+  .destination { min-width: 0; border: 1px solid var(--paper-line); border-radius: var(--radius); overflow: hidden; }
+  .destination :global(img) { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+  .destination__copy { padding: var(--space-5); }
+  .destination h4 { color: var(--enamel-ink); font-size: 1.125rem; margin-bottom: var(--space-3); }
+  .planning__connection { max-width: 80ch; margin-top: var(--space-6); }
+  .planning__connection a { font-weight: 700; color: var(--enamel-ink); text-underline-offset: 4px; }
+  .pricing { border-color: transparent; }
+  .pricing__grid { display: grid; gap: var(--space-8); }
+  .pricing__grid > div > p:not(.coordinate) { margin-bottom: var(--space-5); }
+  .pricing__grid > div > p:not(.coordinate, .lede) { color: var(--signal-dim); }
+  .pricing .action { width: fit-content; max-width: 100%; margin-top: var(--space-3); text-align: left; white-space: normal; }
+  .pricing :global(svg) { flex: none; }
+  .pricing__guide { display: flex; align-items: center; gap: var(--space-3); width: fit-content; margin-top: var(--space-5); color: var(--signal); text-underline-offset: 4px; line-height: 1.5; }
+  .pricing__factors { margin: 0; }
+  .pricing__factors > div { padding-block: var(--space-5); border-top: 1px solid var(--enamel-line); }
+  .pricing__factors dt { font-size: 1.0625rem; font-weight: 800; margin-bottom: var(--space-2); }
+  .pricing__factors dd { margin: 0; color: var(--signal-dim); line-height: 1.65; font-size: 1rem; }
+  .distance a:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
+  @media (min-width: 52rem) {
+    .planning__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .destinations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 60rem) {
+    .comfort__grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: var(--space-5) var(--space-12); }
+    .comfort__intro { grid-column: 1; grid-row: 1; align-self: end; }
+    .comfort__copy { grid-column: 1; grid-row: 2; align-self: start; }
+    .comfort__photo { grid-column: 2; grid-row: 1 / span 2; }
+    .pricing__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-16); }
+  }
+</style>

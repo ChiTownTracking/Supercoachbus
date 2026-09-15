@@ -1,11 +1,14 @@
 ---
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
-import PageHead from '../../components/PageHead.astro';
+import PageTitle from '../../components/PageTitle.astro';
+import PageHero from '../../components/PageHero.astro';
 import CloseBand from '../../components/CloseBand.astro';
 import Icon from '../../components/Icon.astro';
-import WeddingPackageQuote from '../../components/WeddingPackageQuote.astro';
-import { SERVICES, getService } from '../../data/services';
+import LandingQuote from '../../components/LandingQuote.astro';
+import LandingActions from '../../components/LandingActions.astro';
+import LandingFleet from '../../components/LandingFleet.astro';
+import { LISTED_SERVICES, getService } from '../../data/services';
 import { shotsFor } from '../../data/fleetPhotos';
 import { TESTIMONIALS } from '../../data/testimonials';
 import {
@@ -36,7 +39,7 @@ import trolleyInterior from '../../assets/images/wedding/trolley-interior.webp';
  * not a fork of it.
  */
 const service = getService('weddings')!;
-const others = SERVICES.filter((s) => s.slug !== service.slug);
+const others = LISTED_SERVICES.filter((s) => s.slug !== service.slug);
 const path = `/services/${service.slug}`;
 
 /** This site's own wedding review. Found by context so it cannot go stale. */
@@ -74,6 +77,7 @@ const faqSchema = {
 
 <Layout
   path={path}
+  bookingHref="#quote-form"
   title={service.meta.title}
   description={service.meta.description}
   ogImage={trolleyAndCoach.src}
@@ -82,10 +86,24 @@ const faqSchema = {
   {/* Two lines, because the day is two jobs: the bridal party's own vehicle
       and the shuttle that moves the guest list. Naming both in the heading is
       what a visitor arrives searching for. */}
-  <PageHead
-    coordinate={service.destination}
-    title={[service.headline, 'Wedding Guest Shuttle']}
-  />
+  <PageHero>
+    <PageTitle
+      coordinate={service.destination}
+      title={[service.headline, 'Wedding Guest Shuttle']}
+      scale="hero"
+    />
+    <p class="lede wed__lede">{service.proposition}</p>
+    <LandingActions slot="actions" />
+    <figure slot="media">
+      <Image
+        src={trolleyAtVenue}
+        alt="A white trolley waiting outside a wedding venue"
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 60rem) 46vw, 92vw"
+        loading="eager"
+      />
+    </figure>
+  </PageHero>
 
   {/* ---- Two vehicles, two companies, one day ---- */}
   <section class="section--tight pkg" aria-labelledby="package-head">
@@ -117,10 +135,10 @@ const faqSchema = {
           The Wedding Package: Trolley &amp; Coach Bus
         </p>
         <p class="pkg__lede">
-          Most Chicago weddings need two vehicles doing two different jobs, and
-          booking them from two companies is how the timing goes wrong. We run
-          the coach. Our sister company, {SISTER.brand}, runs the trolley. One
-          timeline covers both.
+          Coordinate a coach for your guests and a trolley for your wedding
+          party on one timeline. We operate the coach, and our sister company,
+          {SISTER.brand}, operates the trolley. Request the package below so we
+          can confirm both vehicles and the schedule for your date.
         </p>
 
         <ul class="pkg__parts">
@@ -154,11 +172,15 @@ const faqSchema = {
         </ul>
 
         <div class="pkg__actions">
-          <WeddingPackageQuote />
+          <a class="action" href="#quote-form" data-quote-vehicle="wedding-package" data-quote-hours="8 Hours">
+            Get Wedding Package Quote <Icon name="arrow" size={16} />
+          </a>
         </div>
       </div>
     </div>
   </section>
+  <LandingQuote context="Wedding transportation and guest shuttles" />
+
 
   {/* ---- The two run sheets ---- */}
   <section class="section--tight runs" aria-labelledby="runs-head">
@@ -197,7 +219,7 @@ const faqSchema = {
             <p class="run__tag mono">Chicago Super Coach</p>
             <h3 class="run__name gothic">The coach, for your guests</h3>
             <p class="run__note">
-              Hotel to venue and back again, with the coach on site in between.
+              Hotel to venue and back again, with waiting and return arrangements confirmed before booking.
             </p>
           </header>
           <ol class="run__stops">
@@ -333,10 +355,16 @@ const faqSchema = {
     </div>
   </section>
 
-  <CloseBand />
+  <LandingFleet />
+  <CloseBand primaryAction={{ label: 'Get My Wedding Quote', href: '#quote-form' }} secondaryAction={{ label: `Call ${BUSINESS.phone.display}`, href: BUSINESS.phone.href }} />
 </Layout>
 
 <style>
+  .wed__lede {
+    margin-top: var(--space-5);
+    max-width: 54ch;
+  }
+
   /* ---- The package ---- */
 
   .pkg {

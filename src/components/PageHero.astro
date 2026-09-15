@@ -1,0 +1,108 @@
+---
+/**
+ * The opening of an individual service or area page: the page's own name and
+ * its first sentences on one side, its photograph on the other.
+ *
+ * The copy column is the default slot and the photograph is the `media` slot,
+ * so each page keeps its own opening — one leads with a trail and a coordinate,
+ * another with a capacity — while the two columns, their breakpoint and the
+ * plate the photograph is mounted on stay the same across all of them.
+ *
+ * One column below 60rem. A photograph beside a paragraph needs roughly half a
+ * page each to be worth splitting; narrower than that it is two cramped columns
+ * rather than one hero, and the phone reads the name, the sentences and then
+ * the picture.
+ *
+ * The actions are their own slot so that stacked order can put them last, under
+ * the photograph, where a thumb is already heading. Beside the photograph they
+ * go back to the foot of the copy column, which is why they are placed by grid
+ * area rather than left to follow the source.
+ */
+---
+
+<section class="page-hero">
+  <div class="shell page-hero__grid">
+    <div class="page-hero__copy"><slot /></div>
+    <div class="page-hero__media"><slot name="media" /></div>
+    {Astro.slots.has('actions') && (
+      <div class="page-hero__actions"><slot name="actions" /></div>
+    )}
+  </div>
+</section>
+
+<style>
+  .page-hero {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-12);
+  }
+
+  .page-hero__grid {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  /* Both need it: a grid item's default minimum is its content, so a long word
+     in the copy or an image's intrinsic width pushes the other column out. */
+  .page-hero__copy,
+  .page-hero__media,
+  .page-hero__actions {
+    min-width: 0;
+  }
+
+  /* Stacked, the buttons come after the picture, so the column reads name,
+     sentences, photograph, act. The component supplies its own top margin for
+     the copy it normally follows; here the grid gap is the spacing. */
+  .page-hero__actions :global(.landing-actions) {
+    margin-top: 0;
+  }
+
+  @media (min-width: 60rem) {
+    .page-hero__grid {
+      /* The copy takes the wider half. It carries the heading and the lede;
+         the photograph carries itself. */
+      grid-template-columns: 1.05fr 1fr;
+      gap: var(--space-6) var(--space-12);
+      align-items: center;
+    }
+
+    /* Side by side the actions rejoin the copy: the photograph stands against
+       both rows of it rather than the buttons sitting under the full width. */
+    .page-hero__copy {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .page-hero__actions {
+      grid-column: 1;
+      grid-row: 2;
+      align-self: start;
+    }
+
+    .page-hero__media {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+  }
+
+  /* The photograph is mounted the way every other photograph on the site is —
+     the same plate edge and the same ratio — whatever the page hands in. */
+  .page-hero__media :global(figure) {
+    margin: 0;
+  }
+
+  .page-hero__media :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius);
+    background: var(--enamel-deep);
+  }
+
+  .page-hero__media :global(figcaption) {
+    margin-top: var(--space-3);
+    font-size: 0.8125rem;
+    color: var(--ink-dim);
+  }
+</style>

@@ -1,15 +1,20 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
-import PageHead from '../../components/PageHead.astro';
+import PageTitle from '../../components/PageTitle.astro';
+import PageHero from '../../components/PageHero.astro';
 import GuideCard from '../../components/GuideCard.astro';
 import Icon from '../../components/Icon.astro';
-import { BESPOKE_SERVICE_PAGES, SERVICES } from '../../data/services';
+import LinkedText from '../../components/LinkedText.astro';
+import LandingQuote from '../../components/LandingQuote.astro';
+import LandingActions from '../../components/LandingActions.astro';
+import LandingFleet from '../../components/LandingFleet.astro';
+import OutOfStateDetails from '../../components/OutOfStateDetails.astro';
+import { BESPOKE_SERVICE_PAGES, LISTED_SERVICES, SERVICES } from '../../data/services';
 import { SERVICE_PHOTOS } from '../../data/servicePhotos';
-import { FLEET, type Vehicle } from '../../data/fleet';
-import { listingShotsFor } from '../../data/fleetPhotos';
 import { GUIDES } from '../../data/guides';
 import { BUSINESS, SITE_ORIGIN } from '../../config/site';
+import openRoad from '../../assets/images/out-of-state/open-road-pexels.jpg';
 
 /**
  * Every service except the ones that ship their own page. Weddings is the first:
@@ -29,20 +34,12 @@ export function getStaticPaths() {
 const { service } = Astro.props;
 const path = `/services/${service.slug}`;
 const canonical = new URL(path, SITE_ORIGIN).href;
-const others = SERVICES.filter((s) => s.slug !== service.slug);
+const others = LISTED_SERVICES.filter((s) => s.slug !== service.slug);
 const photo = SERVICE_PHOTOS[service.slug];
-
-/**
- * The vehicle strip. Slugs are resolved against FLEET rather than trusted, and
- * the photograph is the fleet's own listing frame — the same picture /fleet
- * shows for that vehicle, so a visitor who follows the card does not find a
- * different bus at the other end. A vehicle whose pictures have not arrived
- * still gets a card, because a capacity and a link are the useful part.
- */
-const rigs = (service.vehicles ?? [])
-  .map((slug) => FLEET.find((v) => v.slug === slug))
-  .filter((v): v is Vehicle => Boolean(v))
-  .map((vehicle) => ({ vehicle, shot: listingShotsFor(vehicle.slug)[0] }));
+const isOutOfState = service.slug === 'long-distance-charter-bus-rental';
+const tripBackground = isOutOfState
+  ? await getImage({ src: openRoad, width: 1000, format: 'webp', quality: 75 })
+  : undefined;
 
 /**
  * Structured data, and only what this page can honestly claim.
@@ -95,39 +92,48 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
 
 <Layout
   path={path}
+  bookingHref="#quote-form"
   title={service.meta.title}
   description={service.meta.description}
   ogImage={photo.src.src}
   ogImageAlt={photo.alt}
   jsonLd={schema}
 >
-  <PageHead coordinate={service.destination} title={service.headline}>
+  {/* The trail runs above the name, where a trail runs. Inside the band it had
+      to sit under the heading because the band was the whole header; on the
+      page it can be the first small line and get out of the way. */}
+  <PageHero>
     <nav class="crumbs" aria-label="Breadcrumb">
       <a href="/">Home</a>
       <span aria-hidden="true">/</span>
       <a href="/services">Services</a>
     </nav>
-  </PageHead>
+    <PageTitle coordinate={service.destination} title={service.headline} scale="hero" />
+    <p class="lede svc__lead">{service.proposition}</p>
+    {isOutOfState && <nav class="svc__jump" aria-label="On this page">
+      <a href="#onboard-comfort">Onboard comfort</a>
+      <a href="#trip-planning">Trip planning</a>
+      <a href="#trip-cost">Rental cost</a>
+    </nav>}
+    <LandingActions slot="actions" />
+    <figure slot="media">
+      <Image
+        src={photo.src}
+        alt={photo.alt}
+        widths={[480, 800, 1200]}
+        sizes="(min-width: 60rem) 46vw, 92vw"
+        loading="eager"
+      />
+    </figure>
+  </PageHero>
+  <LandingQuote context={service.name} />
 
-  {/* The photograph and the copy are one section, not two: a band boundary
-      between them reads as a subject change, and a section's own padding either
-      side of the plate opens a gap wide enough to look like a mistake. */}
   <div class="section">
-    <div class="shell">
-      <figure class="shot">
-        <Image
-          src={photo.src}
-          alt={photo.alt}
-          widths={[720, 1100, 1600]}
-          sizes="(min-width: 82rem) 78rem, 92vw"
-          loading="eager"
-        />
-      </figure>
-    </div>
-
-    <div class="shell svc__grid">
+    <div class:list={['shell', 'svc__grid', isOutOfState && 'svc__grid--trip']}>
+      {isOutOfState && service.bodyHeading && <h2 class="subtitle svc__heading">{service.bodyHeading}</h2>}
       <div class="svc__body stack">
-        {service.body.map((p) => <p class="svc__p">{p}</p>)}
+        {!isOutOfState && service.bodyHeading && <h2 class="subtitle svc__heading">{service.bodyHeading}</h2>}
+        {service.body.map((p) => <p class="svc__p"><LinkedText text={p} links={service.bodyLinks?.filter((link) => p.includes(link.phrase))} quoteHref="#quote-form" /></p>)}
 
         {
           service.sister && (
@@ -142,8 +148,8 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
         }
       </div>
 
-      <aside class="svc__aside">
-        <h2 class="coordinate coordinate--ink">What people ask us</h2>
+      <aside class:list={['svc__aside', isOutOfState && 'svc__aside--trip']} style={tripBackground ? { '--svc-aside-image': `url("${tripBackground.src}")` } : undefined}>
+        <h2 class="coordinate coordinate--ink">{isOutOfState ? 'Choose your trip type' : 'What people ask us'}</h2>
         <dl class="concerns">
           {
             service.concerns.map((c) => (
@@ -158,51 +164,9 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
     </div>
   </div>
 
-  {
-    rigs.length > 0 && (
-      <section class="section--tight rigs" aria-labelledby="rigs-head">
-        <div class="shell">
-          <p class="coordinate coordinate--ink">Where this group sits</p>
-          <h2 class="subtitle rigs__head" id="rigs-head">
-            The sizes this trip usually takes.
-          </h2>
-          <p class="lede rigs__lede">
-            A starting point, not the answer — the headcount decides the vehicle,
-            and we confirm the smallest one that seats the group and the job.
-          </p>
+  {isOutOfState && <OutOfStateDetails />}
 
-          <ul class="rigs__list">
-            {rigs.map(({ vehicle, shot }) => (
-              <li>
-                <a class="rig" href={`/fleet/${vehicle.slug}`}>
-                  {shot && (
-                    <span class="rig__frame">
-                      <Image
-                        src={shot.src}
-                        alt={shot.alt}
-                        widths={[360, 540, 760]}
-                        sizes="(min-width: 64rem) 21rem, (min-width: 44rem) 44vw, 90vw"
-                        loading="lazy"
-                      />
-                    </span>
-                  )}
-                  <span class="rig__cap mono">
-                    <b>{vehicle.capacityLabel}</b> passengers
-                  </span>
-                  <span class="rig__name gothic">{vehicle.name}</span>
-                  <span class="rig__role">{vehicle.role}</span>
-                  <span class="rig__link direction">
-                    See this vehicle
-                    <Icon name="arrow" size={15} />
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-    )
-  }
+  <LandingFleet slugs={service.vehicles} />
 
   {
     service.faq && (
@@ -210,16 +174,21 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
         <div class="shell">
           <p class="coordinate">Before you send the request</p>
           <h2 class="subtitle faq__head" id="faq-head">
-            Questions we get about this trip.
+            {service.faqHeading ?? 'Questions we get about this trip.'}
           </h2>
-          <dl class="faq__list">
+          {isOutOfState ? <div class="faq__accordion">
+            {service.faq.map((item) => <details class="faq__disclosure">
+              <summary>{item.q}<Icon name="chevron" size={16} /></summary>
+              <p class="faq__a">{item.a}</p>
+            </details>)}
+          </div> : <dl class="faq__list">
             {service.faq.map((item) => (
               <div class="faq__item">
                 <dt class="faq__q">{item.q}</dt>
                 <dd class="faq__a">{item.a}</dd>
               </div>
             ))}
-          </dl>
+          </dl>}
         </div>
       </section>
     )
@@ -242,13 +211,13 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
   <section class="section--tight field cta">
     <div class="shell cta__inner">
       <div>
-        <h2 class="subtitle cta__head">Get this priced.</h2>
+        <h2 class="subtitle cta__head">{isOutOfState ? 'Ready to Plan Your Out-of-State Trip?' : 'Get this priced.'}</h2>
         <p class="lede cta__body">
           Send the date, the headcount and the route. Office {BUSINESS.hours.officeSummary}.
         </p>
       </div>
       <div class="cta__actions">
-        <a class="action" href="/#quote-form">
+        <a class="action" href="#quote-form">
           Get a quote
           <Icon name="arrow" size={16} />
         </a>
@@ -280,77 +249,35 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
 </Layout>
 
 <style>
-  /* ---- Breadcrumb, inside the enamel nameplate ---- */
-
+  .svc__lead { max-width: 65ch; margin-top: var(--space-5); }
+  .svc__heading { color: var(--enamel-ink); }
+  .svc__jump { display: flex; flex-wrap: wrap; gap: var(--space-3) var(--space-5); margin-top: var(--space-5); }
+  .svc__jump a { display: inline-flex; align-items: center; min-height: 2.75rem; color: var(--enamel-ink); font-weight: 700; font-size: .875rem; text-underline-offset: 4px; }
+  .svc__jump a:focus-visible { outline: 3px solid var(--enamel-ink); outline-offset: 4px; }
+  /* No rule over it any more: above the heading it is the first line on the
+     page, and a border there would draw a lid on the page rather than separate
+     anything. */
   .crumbs {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: var(--space-3);
-    /* Was a step wider, to clear the lede that used to sit above it. With the
-       band carrying the nameplate alone, that distance read as a hole. */
-    margin-top: var(--space-6);
-    padding-top: var(--space-4);
-    border-top: 1px solid var(--enamel-line);
+    margin-bottom: var(--space-5);
     font-family: var(--font-mono);
     font-size: 0.6875rem;
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--signal-dim);
+    color: var(--ink-dim);
   }
 
   .crumbs a {
-    color: var(--signal-dim);
+    color: var(--ink-dim);
     text-decoration: none;
   }
 
   .crumbs a:hover {
-    color: var(--signal);
-  }
-
-  /* ---- Lead photograph, mounted as a plate ---- */
-
-  .shot {
-    position: relative;
-    margin: 0 0 var(--space-12);
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--enamel-deep);
-  }
-
-  .shot::after {
-    content: '';
-    position: absolute;
-    inset: 5px;
-    border: 1px solid var(--keyline);
-    border-radius: 1px;
-    pointer-events: none;
-  }
-
-  /* The plate widens as the viewport does, and gets slimmer with it. A phone
-     reads the photograph as a picture and wants its height; a 78rem desktop
-     reads the same crop as a wall, and 3:2 at that width pushes the opening
-     paragraph below the fold. Three steps rather than one breakpoint, because
-     the middle widths are where a single ratio always looks wrong. */
-  .shot :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 3 / 2;
-    object-fit: cover;
-  }
-
-  @media (min-width: 44rem) {
-    .shot :global(img) {
-      aspect-ratio: 5 / 2;
-    }
-  }
-
-  @media (min-width: 64rem) {
-    .shot :global(img) {
-      aspect-ratio: 4 / 1;
-    }
+    color: var(--ink);
   }
 
   .svc__grid {
@@ -358,11 +285,25 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
     gap: var(--space-12);
   }
 
+  .svc__grid--trip {
+    grid-template-areas: 'heading' 'aside' 'body';
+    gap: var(--space-6);
+  }
+
+  .svc__grid--trip > .svc__heading { grid-area: heading; }
+  .svc__grid--trip > .svc__body { grid-area: body; }
+  .svc__grid--trip > .svc__aside { grid-area: aside; }
+
   @media (min-width: 60rem) {
     .svc__grid {
       grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
       gap: var(--space-16);
       align-items: start;
+    }
+    .svc__grid--trip {
+      grid-template-areas: 'heading aside' 'body aside';
+      grid-template-rows: auto 1fr;
+      gap: var(--space-6) var(--space-16);
     }
   }
 
@@ -422,97 +363,18 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
     color: var(--ink-dim);
   }
 
-  /* ---- The sizes this trip takes ---- */
-
-  .rigs__head {
-    margin-top: var(--space-2);
-  }
-
-  .rigs__lede {
-    max-width: 52ch;
-    margin-top: var(--space-3);
-  }
-
-  .rigs__list {
-    display: grid;
-    gap: var(--space-6);
-    margin: var(--space-10) 0 0;
-    padding: 0;
-    list-style: none;
-    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  }
-
-  /* The vehicle's own listing frame, mounted the way /fleet mounts it: a plate
-     with a scribed keyline, type on the ground below rather than in a panel. */
-  .rig {
-    display: grid;
-    gap: var(--space-2);
-    height: 100%;
-    align-content: start;
-    text-decoration: none;
-    color: var(--ink);
-  }
-
-  .rig__frame {
-    position: relative;
-    display: block;
-    margin-bottom: var(--space-3);
-    overflow: hidden;
-    border-radius: var(--radius);
-    background: var(--enamel-deep);
-  }
-
-  .rig__frame::after {
-    content: '';
-    position: absolute;
-    inset: 5px;
-    border: 1px solid var(--keyline);
-    border-radius: 1px;
-    pointer-events: none;
-  }
-
-  .rig__frame :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    transition: transform 400ms var(--ease-out);
-  }
-
-  .rig:hover .rig__frame :global(img) {
-    transform: scale(1.03);
-  }
-
-  .rig__cap {
-    font-size: 0.6875rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-  }
-
-  .rig__cap b {
-    color: var(--enamel-ink);
-    font-size: 0.8125rem;
-  }
-
-  .rig__name {
-    font-size: 1.125rem;
-    letter-spacing: -0.01em;
-  }
-
-  .rig__role {
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    color: var(--ink-dim);
-  }
-
-  .rig__link {
-    margin-top: var(--space-2);
-  }
-
-  .rig:hover .rig__link {
-    color: var(--hivis-text);
+  @media (width < 60rem) {
+    .svc__aside--trip {
+      background-color: var(--enamel-deep);
+      background-image: linear-gradient(135deg, rgb(6 34 23 / 0.94), rgb(6 34 23 / 0.84)), var(--svc-aside-image);
+      background-size: cover;
+      background-position: center;
+      border-top-color: var(--enamel-line);
+      border-radius: var(--radius);
+      color: var(--signal);
+    }
+    .svc__aside--trip .coordinate,
+    .svc__aside--trip .concern__a { color: var(--signal); }
   }
 
   /* ---- Questions, on the enamel band ---- */
@@ -547,6 +409,16 @@ const schema = [serviceSchema, breadcrumbSchema, ...(faqSchema ? [faqSchema] : [
     line-height: 1.7;
     color: var(--signal-dim);
   }
+
+  .faq__accordion { max-width: 54rem; margin-top: var(--space-8); }
+  .faq__disclosure { border-top: 1px solid var(--enamel-line); }
+  .faq__disclosure:last-child { border-bottom: 1px solid var(--enamel-line); }
+  .faq__disclosure summary { display: flex; justify-content: space-between; align-items: center; gap: var(--space-5); padding-block: var(--space-5); font-size: 1.0625rem; font-weight: 800; cursor: pointer; list-style: none; }
+  .faq__disclosure summary::-webkit-details-marker { display: none; }
+  .faq__disclosure summary :global(svg) { flex: none; }
+  .faq__disclosure[open] summary :global(svg) { transform: rotate(180deg); }
+  .faq__disclosure summary:focus-visible { outline: 3px solid currentColor; outline-offset: 4px; }
+  .faq__disclosure .faq__a { max-width: 75ch; padding-bottom: var(--space-5); }
 
   /* ---- Guides ---- */
 

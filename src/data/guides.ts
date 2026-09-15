@@ -24,6 +24,7 @@
  */
 
 import type { ImageMetadata } from 'astro';
+import { TRANSPORT_LINKS as T, OFFICIAL_LINKS as O } from './transportationLinks';
 import costImage from '../assets/images/guides/guide-cost-lake-shore-drive.jpg';
 import sizeImage from '../assets/images/coach-interior.png';
 import bookingImage from '../assets/images/guides/guide-booking-wedding-guests.jpg';
@@ -316,6 +317,15 @@ export const GUIDES: Guide[] = [
         text: 'Parking and the roads you use',
       },
       {
+        type: 'p',
+        text: "An airport arrival, a hotel loop, and a convention day need different routes and vehicle hours. For O'Hare group transfers that continue to Rosemont, include every stop in the request. If the trip also needs convention transportation, send the event schedule with the airport details so the quote covers the whole visit.",
+        links: [
+          { phrase: "O'Hare group transfers", href: T.ohare },
+          { phrase: 'Rosemont', href: T.rosemont },
+          { phrase: 'convention transportation', href: T.conventions },
+        ],
+      },
+      {
         type: 'h3',
         text: 'Downtown parking',
       },
@@ -326,6 +336,10 @@ export const GUIDES: Guide[] = [
       {
         type: 'p',
         text: 'Which of those applies depends on the venue and the block, and that is why an address helps more than a neighborhood. Loop hotels, Navy Pier, McCormick Place and the Museum Campus each handle an arriving coach their own way, and knowing which one you are using lets us settle the wait before the day rather than on it.',
+        links: [
+          { phrase: 'Loop hotels', href: T.hotels },
+          { phrase: 'McCormick Place', href: O.mccormick },
+        ],
       },
       {
         type: 'h3',
@@ -580,6 +594,16 @@ export const GUIDES: Guide[] = [
       },
       {
         type: 'p',
+        text: 'For a group heading to Wrigley Field, start with the people who need to travel together, then account for their bags and equipment. Our Wrigleyville transportation page covers the trip planning, while the full fleet comparison helps you choose a size. Include that headcount and any luggage when you request a vehicle recommendation.',
+        links: [
+          { phrase: 'Wrigley Field', href: O.wrigley },
+          { phrase: 'Wrigleyville transportation', href: T.wrigleyville },
+          { phrase: 'full fleet comparison', href: T.fleet },
+          { phrase: 'request a vehicle recommendation', href: T.quote },
+        ],
+      },
+      {
+        type: 'p',
         text: 'Two smaller vehicles will seat the same people as one larger one, and it is not the same trip. Two means two counts at every stop, two arrival times, and two drivers working one timeline from different points in traffic.',
       },
       {
@@ -773,6 +797,15 @@ export const GUIDES: Guide[] = [
       {
         type: 'h2',
         text: 'What a late start actually narrows',
+      },
+      {
+        type: 'p',
+        text: 'For visitors flying in, plan the ground transportation when the travel dates take shape. Share flight details for Midway airport transfers, the stops needed for hotel transportation, and any time-sensitive event connections. If your group is staying in Rosemont, include that pickup address even when the main event is in Chicago.',
+        links: [
+          { phrase: 'Midway airport transfers', href: T.midway },
+          { phrase: 'hotel transportation', href: T.hotels },
+          { phrase: 'Rosemont', href: T.rosemont },
+        ],
       },
       {
         type: 'p',

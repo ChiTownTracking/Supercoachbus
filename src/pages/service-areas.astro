@@ -1,0 +1,164 @@
+---
+import Layout from '../layouts/Layout.astro';
+import PageTitle from '../components/PageTitle.astro';
+import Icon from '../components/Icon.astro';
+import LinkedText from '../components/LinkedText.astro';
+import { CHICAGO_SERVICE_AREAS } from '../data/chicagoTravel';
+import { LOCATION_LINKS } from '../data/transportationLinks';
+import { LOCATION_PAGES } from '../data/transportationPages';
+import LandingActions from '../components/LandingActions.astro';
+import LandingQuote from '../components/LandingQuote.astro';
+import LandingFleet from '../components/LandingFleet.astro';
+import BookingEssentials from '../components/BookingEssentials.astro';
+import CloseBand from '../components/CloseBand.astro';
+import { BUSINESS } from '../config/site';
+---
+
+<Layout
+  path="/service-areas"
+  bookingHref="#quote-form"
+  title="Chicago Charter Bus Service Areas | Chicago Super Coach"
+  description="Explore Chicago Super Coach service areas, from downtown neighborhoods and O'Hare and Midway to Rosemont, Schaumburg, Naperville, and surrounding suburbs."
+>
+  <section class="coverage__head">
+    <div class="shell">
+      <PageTitle title={CHICAGO_SERVICE_AREAS.heading} />
+      <p class="lede coverage__lead">{CHICAGO_SERVICE_AREAS.intro}</p>
+      <LandingActions />
+    </div>
+  </section>
+  <LandingQuote context="Chicago and suburban service areas" />
+
+  <section class="section coverage" aria-label="Our Chicago and suburban service areas">
+    <div class="shell">
+
+      <div class="coverage__groups">
+        {
+          CHICAGO_SERVICE_AREAS.groups?.map((group) => (
+            <section class="plate coverage__group">
+              <h2 class="subtitle">{group.name}</h2>
+              <ul class="coverage__locations">
+                {group.locations.map((location) => (
+                  <li><Icon name="pin" size={18} />{LOCATION_LINKS[location] ? <a href={LOCATION_LINKS[location]}>{location}</a> : location}</li>
+                ))}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
+
+      <div class="coverage__local">
+        {LOCATION_PAGES.map((page) => (
+          <section>
+            <h2 class="subtitle"><a href={page.path}>{page.name}</a></h2>
+            <p><LinkedText text={page.intro.text} links={page.intro.links} quoteHref="#quote-form" /></p>
+            <a class="direction" href={page.path}>Plan Transportation in {page.area}<Icon name="arrow" size={18} /></a>
+          </section>
+        ))}
+      </div>
+
+      <div class="coverage__planning">
+        <h2 class="subtitle">Plan your group's pickup and return</h2>
+        <p>
+          Share your pickup and destination addresses, travel date, passenger
+          count, and return schedule. For airport trips, include flight details
+          and luggage needs. For hotel or event shuttles, include each stop and
+          the times your group needs to arrive.
+        </p>
+        <div class="coverage__actions">
+          <a class="action" href="#quote-form">
+            Get a Transportation Quote
+            <Icon name="arrow" size={18} />
+          </a>
+          <a class="direction" href="/services">
+            Explore Our Services
+            <Icon name="arrow" size={18} />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <LandingFleet />
+  <BookingEssentials />
+  <CloseBand heading="Let's plan your pickup." description="Send your pickup address, destination, and dates. We'll confirm the route and the right vehicle."
+    primaryAction={{ label: 'Get My Trip Quote', href: '#quote-form' }} secondaryAction={{ label: `Call ${BUSINESS.phone.display}`, href: BUSINESS.phone.href }} />
+</Layout>
+
+<style>
+  .coverage__head {
+    padding-top: var(--space-8);
+  }
+
+  .coverage__lead { max-width: 65ch; margin-top: var(--space-5); }
+  .coverage__local { display: grid; gap: var(--space-8); margin-top: var(--space-12); }
+  .coverage__local section { padding-top: var(--space-6); border-top: 1px solid var(--paper-line); }
+  .coverage__local h2 { font-size: 1.5rem; }
+  .coverage__local p { color: var(--ink-dim); margin: var(--space-4) 0 var(--space-5); }
+  .coverage__locations a, .coverage__local h2 a { text-underline-offset: 4px; }
+  @media (min-width: 64rem) { .coverage__local { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .coverage__intro {
+    max-width: 75ch;
+  }
+
+  .coverage__groups {
+    display: grid;
+    gap: var(--space-6);
+    margin-top: var(--space-8);
+  }
+
+  .coverage__group h2 {
+    color: var(--enamel-ink);
+  }
+
+  .coverage__locations {
+    display: grid;
+    gap: var(--space-3) var(--space-5);
+    padding: 0;
+    margin: var(--space-6) 0 0;
+    list-style: none;
+  }
+
+  .coverage__locations li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .coverage__locations :global(svg) {
+    flex: none;
+    align-self: center;
+    color: var(--enamel-ink);
+  }
+
+  .coverage__planning {
+    margin-top: var(--space-12);
+    padding-top: var(--space-8);
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .coverage__planning p {
+    max-width: 75ch;
+    margin-top: var(--space-4);
+    color: var(--ink-dim);
+  }
+
+  .coverage__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 40rem) {
+    .coverage__locations {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .coverage__groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

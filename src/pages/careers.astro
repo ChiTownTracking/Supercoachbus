@@ -1,0 +1,218 @@
+---
+/**
+ * Careers.
+ *
+ * The page states nothing about the job that this site does not already state
+ * about the people doing it. The standards block is TRUST_CLAIMS — the same
+ * five lines the homepage makes to a customer, read from the other side of the
+ * windscreen, which is the one honest way to describe the work without being
+ * told what the terms are. Open roles, pay and requirements are registered as
+ * unresolved (careers.roles) rather than guessed at, so the page invites rather
+ * than advertises until the owner supplies them.
+ */
+import Layout from '../layouts/Layout.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import CloseBand from '../components/CloseBand.astro';
+import { BUSINESS, TRUST_CLAIMS } from '../config/site';
+
+const { address, hours, phone } = BUSINESS;
+
+/**
+ * What the work is, drawn from what the site already publishes about the
+ * operation: the fleet it runs, the hours it runs them, and the ground it
+ * covers. Nothing here is a term of employment.
+ */
+const WORK = [
+  {
+    heading: 'The vehicles',
+    body: `Coaches and an executive van, 13 to 57 passengers. Every seat belted, and the fleet on a regular maintenance schedule.`,
+  },
+  {
+    heading: 'The work',
+    body: `Group charters across ${BUSINESS.serviceReach} — corporate shuttles, school and youth groups, weddings, sporting events, and multi-day trips that run overnight.`,
+  },
+  {
+    heading: 'The hours',
+    body: `The office keeps ${hours.officeSummary}. ${hours.charterNote}, so driving schedules follow the charter rather than the office.`,
+  },
+];
+---
+
+<Layout
+  path="/careers"
+  title="Careers | Drive for Chicago Super Coach"
+  description="Driving and charter work with Chicago Super Coach in Elk Grove Village. Licensed, insured, drug-tested drivers operating coaches for group travel across Chicago. Call 630-624-3448."
+>
+  <PageHead coordinate={`${address.city} · ${address.region}`} title="Drive with us." />
+
+  <section class="section careers">
+    <div class="shell careers__grid">
+      <div class="careers__intro">
+        <p class="lede">
+          Chicago Super Coach has been a trusted name in ground transportation
+          for over 15 years. The coaches are only as good as the person driving
+          them, which is why every driver here is licensed, insured and drug
+          tested before they carry anyone.
+        </p>
+        <p class="careers__p">
+          We are always glad to hear from experienced drivers who hold a CDL
+          with a passenger endorsement. Tell us what you have driven and when
+          you are available, and we will tell you what we have.
+        </p>
+
+        <div class="careers__actions">
+          <a class="action" href={phone.href}>
+            Call {phone.display}
+            <Icon name="arrow" size={16} />
+          </a>
+          <a class="direction" href={`mailto:${BUSINESS.email}?subject=Driver%20enquiry`}>
+            Email {BUSINESS.email}
+            <Icon name="mail" size={16} />
+          </a>
+        </div>
+      </div>
+
+      <aside class="plate careers__standards" aria-labelledby="standards-heading">
+        <h2 class="subtitle" id="standards-heading">What we hold drivers to</h2>
+        <ul class="careers__list">
+          {
+            TRUST_CLAIMS.map((claim) => (
+              <li>
+                <Icon name="check" size={17} />
+                <span>{claim}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="careers__note">
+          The same standards this company publishes to the groups it carries.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section--tight careers__work" aria-labelledby="work-heading">
+    <div class="shell">
+      <p class="coordinate coordinate--ink">The job</p>
+      <h2 class="title careers__head" id="work-heading">What you would be driving</h2>
+      <ul class="careers__cards">
+        {
+          WORK.map((item) => (
+            <li class="plate careers__card">
+              <h3 class="careers__card-head">{item.heading}</h3>
+              <p>{item.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CloseBand
+    heading="Interested in driving?"
+    description={`Call the office ${hours.officeSummary}, or send your experience and availability by email. We read every one.`}
+    primaryAction={{ label: `Call ${phone.display}`, href: phone.href }}
+    secondaryAction={{ label: 'Email us', href: `mailto:${BUSINESS.email}?subject=Driver%20enquiry` }}
+  />
+</Layout>
+
+<style>
+  .careers__grid {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  @media (min-width: 60rem) {
+    .careers__grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: var(--space-12);
+    }
+  }
+
+  .careers__intro .lede {
+    max-width: 54ch;
+  }
+
+  .careers__p {
+    margin-top: var(--space-5);
+    max-width: 58ch;
+    color: var(--ink-dim);
+  }
+
+  .careers__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+    margin-top: var(--space-8);
+  }
+
+  .careers__standards {
+    padding: var(--space-6);
+  }
+
+  .careers__list {
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .careers__list li {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+
+  .careers__list :global(svg) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--hivis-text);
+  }
+
+  .careers__note {
+    margin-top: var(--space-5);
+    font-size: 0.8125rem;
+    color: var(--ink-dim);
+  }
+
+  .careers__head {
+    max-width: 18ch;
+    margin-bottom: var(--space-8);
+  }
+
+  .careers__cards {
+    display: grid;
+    gap: var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 52rem) {
+    .careers__cards {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .careers__card {
+    padding: var(--space-6);
+  }
+
+  .careers__card-head {
+    margin: 0 0 var(--space-3);
+    font-size: 1.0625rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .careers__card p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+</style>

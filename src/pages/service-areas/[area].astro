@@ -1,0 +1,11 @@
+---
+import TransportationLanding from '../../components/TransportationLanding.astro';
+import { LOCATION_PAGES } from '../../data/transportationPages';
+export function getStaticPaths() {
+  return LOCATION_PAGES.map((page) => ({
+    params: { area: page.path.split('/').pop() }, props: { page },
+  }));
+}
+const { page } = Astro.props;
+---
+<TransportationLanding page={page} />

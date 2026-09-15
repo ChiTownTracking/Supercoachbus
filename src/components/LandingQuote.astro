@@ -1,0 +1,16 @@
+---
+import QuickQuote from './QuickQuote.astro';
+import { LANDING_QUOTE_DEFAULTS, quoteSourcePath } from '../data/bookingPolicy';
+interface Props { context: string }
+const { context } = Astro.props;
+const defaults = LANDING_QUOTE_DEFAULTS[quoteSourcePath(Astro.url.pathname)];
+---
+<QuickQuote
+  heading="Request a Trip Quote"
+  intro="Share your route, passenger count, and schedule. Our reservation team will confirm availability and send your quote."
+  context={context}
+  eventType={defaults?.eventType ?? 'General Charter'}
+  hours={defaults?.hours}
+  notesPlaceholder={defaults?.notes}
+  showContext
+/>

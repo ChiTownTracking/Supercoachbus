@@ -1,0 +1,239 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import LinkedText from './LinkedText.astro';
+import { CHICAGO_TRAVEL_SECTIONS } from '../data/chicagoTravel';
+import { LOCATION_LINKS } from '../data/transportationLinks';
+import skyline from '../assets/images/chicago-skyline.png';
+import cityRoads from '../assets/images/guides/guide-cost-lake-shore-drive.jpg';
+import airport from '../assets/images/transportation/ohare-terminal-pexels.jpg';
+import wrigley from '../assets/images/services/wrigley-field-crowd-pexels.jpg';
+
+/** Short wayfinding labels accompany the full, owner-supplied SEO headings. */
+const topicDesign = {
+  'chicago-neighborhoods': {
+    label: 'Chicago neighborhoods',
+    preview: 'The Loop, River North, Lincoln Park & beyond',
+    image: skyline, position: 'left center', layout: 'neighborhoods',
+  },
+  'chicago-service-areas': {
+    label: 'City & suburban service areas',
+    preview: 'Downtown Chicago to the surrounding suburbs',
+    image: cityRoads, position: 'center 45%', layout: 'areas',
+  },
+  'chicago-airport-hotel': {
+    label: 'Airports & hotel transfers',
+    preview: "O'Hare, Midway & your Chicago hotel",
+    image: airport, position: 'center', layout: 'transfers',
+  },
+  'chicago-attractions': {
+    label: 'Attractions & event venues',
+    preview: 'Museums, game days, conventions & city sights',
+    image: wrigley, position: 'center', layout: 'attractions',
+  },
+};
+---
+
+<section class="section--tight field travel" id="chicago-travel" aria-labelledby="travel-heading">
+  <div class="shell travel__layout">
+    <div class="travel__intro">
+      <p class="coordinate">Chicago &amp; surrounding areas</p>
+      <h2 class="title travel__title" id="travel-heading">Explore Chicago,<br />together.</h2>
+      <p class="travel__lede">
+        From your neighborhood pickup to the last stop of the day, find the right transportation for your group.
+      </p>
+      <a class="travel__directory travel__directory--desktop" href="/service-areas">
+        Explore our service areas <Icon name="arrow" size={18} />
+      </a>
+      <div class="travel__note">
+        <Icon name="pin" size={18} />
+        <p>Your pickup. Your itinerary.<br /><strong>One transportation plan.</strong></p>
+      </div>
+    </div>
+
+    <div class="travel__explorer">
+      <p class="travel__hint mono">Find your next stop <span>Choose a topic below</span></p>
+      <div class="travel__topics">
+        {
+          CHICAGO_TRAVEL_SECTIONS.map((topic) => {
+            const design = topicDesign[topic.id as keyof typeof topicDesign];
+            return (
+              /* Native disclosures keep all copy in the initial HTML. One topic
+                 opens at a time, with keyboard and no-JavaScript support. */
+              <details class={'travel__topic travel__topic--' + design.layout} name="chicago-travel" id={topic.id}>
+                <summary class="travel__summary">
+                  <span class="travel__thumbnail" aria-hidden="true">
+                    <Image src={design.image} alt="" widths={[120, 200, 300]}
+                      sizes="(min-width: 44rem) 100px, 64px" loading="lazy"
+                      style={{ objectPosition: design.position }} />
+                  </span>
+                  <span class="travel__summary-copy">
+                    <span class="travel__label">{design.label}</span>
+                    <span class="travel__preview">{design.preview}</span>
+                  </span>
+                  <span class="travel__toggle" aria-hidden="true" />
+                </summary>
+
+                <div class="travel__panel" role="region" aria-labelledby={topic.id + '-heading'}>
+                  <div class="travel__panel-intro">
+                    <h2 class="travel__heading" id={topic.id + '-heading'}>{topic.heading}</h2>
+                    <p class="travel__description">{topic.intro}</p>
+                  </div>
+
+                  {topic.cards && (
+                    <ul class="travel__cards">
+                      {topic.cards.map((card) => (
+                        <li class="travel__card">
+                          <h3>
+                            {LOCATION_LINKS[card.name]
+                              ? <a href={LOCATION_LINKS[card.name]}>{card.name}<Icon name="arrow" size={15} /></a>
+                              : card.name}
+                          </h3>
+                          <p><LinkedText text={card.description} links={card.links} /></p>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {topic.groups && (
+                    <div class="travel__groups">
+                      {topic.groups.map((group) => (
+                        <div class="travel__group">
+                          <h3><Icon name="pin" size={17} />{group.name}</h3>
+                          <ul class="travel__locations">
+                            {group.locations.map((location) => (
+                              <li>{LOCATION_LINKS[location]
+                                ? <a href={LOCATION_LINKS[location]}>{location}<Icon name="arrow" size={13} /></a>
+                                : <span>{location}</span>}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {topic.paragraphs?.map((paragraph) => (
+                    <p class="travel__context"><LinkedText text={paragraph.text} links={paragraph.links} /></p>
+                  ))}
+
+                  {topic.cta && (
+                    <div class="travel__panel-footer">
+                      <a class="travel__cta" href={topic.cta.href}>
+                        {topic.cta.label}<Icon name="arrow" size={18} />
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </details>
+            );
+          })
+        }
+      </div>
+    </div>
+    <a class="travel__directory travel__directory--mobile" href="/service-areas">
+      Explore our service areas <Icon name="arrow" size={18} />
+    </a>
+  </div>
+</section>
+
+<style>
+  .travel {
+    padding-block: clamp(2.5rem, 5vw, 4rem);
+    border-bottom: 1px solid var(--enamel-line);
+  }
+
+  .travel__layout { display: grid; align-items: start; gap: var(--space-8); }
+  .travel__intro, .travel__explorer { min-width: 0; }
+  .travel__intro .coordinate { max-width: 28rem; font-size: .6875rem; }
+  .travel__title { max-width: 15ch; font-size: clamp(2.1rem, 3.7vw, 3.25rem); line-height: 1.06; text-wrap: balance; }
+  .travel__lede { margin-top: var(--space-5); max-width: 39ch; font-size: 1.0625rem; line-height: 1.65; color: var(--signal-dim); }
+  .travel__directory { display: inline-flex; align-items: center; gap: var(--space-3); min-height: 2.75rem; margin-top: var(--space-4); font-size: .9375rem; font-weight: 700; text-underline-offset: 5px; }
+  .travel__directory:hover { color: var(--hivis); }
+  .travel__directory:focus-visible { outline: 2px solid var(--hivis); outline-offset: 4px; }
+  .travel__directory--desktop { display: none; }
+  .travel__directory--mobile { justify-self: start; margin-top: 0; }
+  .travel__note { display: none; }
+
+  .travel__hint { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-3); font-size: .625rem; line-height: 1.5; letter-spacing: .08em; text-transform: uppercase; color: var(--signal); }
+  .travel__hint span { color: var(--signal-dim); }
+  .travel__topics { display: grid; gap: var(--space-3); }
+
+  .travel__topic { min-width: 0; background: var(--paper-lift); color: var(--ink); border: 1px solid transparent; border-radius: var(--radius); scroll-margin-top: 7rem; }
+  .travel__topic[open] { border-color: var(--paper-line); }
+  .travel__summary { display: grid; grid-template-columns: 4rem minmax(0, 1fr) 1.75rem; align-items: center; gap: var(--space-3); padding: var(--space-3); cursor: pointer; list-style: none; border-radius: var(--radius); transition: background-color 160ms var(--ease-out); }
+  .travel__summary::-webkit-details-marker { display: none; }
+  .travel__summary::marker { content: ''; }
+  .travel__summary:hover { background: var(--paper); }
+  .travel__summary:focus-visible { outline: 3px solid var(--hivis); outline-offset: 3px; }
+  .travel__thumbnail { display: block; width: 4rem; height: 4.75rem; overflow: hidden; border-radius: 1px; background: var(--paper-line); }
+  .travel__thumbnail :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .travel__summary-copy { min-width: 0; }
+  .travel__label { display: block; font-size: 1.0625rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.2; color: var(--enamel-ink); }
+  .travel__preview { display: block; margin-top: 6px; font-size: .75rem; line-height: 1.45; color: var(--ink-dim); }
+
+  .travel__toggle { position: relative; display: block; width: 1.75rem; height: 1.75rem; border: 1px solid var(--paper-line); border-radius: 50%; color: var(--enamel-ink); transition: background-color 160ms var(--ease-out), color 160ms var(--ease-out); }
+  .travel__toggle::before, .travel__toggle::after { content: ''; position: absolute; inset: 50% auto auto 50%; width: 10px; height: 2px; background: currentColor; transform: translate(-50%, -50%); }
+  .travel__toggle::after { transform: translate(-50%, -50%) rotate(90deg); transition: transform 160ms var(--ease-out); }
+  .travel__topic[open] .travel__toggle { background: var(--enamel); border-color: var(--enamel); color: var(--signal); }
+  .travel__topic[open] .travel__toggle::after { transform: translate(-50%, -50%) rotate(0deg); }
+  .travel__summary:hover .travel__toggle { background: var(--enamel); border-color: var(--enamel); color: var(--signal); }
+
+  .travel__panel { padding: 0 var(--space-5) var(--space-5); }
+  .travel__panel-intro { padding-top: var(--space-5); border-top: 1px solid var(--paper-line); }
+  .travel__heading { max-width: 30ch; color: var(--enamel-ink); font-size: clamp(1.375rem, 2.2vw, 1.875rem); letter-spacing: -.025em; line-height: 1.2; text-wrap: pretty; }
+  .travel__description { margin-top: var(--space-3); max-width: 78ch; font-size: .9375rem; color: var(--ink-dim); line-height: 1.65; }
+  .travel__cards, .travel__groups { display: grid; gap: 0 var(--space-6); padding: 0; margin: var(--space-5) 0 0; list-style: none; }
+  .travel__card { min-width: 0; padding-block: var(--space-4); border-top: 1px solid var(--paper-line); }
+  .travel__panel h3 { color: var(--enamel-ink); font-size: 1rem; font-weight: 800; line-height: 1.3; letter-spacing: -.01em; }
+  .travel__card h3 a { display: inline-flex; align-items: center; gap: var(--space-2); text-underline-offset: 4px; }
+  .travel__card h3 :global(svg) { flex-shrink: 0; }
+  .travel__card p { margin-top: var(--space-2); font-size: .875rem; color: var(--ink-dim); line-height: 1.65; }
+  .travel__topic--transfers .travel__card { padding-block: var(--space-5); }
+  .travel__topic--transfers .travel__card:last-child { padding-bottom: 0; }
+
+  .travel__groups { gap: var(--space-4); }
+  .travel__group { min-width: 0; padding: var(--space-4); border: 1px solid var(--paper-line); border-radius: var(--radius); }
+  .travel__group h3 { display: flex; align-items: center; gap: var(--space-2); }
+  .travel__locations { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2) var(--space-3); padding: 0; margin: var(--space-4) 0 0; list-style: none; font-size: .8125rem; line-height: 1.45; }
+  .travel__locations li { min-width: 0; }
+  .travel__locations a { display: inline-flex; align-items: baseline; gap: 5px; color: var(--enamel-ink); font-weight: 700; text-underline-offset: 3px; }
+  .travel__locations :global(svg) { flex-shrink: 0; align-self: center; }
+  .travel__context { padding: var(--space-4); margin-top: var(--space-5); border-left: 3px solid var(--enamel); background: var(--paper); font-size: .875rem; color: var(--ink-dim); line-height: 1.65; }
+  .travel__panel-footer { padding-top: var(--space-5); margin-top: var(--space-5); border-top: 1px solid var(--paper-line); }
+  .travel__cta { display: inline-flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-height: 2.75rem; padding: var(--space-3) var(--space-4); max-width: 100%; border-radius: var(--radius); background: var(--enamel); color: var(--signal); font-size: .875rem; font-weight: 700; line-height: 1.35; text-decoration: none; }
+  .travel__cta :global(svg) { flex-shrink: 0; }
+  .travel__cta:hover { background: var(--enamel-deep); }
+  .travel__panel a:focus-visible { outline: 2px solid var(--enamel-ink); outline-offset: 4px; }
+
+  @media (min-width: 44rem) {
+    .travel__summary { grid-template-columns: 6.25rem minmax(0, 1fr) 2.25rem; gap: var(--space-5); padding: var(--space-3) var(--space-5) var(--space-3) var(--space-3); }
+    .travel__thumbnail { width: 6.25rem; height: 5rem; }
+    .travel__label { font-size: 1.25rem; }
+    .travel__preview { font-size: .8125rem; }
+    .travel__toggle { width: 2.25rem; height: 2.25rem; }
+    .travel__panel { padding-inline: var(--space-6); padding-bottom: var(--space-6); }
+    .travel__panel-intro { padding-top: var(--space-6); }
+    .travel__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .travel__topic--transfers .travel__cards { grid-template-columns: minmax(0, 1fr); }
+    .travel__topic--transfers .travel__card { display: grid; grid-template-columns: minmax(0, .75fr) minmax(0, 1.5fr); gap: var(--space-5); }
+    .travel__topic--transfers .travel__card p { margin-top: 0; }
+    .travel__groups { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .travel__locations { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (min-width: 64rem) {
+    .travel__directory--desktop { display: inline-flex; }
+    .travel__directory--mobile { display: none; }
+    .travel__layout { grid-template-columns: minmax(0, .8fr) minmax(0, 1.4fr); gap: clamp(2rem, 4vw, 4rem); }
+    .travel__intro { position: sticky; top: 7rem; padding-top: var(--space-8); }
+    .travel__title { font-size: clamp(2.25rem, 3.7vw, 3.25rem); }
+    .travel__note { display: flex; align-items: flex-start; gap: var(--space-3); padding-top: var(--space-6); margin-top: var(--space-6); border-top: 1px solid var(--enamel-line); color: var(--signal-dim); }
+    .travel__note :global(svg) { flex-shrink: 0; margin-top: 3px; color: var(--azure); }
+    .travel__note p { font-size: .875rem; line-height: 1.7; }
+    .travel__note strong { font-weight: 600; color: var(--signal); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .travel__summary, .travel__toggle, .travel__toggle::after { transition: none; }
+  }
+</style>

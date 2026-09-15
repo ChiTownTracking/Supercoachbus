@@ -4,13 +4,19 @@ import Layout from '../layouts/Layout.astro';
 import Icon from '../components/Icon.astro';
 import QuickQuote from '../components/QuickQuote.astro';
 import Testimonials from '../components/Testimonials.astro';
+import WhyChooseUs from '../components/WhyChooseUs.astro';
+import ChicagoTravel from '../components/ChicagoTravel.astro';
+import BookingGuide from '../components/BookingGuide.astro';
 import GuideCard from '../components/GuideCard.astro';
 import CloseBand from '../components/CloseBand.astro';
+import HomeFAQ from '../components/HomeFAQ.astro';
+import ServiceAreaMap from '../components/ServiceAreaMap.astro';
 import { BUSINESS, SITE_ORIGIN, TRUST_CLAIMS } from '../config/site';
 import { FLEET, MAX_SINGLE_VEHICLE, vehicleHref } from '../data/fleet';
-import { SERVICES } from '../data/services';
+import { LISTED_SERVICES } from '../data/services';
 import { SERVICE_PHOTOS } from '../data/servicePhotos';
 import { GUIDES } from '../data/guides';
+import { HOME_TESTIMONIALS } from '../data/testimonials';
 
 import heroCoach from '../assets/images/hero-caoch-bus.png';
 import heroCoachMobile from '../assets/images/hero-coach-mobile-v2.png';
@@ -18,6 +24,7 @@ import coachExterior from '../assets/images/coach-exterior.jpg';
 import coachBus44 from '../assets/images/coach-bus-44.png';
 import coachBus28 from '../assets/images/coach-bus-28.png';
 import executiveSprinter from '../assets/images/excutive-sprinter.png';
+import outOfStatePhoto from '../assets/images/services/super-coach-bus-exterior-interior.png';
 
 /** Portrait art direction for the mobile hero, supplied by the owner. */
 const mobileHeroBackground = await getImage({
@@ -53,6 +60,43 @@ const FLEET_PHOTOS: Record<string, { src: ImageMetadata; alt: string }> = {
     src: executiveSprinter,
     alt: 'The Executive Sprinter Van, a black high-roof Mercedes-Benz Sprinter, seen from the front and side',
   },
+};
+
+/**
+ * Card copy for the homepage fleet row, supplied by the owner.
+ *
+ * Kept here rather than on the vehicle record because it is written for this
+ * row alone: the title carries the passenger range, so the card drops the
+ * separate capacity line, and /fleet, the guides, and the forms keep the
+ * shorter `name` and `role` they already read from FLEET.
+ */
+const HOME_FLEET_COPY: Record<string, { title: string; blurb: string }> = {
+  supercoach: {
+    title: '50–57 Passenger SuperCoach',
+    blurb:
+      'Our largest coach for school groups, corporate events, and long-distance trips. Request a restroom and confirm luggage space when booking.',
+  },
+  coach: {
+    title: '39–44 Passenger Coach Bus',
+    blurb:
+      'Comfortable and spacious coach bus for medium to large groups, corporate travel, school transportation, and group tours.',
+  },
+  'small-coach': {
+    title: '22–28 Passenger Small Coach Bus',
+    blurb:
+      'A great option for smaller groups with big plans. Comfortable seating, luggage space, and a smooth ride.',
+  },
+  'executive-sprinter': {
+    title: '13–15 Passenger Executive Sprinter Van',
+    blurb:
+      'Luxury transportation for executives, wedding parties, small groups, and private events.',
+  },
+};
+
+const HOME_GUIDE_SUMMARIES: Record<string, string> = {
+  'charter-bus-cost-chicago': 'Learn what affects the cost of your trip.',
+  'what-size-charter-bus-do-i-need': 'Find the right vehicle for your group size.',
+  'how-far-in-advance-book-charter-bus': 'Learn when to reserve transportation for your trip.',
 };
 
 const HOME_TITLE = 'Chicago Charter Bus Rental | Chicago Super Coach';
@@ -109,10 +153,9 @@ const homeJsonLd = [
     <div class="shell hero__inner">
       <div class="hero__lead">
         <p class="coordinate hero__coord">
-          <Icon name="pin" size={15} class="hero__ico" />
-          {BUSINESS.address.street} · {BUSINESS.address.city}, {BUSINESS.address.region}
+          Safe. Reliable. Group Transportation.
         </p>
-        <h1 class="display hero__head">Chicago charter buses. One group, one arrival.</h1>
+        <h1 class="display hero__head">Charter Bus Rental in Chicago, IL</h1>
         <span class="hero__rule" aria-hidden="true"></span>
         <p class="lede hero__lede">
           <span class="hero__lede-desktop">
@@ -185,14 +228,15 @@ const homeJsonLd = [
   <section class="section fleet" id="fleet">
     <div class="shell">
       <p class="coordinate coordinate--ink fleet__coord">
-        Chicago coach bus fleet
+        13–57 Passengers
       </p>
-      <h2 class="title fleet__head">Coach buses and a Sprinter van for 13–57 passengers.</h2>
+      <h2 class="title fleet__head">Chicago Charter Bus Fleet</h2>
 
       <ul class="fleet__grid">
         {
           FLEET.map((v) => {
             const photo = FLEET_PHOTOS[v.slug];
+            const copy = HOME_FLEET_COPY[v.slug];
             return (
               <li>
                 <a class="vcard" href={vehicleHref(v)}>
@@ -220,11 +264,8 @@ const homeJsonLd = [
                     aria-hidden="true"
                   />
 
-                  <span class="vcard__cap mono">
-                    <b class="vcard__capnum">{v.capacityLabel}</b> Passengers
-                  </span>
-                  <span class="vcard__name gothic">{v.name}</span>
-                  <span class="vcard__role">{v.role}</span>
+                  <span class="vcard__name gothic">{copy?.title ?? v.name}</span>
+                  <span class="vcard__role">{copy?.blurb ?? v.role}</span>
                   <span class="vcard__more direction">
                     View details
                     <Icon name="arrow" size={15} />
@@ -257,12 +298,23 @@ const homeJsonLd = [
   <!-- Services: each row carries its own photograph. -->
   <section class="section field services">
     <div class="shell">
-      <h2 class="title services__head">Chicago group transportation for five kinds of day</h2>
+      <h2 class="title services__head">Chicago Group Transportation Services</h2>
+      <p class="lede measure services__lede">
+        We provide reliable and flexible transportation services for a wide
+        range of events and group travel needs. No matter the occasion, we'll
+        create a customized transportation plan to keep your group together and
+        on schedule.
+      </p>
 
       <ul class="services__list">
         {
-          SERVICES.map((s) => {
-            const img = SERVICE_PHOTOS[s.slug];
+          LISTED_SERVICES.map((s) => {
+            const img = s.slug === 'long-distance-charter-bus-rental'
+              ? {
+                  src: outOfStatePhoto,
+                  alt: 'A white coach bus exterior alongside its interior with rows of tan leather seats',
+                }
+              : SERVICE_PHOTOS[s.slug];
             return (
               <li>
                 <a class="dest" href={`/services/${s.slug}`}>
@@ -281,10 +333,21 @@ const homeJsonLd = [
           })
         }
       </ul>
+
+      <a class="direction services__all" href="/services">
+        View all services
+        <Icon name="arrow" size={16} />
+      </a>
     </div>
   </section>
 
-  <Testimonials />
+  <WhyChooseUs />
+
+  <ChicagoTravel />
+
+  <BookingGuide />
+
+  <Testimonials heading="What Our Chicago Customers Say" reviews={HOME_TESTIMONIALS} />
 
   <!-- Guides. Held tight, and separated from the reviews by a hairline rather
        than a ground change: two concrete bands in a row need a rule between
@@ -292,17 +355,19 @@ const homeJsonLd = [
   <section class="section--tight guides">
     <div class="shell">
       <p class="coordinate coordinate--ink">Trip planning</p>
-      <h2 class="title guides__head">A little planning goes a long way.</h2>
+      <h2 class="title guides__head">Chicago Group Travel Guides</h2>
       <p class="lede measure guides__lede">
-        Straightforward guides to help you choose the right vehicle, understand
-        pricing, and know when to book.
+        Helpful resources to make your group travel easier.
       </p>
 
       <ul class="guides__grid">
         {
           GUIDES.map((guide) => (
             <li>
-              <GuideCard guide={guide} sizes="(min-width: 64rem) 22rem, (min-width: 44rem) 44vw, 88vw" />
+              <GuideCard
+                guide={{ ...guide, summary: HOME_GUIDE_SUMMARIES[guide.slug] ?? guide.summary }}
+                sizes="(min-width: 64rem) 22rem, (min-width: 44rem) 44vw, 88vw"
+              />
             </li>
           ))
         }
@@ -315,7 +380,18 @@ const homeJsonLd = [
     </div>
   </section>
 
-  <CloseBand />
+  <HomeFAQ />
+
+  <ServiceAreaMap />
+
+  <CloseBand
+    id="home-final-cta"
+    heading="Ready to Move Your Group?"
+    description="Give us a date, a pickup point, and your destination. We'll take care of the rest."
+    primaryAction={{ label: 'Get a Quote', href: '/#quote-form' }}
+    secondaryAction={{ label: `Call ${BUSINESS.phone.display}`, href: BUSINESS.phone.href }}
+    supportingText="Safe People. Safe Trips. A Brighter Tomorrow."
+  />
 </Layout>
 
 <style>
@@ -379,11 +455,6 @@ const homeJsonLd = [
 
   .hero__coord {
     margin-bottom: var(--space-5);
-    color: var(--enamel-ink);
-  }
-
-  .hero__ico {
-    flex: none;
     color: var(--enamel-ink);
   }
 
@@ -837,9 +908,28 @@ const homeJsonLd = [
     list-style: none;
   }
 
+  /* Two or more across, the cards stop sizing their own rows and share one set
+     of tracks, so the frame, the name, the paragraph and the link each sit on
+     one line across the whole row no matter how long a name runs. The bands of
+     five are the parent's; row-gap has to go to nothing or it would open
+     inside every card, and the space between the elements stays where it
+     already was, on their own margins. */
   @media (min-width: 46rem) {
     .fleet__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: auto auto auto auto auto;
+      row-gap: 0;
+    }
+
+    .fleet__grid > li {
+      display: grid;
+      grid-row: span 5;
+      grid-template-rows: subgrid;
+    }
+
+    /* Row-gap is gone, so the second band of cards carries the gap itself. */
+    .fleet__grid > li:nth-child(n + 3) .vcard__frame {
+      margin-top: var(--space-6);
     }
   }
 
@@ -849,16 +939,32 @@ const homeJsonLd = [
     .fleet__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
+
+    /* All four fit one band, so nothing is carrying a gap. */
+    .fleet__grid > li:nth-child(n + 3) .vcard__frame {
+      margin-top: 0;
+    }
   }
 
   .vcard {
     display: grid;
-    /* frame, scale, capacity, name, role, link. The role takes the slack so the
-       four links sit on one line across the row however the names wrap. */
-    grid-template-rows: auto auto auto auto 1fr auto;
+    /* frame, scale, name, role, link. Stacked one-up the card owns its own
+       rows, and the role takes the slack so the link still sits on the floor
+       of the plate. Side by side the cards hand these rows to the grid
+       instead — see the subgrid below. */
+    grid-template-rows: auto auto auto 1fr auto;
     height: 100%;
     text-decoration: none;
     color: inherit;
+  }
+
+  /* Has to come after the rule above to beat it on source order: side by side
+     the card takes its rows from the grid rather than sizing its own. */
+  @media (min-width: 46rem) {
+    .vcard {
+      grid-row: span 5;
+      grid-template-rows: subgrid;
+    }
   }
 
   /* Mounted like a sign plate: 3px corners, a scribed keyline a few millimetres
@@ -937,24 +1043,8 @@ const homeJsonLd = [
     background: var(--enamel-ink);
   }
 
-  .vcard__cap {
-    margin-top: var(--space-4);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-  }
-
-  .vcard__capnum {
-    font-size: 0.9375rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    color: var(--enamel-ink);
-  }
-
   .vcard__name {
-    margin-top: var(--space-2);
+    margin-top: var(--space-4);
     font-size: 1.125rem;
     font-weight: 800;
     letter-spacing: 0.01em;
@@ -993,7 +1083,12 @@ const homeJsonLd = [
 
   .services__head {
     max-width: 18ch;
-    margin-bottom: var(--space-12);
+  }
+
+  .services__lede {
+    max-width: 54ch;
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-8);
   }
 
   .services__list {
@@ -1104,6 +1199,21 @@ const homeJsonLd = [
       grid-column: 2;
       align-self: center;
     }
+  }
+
+  /* The wayfinding link the fleet cards already end on, centred under the row.
+     No ring and no fill: the section closes on a line of type rather than on a
+     second control competing with Reserve. Amber under the cursor, the same
+     move the arrow on each service row makes. */
+  .services__all {
+    display: flex;
+    width: max-content;
+    max-width: 100%;
+    margin: var(--space-12) auto 0;
+  }
+
+  .services__all:hover {
+    color: var(--hivis);
   }
 
   /* ---- Guides ----

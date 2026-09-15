@@ -1,0 +1,164 @@
+---
+import Icon from './Icon.astro';
+import { BUSINESS } from '../config/site';
+
+const { address, phone } = BUSINESS;
+const mapEmbed = `https://www.google.com/maps?q=${encodeURIComponent(
+  `${address.street}, ${address.city}, ${address.region} ${address.postalCode}`
+)}&z=10&output=embed`;
+---
+
+<section class="section--tight location" id="chicago-service-map" aria-labelledby="service-map-heading">
+  <div class="shell location__layout">
+    <div>
+      <h2 class="title location__heading" id="service-map-heading">Our Chicago Service Area</h2>
+      <p class="lede location__intro">
+        Searching for “charter bus companies near me”? Chicago Super Coach is
+        based in {address.city} and arranges private group pickups throughout
+        Chicago and nearby suburbs. Contact our team with your pickup address,
+        destination, and travel date.
+      </p>
+
+      <address class="location__address">
+        <strong>{BUSINESS.name}</strong>
+        <span>{address.street}<br />{address.city}, {address.region} {address.postalCode}</span>
+        <a class="location__phone" href={phone.href}>
+          <Icon name="phone" size={18} />
+          Call: {phone.display}
+        </a>
+      </address>
+
+      <a class="direction location__areas" href="/service-areas">
+        View Service Areas
+        <Icon name="arrow" size={18} />
+      </a>
+    </div>
+
+    <figure class="location__map">
+      <div class="location__frame">
+        <iframe
+          src={mapEmbed}
+          title={`Map showing ${BUSINESS.name} at ${address.street}, ${address.city}, and the surrounding Chicago area`}
+          width="640"
+          height="400"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
+      </div>
+      <figcaption class="location__caption">
+        <span>Our office in {address.city}</span>
+        <a href={BUSINESS.googleMapsUrl} target="_blank" rel="noopener">
+          Open map
+          <Icon name="arrow" size={14} />
+        </a>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .location {
+    scroll-margin-top: 7rem;
+  }
+
+  .location__layout {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .location__heading {
+    max-width: 26ch;
+    color: var(--enamel-ink);
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    line-height: 1.1;
+  }
+
+  .location__intro {
+    max-width: 55ch;
+    margin-top: var(--space-5);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .location__address {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-6);
+    font-style: normal;
+    font-size: 1rem;
+  }
+
+  .location__address strong {
+    color: var(--enamel-ink);
+  }
+
+  .location__phone {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+    text-underline-offset: 4px;
+    font-weight: 700;
+    color: var(--enamel-ink);
+  }
+
+  .location__areas {
+    margin-top: var(--space-6);
+    color: var(--enamel-ink);
+  }
+
+  .location__map {
+    display: grid;
+    grid-template-rows: minmax(18rem, 1fr) auto;
+    gap: var(--space-3);
+    min-width: 0;
+    margin: 0;
+  }
+
+  .location__frame {
+    position: relative;
+    overflow: hidden;
+    min-height: 18rem;
+    border: 1px solid var(--paper-line);
+    border-radius: var(--radius);
+    background: var(--paper-lift);
+  }
+
+  .location__frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .location__caption {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    color: var(--ink-dim);
+    font-size: 0.875rem;
+  }
+
+  .location__caption a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 700;
+    text-underline-offset: 3px;
+  }
+
+  .location a:focus-visible {
+    outline: 3px solid var(--enamel-ink);
+    outline-offset: 5px;
+  }
+
+  @media (min-width: 64rem) {
+    .location__layout {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: var(--space-12);
+    }
+  }
+</style>

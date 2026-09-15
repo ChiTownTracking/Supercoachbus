@@ -1,5 +1,5 @@
 /**
- * The five services. Copy is original to this rebuild — the old site's wording
+ * The services. Copy is original to this rebuild — the old site's wording
  * is not carried over.
  *
  * Each entry has to earn a distinct value proposition. Five near-identical
@@ -8,10 +8,23 @@
  * is what each buyer is actually worried about, which is different every time.
  */
 
+import type { InlineLink } from '../lib/inlineLinks';
+import { TRANSPORT_LINKS as T, OFFICIAL_LINKS as O } from './transportationLinks';
+
 export interface Service {
   slug: string;
   /** Nav and card label. */
   name: string;
+  /**
+   * Whether the service stands in the lineups — the homepage row, the cards on
+   * /services, the footer list.
+   *
+   * False keeps the page, its URL and every link already pointing at it
+   * exactly where they are; it only stops the service being offered as one of
+   * the choices to someone who has not asked for it. Nothing 404s, so this is
+   * how a service leaves the menu without leaving the site. Listed by default.
+   */
+  listed?: boolean;
   /** The blade destination line — where these passengers are going. */
   destination: string;
   /** The page's own H1. */
@@ -20,6 +33,10 @@ export interface Service {
   proposition: string;
   /** Two or three paragraphs of body copy. */
   body: string[];
+  bodyHeading?: string;
+  faqHeading?: string;
+  /** Contextual links, matched to their paragraph during rendering. */
+  bodyLinks?: InlineLink[];
   /** The specific worry this buyer has, and how it is answered. */
   concerns: { label: string; answer: string }[];
   /**
@@ -61,22 +78,109 @@ export interface Service {
 
 export const SERVICES: Service[] = [
   {
+    slug: 'long-distance-charter-bus-rental',
+    name: 'Out of State Transportation Services',
+    destination: 'Overnight · Multi-Day · Interstate',
+    headline: 'Long Distance Charter Bus Rental',
+    proposition:
+      'Travel beyond Illinois with your group, a professional driver, and an itinerary planned around your stops. Request a quote here for a one-way, round-trip, or multi-day journey.',
+    bodyHeading: 'Out of State Transportation Services',
+    faqHeading: 'Long-Distance Travel FAQs',
+    body: [
+      'Chicago Super Coach provides private group transportation for trips that cross state lines, from a single event to an overnight stay or a tour with several destinations. Your group books the vehicle for its own itinerary, with pickup locations, stops, and return arrangements agreed before departure.',
+      'Our long distance charter bus rental service can connect Chicago and the surrounding suburbs with your out-of-state destination. Pickups outside Illinois can also be arranged; tell us where the group starts and finishes. For a school trip, sports tournament, or corporate event, include the arrival deadline and any transportation needed at the destination.',
+      'Start with the quote form on this page, then review the itinerary and vehicle with your reservation manager. Browse our Chicago charter bus fleet to compare seating and luggage options. Lavatories are available on select Supercoach buses; request one before booking so we can confirm availability for your dates.',
+    ],
+    bodyLinks: [
+      { phrase: 'surrounding suburbs', href: '/service-areas' },
+      { phrase: 'school trip', href: '/services/school' },
+      { phrase: 'sports tournament', href: T.sports },
+      { phrase: 'corporate event', href: '/services/corporate' },
+      { phrase: 'quote form on this page', href: T.quote },
+      { phrase: 'Chicago charter bus fleet', href: T.fleet },
+    ],
+    concerns: [
+      {
+        label: 'One-way travel',
+        answer:
+          'Share the departure point, destination, and required arrival time. Let us know if you need transportation after the initial drop-off.',
+      },
+      {
+        label: 'Round trips',
+        answer:
+          'Include both departure and return times, event addresses, and any stops between them. We will review a workable schedule for the full journey.',
+      },
+      {
+        label: 'Overnight and multi-day trips',
+        answer:
+          'Send each travel date, hotel stop, and daily activity. Vehicle and driver arrangements are confirmed around the full itinerary and required rest.',
+      },
+    ],
+    vehicles: ['supercoach', 'coach', 'small-coach'],
+    faq: [
+      {
+        q: 'How do I arrange a charter bus rental for long distance travel?',
+        a: 'Use the quote form on this page. The out-of-state trip option is already selected; enter the number of days, passenger count, pickup and destination, and your contact information. Add overnight stops and the daily schedule in the notes. A reservation manager will review availability and send your quote before you confirm the booking.',
+      },
+      {
+        q: 'What affects the cost of an interstate trip?',
+        a: 'The travel dates, vehicle size, total days, mileage, pickup locations, stops, and driver arrangements all affect the price. A direct return trip and a multi-day tour need different schedules. Ask your manager which charges are included and whether tolls, parking, driver lodging, or additional driver costs apply. Driver gratuity is generally separate from the base price.',
+      },
+      {
+        q: 'Does the same coach stay with us for the whole trip?',
+        a: 'Your reservation manager will confirm the vehicle and driver arrangements for the full itinerary before booking. Longer schedules may require additional drivers, and each day must allow for required driving and rest limits.',
+      },
+      {
+        q: 'Do your buses have an onboard bathroom?',
+        a: 'Lavatories are available on select Supercoach buses. A restroom is not standard on every vehicle, so include the request in your quote notes. Your reservation manager will confirm a suitable vehicle and availability before booking. Scheduled rest stops still form part of the trip plan.',
+      },
+      {
+        q: 'Can we add several stops or stay overnight?',
+        a: 'Yes. Include each stop, its address, overnight accommodation, and the times you need transportation on each day. Your manager will review a multi-stop or multi-day itinerary with you. Changes after quoting may affect the price and vehicle or driver availability.',
+      },
+      {
+        q: 'Can the trip start outside Chicago or Illinois?',
+        a: 'Pickups in the Chicago area and outside Illinois can be arranged. Provide the exact starting point, destination, and final return location so your manager can confirm availability and price the complete route.',
+      },
+      {
+        q: 'Will there be room for suitcases and team equipment?',
+        a: 'Luggage space varies by vehicle and configuration. Tell us how many bags each passenger will bring, plus any large equipment, instruments, or mobility aids. Undercarriage storage is available on request on suitable coaches; your manager will confirm the space with you before booking.',
+      },
+      {
+        q: 'How far in advance should an out-of-state trip be booked?',
+        a: 'Send your request as soon as your travel dates and approximate passenger count are known. A multi-day reservation needs vehicle and driver availability across the entire itinerary. You can share an early route plan and discuss revisions with your manager; availability is confirmed during the booking process.',
+      },
+    ],
+    meta: {
+      title: 'Long Distance Charter Bus Rental | Chicago Super Coach',
+      description:
+        'Long distance charter bus rental from Chicago for out-of-state and multi-day trips. Lavatories on select Supercoach buses. Request your trip quote online.',
+    },
+  },
+  {
     slug: 'corporate',
-    name: 'Corporate Charter',
+    name: 'Corporate Transportation',
     destination: 'Hotel · Venue · Office',
     headline: 'Corporate charter and staff shuttles in Chicago',
     proposition:
       'A repeating loop that runs on your schedule, so attendees stop asking how they are getting there.',
     body: [
-      'Conferences, sales meetings, client events and office moves all fail the same way: people arrive in ones and twos, late, by rideshare, on their own expense reports. A chartered coach turns that into a single departure time you control.',
-      'We run continuous shuttle loops between hotels, venues and offices, or one-way transfers on a fixed schedule. Tell us the pattern you need and we will run it — a morning inbound, an evening outbound, or a loop every thirty minutes across an all-day event.',
-      'Every seat has a USB charging port and a seatbelt, and the coach has overhead and undercarriage luggage space, so a team travelling with equipment or collateral is not improvising.',
+      'Coordinate staff, clients, or conference attendees with scheduled transportation between Chicago offices, hotels, and event venues. Share the passenger count at each location and the times everyone needs to arrive so we can build a practical pickup plan.',
+      'Choose a one-way transfer, a return journey, or scheduled shuttle loops. Include the first departure, desired frequency, breaks between sessions, and final return. We will confirm vehicle availability and a driver schedule that supports the itinerary.',
+      'Our coach and Sprinter options include USB charging and seatbelts. Luggage storage varies by vehicle, so tell us about suitcases, display materials, or equipment. Confirm the space and any requested amenities with your reservation manager before booking.',
+      "For an event at McCormick Place, connect Chicago convention transportation with hotel shuttle service and O'Hare airport transfers. Share the arrival schedule and each venue address so the event itinerary covers the full visit.",
+    ],
+    bodyLinks: [
+      { phrase: 'McCormick Place', href: O.mccormick },
+      { phrase: 'Chicago convention transportation', href: T.conventions },
+      { phrase: 'hotel shuttle service', href: T.hotels },
+      { phrase: "O'Hare airport transfers", href: T.ohare },
     ],
     concerns: [
       {
         label: 'It has to look organized',
         answer:
-          'One vehicle, one departure time, one driver who has your run sheet. Attendees follow a schedule instead of a group chat.',
+          'One coordinated run sheet, with pickup times and vehicles matched to the passenger count at each stop.',
       },
       {
         label: 'Someone has to expense it',
@@ -93,7 +197,7 @@ export const SERVICES: Service[] = [
     faq: [
       {
         q: 'Can the coach run a loop all day, or is it one transfer?',
-        a: 'Either. We run continuous shuttle loops between hotels, venues and offices — a loop every thirty minutes across an all-day event is normal — or one-way transfers on a fixed schedule. Tell us the pattern and we run it.',
+        a: 'We can arrange one-way transfers, return trips, or scheduled shuttle loops. Send the operating window and requested frequency so we can confirm the vehicles and driver arrangements needed.',
       },
       {
         q: 'How many people fit in one vehicle?',
@@ -116,11 +220,11 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'school',
-    name: 'School Shuttle',
+    name: 'School Transportation',
     destination: 'Field Trip · Campus · Event',
     headline: 'School shuttle and student group transportation',
     proposition:
-      'Licensed, insured, drug-tested drivers and a seatbelt on every seat — the things a district actually asks about.',
+      'Licensed, drug-tested drivers, insured transportation, and coach buses with seatbelts on every seat for school groups.',
     body: [
       'Booking transportation for students means answering to someone: a principal, a district office, a parent who wants to know who is driving. The questions are always about the driver and the vehicle, not the price.',
       'Our drivers are licensed and experienced, insured, and drug tested. The coach has seatbelts on all seats and is maintained on a regular schedule. We have carried student groups from elementary field trips through university travel.',
@@ -130,7 +234,7 @@ export const SERVICES: Service[] = [
       {
         label: 'Who is driving my students',
         answer:
-          'Licensed, experienced, insured drivers who are drug tested. We can provide driver details in advance for district records.',
+          'Licensed, experienced, drug-tested drivers. Tell us which district documents you need when booking; driver assignments are usually completed about 24 hours before travel.',
       },
       {
         label: 'Is the vehicle safe',
@@ -147,7 +251,7 @@ export const SERVICES: Service[] = [
     faq: [
       {
         q: 'Who will be driving my students?',
-        a: 'Licensed, experienced, insured drivers who are drug tested. We can provide driver details in advance for district records.',
+        a: 'Licensed, experienced, drug-tested drivers. Tell us which district documents you need when booking. Driver assignments are usually completed about 24 hours before travel, with details sent to the trip contact.',
       },
       {
         q: 'Does every seat have a seatbelt?',
@@ -170,15 +274,22 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'sporting-events',
-    name: 'Sporting Events',
+    name: 'Sporting Event Transportation',
     destination: 'Wrigley · Rate · Soldier · United',
     headline: 'Chicago sporting event charters',
     proposition:
-      'Game-day parking and traffic are the whole problem. A charter drops your group at the gate and is waiting after.',
+      'Travel together to the game, with pickup, drop-off, and return times arranged in advance at locations the bus can safely access.',
     body: [
       'Cubs, White Sox, Bears, Bulls and Blackhawks games all share one logistics problem: parking near the venue is expensive, scarce, and nowhere near where your group wants to be. Twelve cars means twelve parking searches and twelve different arrival times.',
-      'One coach means one arrival. We drop your group close in, park in the charter lot, and are in position when the game ends — which is the part that matters, because that is when everyone else is walking to their cars.',
+      'Send the venue, event date, passenger count, and preferred return window. We will agree on pickup and drop-off arrangements based on bus access and venue rules. The return meeting point and time are confirmed with your group before travel.',
       'This works the same for a company outing, a season-ticket group, a birthday, or a youth team travelling to a tournament.',
+      'For a Cubs game at Wrigley Field, our Wrigleyville charter bus service connects your pickup and return plans. Visiting teams and fans can add Chicago hotel transportation and compare our charter bus fleet for the passengers, luggage, and equipment coming along.',
+    ],
+    bodyLinks: [
+      { phrase: 'Wrigley Field', href: O.wrigley },
+      { phrase: 'Wrigleyville charter bus service', href: T.wrigleyville },
+      { phrase: 'Chicago hotel transportation', href: T.hotels },
+      { phrase: 'charter bus fleet', href: T.fleet },
     ],
     concerns: [
       {
@@ -201,7 +312,7 @@ export const SERVICES: Service[] = [
     faq: [
       {
         q: 'Where does the coach actually drop us?',
-        a: 'Close in at the venue, then the coach parks in the charter lot rather than circling for street parking. Your group walks from the drop-off, not from wherever a garage had space.',
+        a: 'The drop-off location depends on venue rules, road access, and the vehicle. We will confirm a suitable meeting point and the return pickup plan before the trip.',
       },
       {
         q: 'What happens if the game runs long?',
@@ -213,7 +324,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: 'Is the driver waiting when we come out?',
-        a: 'The coach is in position when the game ends, which is the part that matters — that is the moment everyone else starts walking to their cars.',
+        a: 'We arrange a return window and meeting point when you book. Tell your reservation manager if you need flexibility for extra innings or overtime; waiting arrangements depend on the booked schedule and venue access.',
       },
     ],
     meta: {
@@ -224,15 +335,15 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'weddings',
-    name: 'Wedding Transportation',
+    name: 'Wedding Shuttle Service',
     destination: 'Ceremony · Photos · Reception',
     headline: 'Bridal Party Transportation',
     proposition:
-      'The date does not move. Guest shuttles run on the timeline you already built, including the late return nobody plans for.',
+      'Guest shuttles between hotels, ceremonies, and receptions, with stops and return times arranged with your reservation manager.',
     body: [
       'Wedding transportation is a timing problem wearing a formal outfit. Guests need to get from the hotel to the ceremony, the wedding party needs to get to photos, and at the end of the night a lot of people need to get back safely.',
       'We run the loops your timeline needs: a guest shuttle from the hotel block, a wedding party transfer between ceremony, photo locations and reception, and a late return so nobody is driving home from an open bar.',
-      'One coach moves the whole guest list in a single run, which is usually simpler than staging several smaller vehicles — and it means one driver holding one timeline rather than a convoy trying to stay together.',
+      'Match the vehicles and number of runs to your guest count. Larger weddings may need several coaches or repeat shuttles, with each hotel pickup and return included in the agreed timeline.',
     ],
     concerns: [
       {
@@ -273,14 +384,15 @@ export const SERVICES: Service[] = [
   },
   {
     slug: 'youth-groups',
-    name: 'Youth Groups',
+    name: 'Youth Group Transportation',
+    listed: false,
     destination: 'Tournament · Retreat · Outing',
     headline: 'Youth group and team transportation',
     proposition:
-      'Built for chaperones: everyone in one vehicle, counted once, with luggage and gear that actually fits.',
+      'Safe and comfortable transportation for camps, retreats, and group activities.',
     body: [
       'Church groups, club teams, scouts and camp programs travel with a ratio of adults to kids and a headcount that has to be right every single time the group moves. Splitting across private cars makes that harder at every stop.',
-      'One coach keeps the group together and the count simple. Overhead and undercarriage luggage space means gear, equipment bags and overnight luggage travel with the group instead of in a separate parent convoy.',
+      'Keep the group on one transportation plan, with vehicles matched to the passenger count and equipment. Luggage space varies by coach; describe sports bags, instruments, or overnight luggage so we can confirm sufficient storage before booking.',
       'Our drivers are licensed, insured and drug tested, and we have long experience with youth groups — the same standard we hold for school district work.',
     ],
     concerns: [
@@ -316,7 +428,7 @@ export const SERVICES: Service[] = [
       },
       {
         q: 'Do you run overnight and out-of-state trips?',
-        a: 'Yes. Out-of-state is an option on the quote form — tell us the days and the nights away, and the quote is built on the vehicle and driver held for that whole stretch.',
+        a: 'Yes. Choose the out-of-state option and include all travel dates and overnight stops. We will confirm the vehicle and driver arrangements around the itinerary and required driving and rest limits.',
       },
     ],
     meta: {
@@ -330,6 +442,17 @@ export const SERVICES: Service[] = [
 export function getService(slug: string): Service | undefined {
   return SERVICES.find((s) => s.slug === slug);
 }
+
+/**
+ * The lineup: the services offered as choices, in order.
+ *
+ * Every list a visitor browses reads this rather than SERVICES — the homepage
+ * row, the cards on /services, the footer, and the strip of other services at
+ * the foot of a service page. SERVICES itself stays the full set, because it is
+ * what builds the routes: an unlisted service keeps its page and every link
+ * already pointing at it.
+ */
+export const LISTED_SERVICES = SERVICES.filter((s) => s.listed !== false);
 
 /**
  * Services that have outgrown the shared template and ship their own page.

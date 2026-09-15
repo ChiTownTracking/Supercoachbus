@@ -1,0 +1,54 @@
+---
+import Icon from './Icon.astro';
+import { BUSINESS } from '../config/site';
+import { BOOKING_POLICY } from '../data/bookingPolicy';
+const steps = [
+  { title: 'Send your trip details', text: 'Use the quote form on this page. Include all stops, passenger counts, luggage, and your return plans.' },
+  { title: 'Review your quote', text: 'Your reservation manager checks availability and reviews the vehicle, itinerary, and price with you by email.' },
+  { title: 'Confirm your booking', text: `Your manager guides you through confirmation and the $${BOOKING_POLICY.depositAmount} credit card deposit. The remaining balance is charged ${BOOKING_POLICY.balanceDaysBeforeTrip} days before your trip.` },
+];
+const questions = [
+  { q: 'What goes into the price?', a: 'Vehicle size, date, duration, mileage, pickup locations, and the itinerary affect the quote. Driver gratuity is generally separate from the base price. Ask your reservation manager to explain all included charges before you confirm.' },
+  { q: 'Can I request specific amenities or an accessible coach?', a: 'Yes. Request a restroom, Wi-Fi, PA or TV/DVD equipment, or wheelchair-accessible transportation before booking. Availability and luggage space vary by vehicle; your manager will confirm the right configuration for your group.' },
+  { q: 'What if my plans change or I need to cancel?', a: 'Contact your reservation manager with the revised stops, times, or passenger count. Changes depend on availability and may affect the quote. Cancellation deadlines depend on the trip type; confirm the applicable deadline and refund terms with your manager before booking.' },
+  { q: 'When will I receive my driver details?', a: 'Drivers are usually assigned about 24 hours before the trip. The trip contact receives the driver information by text once assignments are complete. Make sure the phone number on your reservation is correct.' },
+];
+---
+<section class="section--tight booking-info" aria-labelledby="booking-info-heading">
+  <div class="shell">
+    <h2 class="title booking-info__heading" id="booking-info-heading">From quote to confirmed trip</h2>
+    <ol class="booking-info__steps">
+      {steps.map((step, i) => <li><span class="mono booking-info__number" aria-hidden="true">0{i + 1}</span><div><h3>{step.title}</h3><p>{step.text}</p></div></li>)}
+    </ol>
+    <div class="booking-info__details">
+      <div>
+        <h3 class="subtitle">Know before you book</h3>
+        <p class="booking-info__office">Our office is in {BUSINESS.address.city}. Reach our team {BUSINESS.hours.officeSummary}. {BUSINESS.hours.charterNote}.</p>
+        <a class="direction" href={BUSINESS.phone.href}><Icon name="phone" size={16} />{BUSINESS.phone.display}</a>
+      </div>
+      <div>
+        {questions.map((item) => <details class="booking-info__faq"><summary>{item.q}<Icon name="expand" size={14} /></summary><p>{item.a}</p></details>)}
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+  .booking-info { border-top: 1px solid var(--paper-line); }
+  .booking-info__heading { color: var(--enamel-ink); font-size: clamp(1.75rem, 3vw, 2.5rem); }
+  .booking-info__steps { display: grid; gap: var(--space-6); list-style: none; margin: var(--space-8) 0; padding: 0; }
+  .booking-info__steps li { display: flex; align-items: start; gap: var(--space-4); border-top: 2px solid var(--enamel-ink); padding-top: var(--space-5); }
+  .booking-info__number { font-size: 1.5rem; font-weight: 700; color: var(--enamel-ink); }
+  .booking-info__steps h3 { font-size: 1.125rem; color: var(--enamel-ink); }
+  .booking-info__steps p, .booking-info__office, .booking-info__faq p { margin-top: var(--space-3); color: var(--ink-dim); font-size: 1rem; line-height: 1.6; }
+  .booking-info__details { display: grid; gap: var(--space-8); padding-top: var(--space-6); }
+  .booking-info__office { max-width: 45ch; margin-bottom: var(--space-5); }
+  .booking-info__details .direction { color: var(--enamel-ink); }
+  .booking-info__faq { border-top: 1px solid var(--paper-line); }
+  .booking-info__faq:last-child { border-bottom: 1px solid var(--paper-line); }
+  .booking-info__faq summary { display: flex; justify-content: space-between; align-items: center; gap: var(--space-4); padding-block: var(--space-4); list-style: none; font-weight: 700; cursor: pointer; color: var(--enamel-ink); }
+  .booking-info__faq summary::-webkit-details-marker { display: none; }
+  .booking-info__faq summary :global(svg) { flex: none; }
+  .booking-info__faq p { margin: 0 0 var(--space-5); }
+  .booking-info :is(a, summary):focus-visible { outline: 3px solid var(--enamel-ink); outline-offset: 4px; }
+  @media(min-width: 52rem) { .booking-info__steps { grid-template-columns: repeat(3, minmax(0, 1fr)); } .booking-info__details { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: var(--space-12); } }
+</style>

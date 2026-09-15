@@ -13,9 +13,10 @@ import type { GuideBlock, GuideLink } from '../data/guides';
  */
 interface Props {
   blocks: GuideBlock[];
+  quoteHref?: string;
 }
 
-const { blocks } = Astro.props;
+const { blocks, quoteHref } = Astro.props;
 
 /** Heading ids, so any section of a guide can be linked to directly. */
 function slugify(text: string): string {
@@ -53,7 +54,7 @@ function withLinks(text: string, links?: GuideLink[]): (string | GuideLink)[] {
         continue;
       }
       if (at > 0) next.push(part.slice(0, at));
-      next.push(link);
+      next.push(quoteHref && link.href === '/#quote-form' ? { ...link, href: quoteHref } : link);
       const rest = part.slice(at + link.phrase.length);
       if (rest) next.push(rest);
       placed = true;

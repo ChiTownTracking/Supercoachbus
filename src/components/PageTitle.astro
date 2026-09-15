@@ -1,0 +1,131 @@
+---
+/**
+ * A page's nameplate, set on the paper ground directly above the copy it heads.
+ *
+ * The enamel band this replaces stood the heading in a field of its own, with
+ * the sentence it introduces beginning somewhere below the fold of it. Here the
+ * heading sits where a heading sits — immediately above its first paragraph, in
+ * the same column — so the two read as one block rather than as a banner and
+ * then some text.
+ *
+ * The contract the band carried comes with it. The coordinate line is optional
+ * and must carry real information: an address, a capacity, a destination. A
+ * line that merely restates the heading below it is a kicker, and the heading
+ * carries its own weight. `capacity` is the passenger range, set inside the
+ * heading itself, and a page passing it should not also pass a coordinate
+ * repeating it.
+ */
+interface Props {
+  coordinate?: string;
+  /**
+   * A string sets its own line breaks off the measure. An array breaks where
+   * the page says it does — for a heading carrying two named things rather
+   * than one sentence, where the wrap point is the meaning.
+   */
+  title: string | string[];
+  capacity?: string;
+  /**
+   * `hero` is the heading set in a column beside a photograph rather than
+   * across the page: a step smaller, and measured off the column it stands in.
+   *
+   * It is a prop rather than a class the page passes in, because a class from
+   * the page carries the page's style scope and this heading carries this
+   * component's — they never meet, and the rule is silently dropped.
+   */
+  scale?: 'page' | 'hero';
+}
+
+const { coordinate, title, capacity, scale = 'page' } = Astro.props;
+const titleLines = Array.isArray(title) ? title : [title];
+---
+
+{coordinate && <p class="coordinate coordinate--ink page-title__coord">{coordinate}</p>}
+<h1
+  class:list={[
+    'display',
+    'page-title',
+    titleLines.length > 1 && 'page-title--lines',
+    scale === 'hero' && 'page-title--hero',
+  ]}
+>
+  {
+    titleLines.length > 1
+      ? titleLines.map((line) => <span class="page-title__line">{line}</span>)
+      : titleLines[0]
+  }
+  {capacity && (
+    <span class="page-title__cap mono">
+      <span class="page-title__capnum">{capacity}</span> passengers
+    </span>
+  )}
+</h1>
+
+<style>
+  /* Held at the band's own size so a page that loses the field does not also
+     lose the scale of its name. */
+  .page-title {
+    margin: 0;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    max-width: 18ch;
+    color: var(--ink);
+  }
+
+  /* A given break, not a wrapped one: each line carries the heading's own size
+     and weight, and the measure comes off with them — 18ch is a wrap point for
+     a sentence and would break these lines a second time, which is the one
+     thing a stated break asks not to happen. */
+  .page-title--lines {
+    max-width: none;
+  }
+
+  /* Beside a photograph the heading has roughly half the page to run in, so it
+     steps down and takes its measure from the column instead of the page. */
+  .page-title--hero {
+    font-size: clamp(2.25rem, 4.4vw, 3.5rem);
+    max-width: 16ch;
+  }
+
+  .page-title--hero.page-title--lines {
+    max-width: none;
+  }
+
+  .page-title__line {
+    display: block;
+  }
+
+  /* The display line-height is 0.95: right for one phrase running on, wrong for
+     two standing together, where the last word of the first and the first word
+     of the second read as a line. */
+  .page-title__line + .page-title__line {
+    margin-top: 0.14em;
+  }
+
+  @media (max-width: 47rem) {
+    .page-title__line + .page-title__line {
+      margin-top: 0.34em;
+    }
+  }
+
+  /* Set the way the fleet cards set a capacity under the vehicle name — the
+     number large in mono, the unit small beside it — so the same fact wears the
+     same face on the listing and on the vehicle's own page. */
+  .page-title__cap {
+    display: block;
+    margin-top: var(--space-4);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+
+  .page-title__capnum {
+    display: inline-block;
+    margin-right: var(--space-2);
+    font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    vertical-align: -0.15em;
+  }
+</style>

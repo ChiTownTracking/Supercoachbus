@@ -143,4 +143,29 @@ export const OPEN_ITEMS = {
     'Whether guests may bring beverages aboard',
     'ChiTown Trolley publishes a 21-and-over policy for its trolleys. The wedding FAQ currently answers "tell us in advance and we will confirm for your vehicle and date" rather than restating another vehicle\'s policy as this fleet\'s. Supply the coach policy and the answer becomes a real one.'
   ),
+  /**
+   * The careers page. The page itself invents nothing: it describes the work
+   * from what this site already publishes about its own drivers, and routes an
+   * applicant to the phone number and address that are real. What it cannot say
+   * is which roles are actually open, on what terms, or what the operator
+   * requires of a candidate beyond the licence the work legally needs — so it
+   * says none of that, and this keeps the build asking.
+   */
+  careers: todo(
+    'careers.roles',
+    'fact',
+    'Open roles, their terms, and what the operator asks of an applicant',
+    'The page invites drivers to get in touch and states only the standards the site already publishes (licensed, insured, drug tested). Supply the roles you are actually hiring for, whether they are full or part time, pay, benefits, and any experience requirement beyond a CDL with a passenger endorsement — and the page can list real openings instead of an open invitation.'
+  ),
+  /**
+   * Where an application actually goes. It currently goes to the general
+   * mailbox, which is real and monitored, rather than to a careers address or
+   * an application form that does not exist yet.
+   */
+  careersIntake: todo(
+    'careers.intake',
+    'endpoint',
+    'Where driver applications should land',
+    'Applications are pointed at the main phone number and info@ mailbox. If hiring should go somewhere else — its own address, an application form, or a third-party ATS — supply it and the page can route there instead.'
+  ),
 } as const;

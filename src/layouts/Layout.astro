@@ -16,6 +16,8 @@ interface Props {
   description: string;
   /** Path without origin, e.g. "/fleet". */
   path: string;
+  /** Present when this page has its own quote form. */
+  bookingHref?: string;
   /** Set on pages that should not be indexed. */
   noindex?: boolean;
   /** "article" on a guide; everything else is a page of the site itself. */
@@ -40,6 +42,7 @@ const {
   title,
   description,
   path,
+  bookingHref,
   noindex = false,
   ogType = 'website',
   ogImage,
@@ -210,10 +213,10 @@ const schema = {
       carrying no border between them. Seed unchanged.
     -->
     <a class="skip" href="#main">Skip to content</a>
-    <Header />
+    <Header bookingHref={bookingHref} />
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    <Footer bookingHref={bookingHref} />
   </body>
 </html>

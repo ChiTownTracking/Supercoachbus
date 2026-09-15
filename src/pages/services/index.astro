@@ -1,23 +1,28 @@
 ---
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
-import PageHead from '../../components/PageHead.astro';
+import PageTitle from '../../components/PageTitle.astro';
 import CloseBand from '../../components/CloseBand.astro';
 import Icon from '../../components/Icon.astro';
-import { SERVICES } from '../../data/services';
+import BookingEssentials from '../../components/BookingEssentials.astro';
+import LandingFleet from '../../components/LandingFleet.astro';
+import { LISTED_SERVICES } from '../../data/services';
+import { TRANSPORTATION_SERVICE_PAGES } from '../../data/transportationPages';
 import { SERVICE_PHOTOS } from '../../data/servicePhotos';
-import { FLEET } from '../../data/fleet';
 import { BUSINESS, SITE_ORIGIN, TRUST_CLAIMS } from '../../config/site';
 
 const serviceListSchema = {
   '@context': 'https://schema.org',
   '@type': 'ItemList',
   name: 'Chicago Super Coach transportation services',
-  itemListElement: SERVICES.map((service, index) => ({
+  itemListElement: [
+    ...LISTED_SERVICES.map((service) => ({ name: service.name, path: `/services/${service.slug}` })),
+    ...TRANSPORTATION_SERVICE_PAGES,
+  ].map((service, index) => ({
     '@type': 'ListItem',
     position: index + 1,
     name: service.name,
-    url: new URL(`/services/${service.slug}`, SITE_ORIGIN).href,
+    url: new URL(service.path, SITE_ORIGIN).href,
   })),
 };
 ---
@@ -28,22 +33,24 @@ const serviceListSchema = {
   description="Charter bus and shuttle services in Chicago for corporate groups, schools, sporting events, weddings and youth groups. Licensed, insured drivers. Call 630-624-3448."
   jsonLd={[serviceListSchema]}
 >
-  <PageHead
-    coordinate={`13–57 passengers · ${BUSINESS.serviceArea}`}
-    title="One fleet, built around five different kinds of day."
-  >
-    <div class="head-actions">
-      <a class="action" href="/#quote-form">
-        Get a quote
-        <Icon name="arrow" size={16} />
-      </a>
-      <a class="head-phone mono" href={BUSINESS.phone.href}>
-        <Icon name="phone" size={15} />
-        {BUSINESS.phone.display}
-      </a>
+  <section class="svcs__head">
+    <div class="shell">
+      <PageTitle
+        coordinate={`13–57 passengers · ${BUSINESS.serviceArea}`}
+        title="Group transportation, built around your day."
+      />
+      <div class="head-actions">
+        <a class="action" href="/reserve">
+          Get a quote
+          <Icon name="arrow" size={16} />
+        </a>
+        <a class="head-phone mono" href={BUSINESS.phone.href}>
+          <Icon name="phone" size={15} />
+          {BUSINESS.phone.display}
+        </a>
+      </div>
     </div>
-  </PageHead>
-
+  </section>
   <section class="section directory" aria-labelledby="directory-heading">
     <div class="shell">
       <div class="directory__intro">
@@ -59,7 +66,7 @@ const serviceListSchema = {
 
       <ol class="service-list">
         {
-          SERVICES.map((service, index) => {
+          LISTED_SERVICES.map((service, index) => {
             const photo = SERVICE_PHOTOS[service.slug];
 
             return (
@@ -97,6 +104,15 @@ const serviceListSchema = {
           })
         }
       </ol>
+      <section class="connections" aria-labelledby="connections-heading">
+        <h2 class="subtitle" id="connections-heading">Airport, hotel &amp; convention transportation</h2>
+        <p>Plan the connections between your arrival, your stay, and your event.</p>
+        <ul class="connections__list">
+          {TRANSPORTATION_SERVICE_PAGES.map((page) => (
+            <li><h3><a href={page.path}>{page.name}<Icon name="arrow" size={18} /></a></h3><p>{page.meta.description}</p></li>
+          ))}
+        </ul>
+      </section>
     </div>
   </section>
 
@@ -122,69 +138,10 @@ const serviceListSchema = {
     </div>
   </section>
 
-  <section class="section planning" aria-labelledby="planning-heading">
-    <div class="shell planning__grid">
-      <div class="planning__main">
-        <p class="coordinate coordinate--ink">From details to run sheet</p>
-        <h2 class="title planning__head" id="planning-heading">
-          Three decisions get the trip moving.
-        </h2>
+  <LandingFleet quoteHref="/reserve" />
 
-        <ol class="steps">
-          <li class="step">
-            <span class="step__number mono">01</span>
-            <div>
-              <h3 class="step__head gothic">Tell us the trip</h3>
-              <p>Date, headcount, pickup, destination, timing and any luggage or equipment.</p>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step__number mono">02</span>
-            <div>
-              <h3 class="step__head gothic">Match the vehicle</h3>
-              <p>We confirm the smallest available coach that fits the group and the job.</p>
-            </div>
-          </li>
-          <li class="step">
-            <span class="step__number mono">03</span>
-            <div>
-              <h3 class="step__head gothic">Set the run sheet</h3>
-              <p>Pickup points, departure times, return windows and vehicle details are agreed before the day.</p>
-            </div>
-          </li>
-        </ol>
-      </div>
-
-      <aside class="fleet-fit" aria-labelledby="fleet-fit-heading">
-        <p class="coordinate coordinate--ink">Four vehicle sizes</p>
-        <h2 class="subtitle fleet-fit__head" id="fleet-fit-heading">
-          From a Sprinter to a full-size coach.
-        </h2>
-        <ul class="fleet-fit__list">
-          {
-            [...FLEET].reverse().map((vehicle) => (
-              <li>
-                <a href={`/fleet/${vehicle.slug}`}>
-                  <span>
-                    <b class="fleet-fit__cap mono">{vehicle.capacityLabel}</b>
-                    <span class="fleet-fit__unit mono">passengers</span>
-                  </span>
-                  <span class="fleet-fit__name">{vehicle.name}</span>
-                  <Icon name="arrow" size={15} />
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-        <a class="fleet-fit__all direction" href="/fleet">
-          Compare the full fleet
-          <Icon name="arrow" size={15} />
-        </a>
-      </aside>
-    </div>
-  </section>
-
-  <CloseBand />
+  <BookingEssentials />
+  <CloseBand primaryAction={{ label: 'Get My Trip Quote', href: '/reserve' }} secondaryAction={{ label: `Call ${BUSINESS.phone.display}`, href: BUSINESS.phone.href }} />
 </Layout>
 
 <script>
@@ -198,6 +155,20 @@ const serviceListSchema = {
 </script>
 
 <style>
+  .svcs__head {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+
+  .connections { margin-top: var(--space-12); padding-top: var(--space-8); border-top: 1px solid var(--paper-line); }
+  .connections > p { margin-top: var(--space-3); color: var(--ink-dim); }
+  .connections__list { display: grid; gap: var(--space-6) var(--space-8); padding: 0; margin: var(--space-6) 0 0; list-style: none; }
+  .connections__list li { border-top: 1px solid var(--paper-line); padding-top: var(--space-4); }
+  .connections__list h3 { font-size: 1.125rem; }
+  .connections__list a { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); text-underline-offset: 4px; }
+  .connections__list :global(svg) { flex-shrink: 0; }
+  .connections__list p { margin-top: var(--space-3); color: var(--ink-dim); font-size: .9375rem; }
+  @media (min-width: 44rem) { .connections__list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   .head-actions {
     display: flex;
     flex-wrap: wrap;
@@ -213,12 +184,14 @@ const serviceListSchema = {
     padding-block: var(--space-2);
     font-size: 0.8125rem;
     font-weight: 700;
-    color: var(--signal);
+    color: var(--ink);
     text-underline-offset: 4px;
   }
 
+  /* The paper-ground amber. The bright one is a fill colour and does not carry
+     text on concrete. */
   .head-phone:hover {
-    color: var(--hivis);
+    color: var(--hivis-text);
   }
 
   .directory__intro {
@@ -459,133 +432,8 @@ const serviceListSchema = {
     }
   }
 
-  .planning__grid {
-    display: grid;
-    gap: var(--space-12);
-  }
-
-  @media (min-width: 62rem) {
-    .planning__grid {
-      grid-template-columns: minmax(0, 1.2fr) minmax(20rem, 0.8fr);
-      gap: var(--space-16);
-      align-items: start;
-    }
-  }
-
-  .planning__head {
-    max-width: 16ch;
-    margin-top: var(--space-4);
-  }
-
-  .steps {
-    display: grid;
-    gap: 0;
-    margin: var(--space-12) 0 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid var(--paper-line);
-  }
-
-  .step {
-    display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr);
-    gap: var(--space-5);
-    padding-block: var(--space-6);
-    border-bottom: 1px solid var(--paper-line);
-  }
-
-  .step__number {
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.1em;
-    color: var(--enamel-ink);
-  }
-
-  .step__head {
-    font-size: 1rem;
-    font-weight: 800;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-  }
-
-  .step p {
-    max-width: 48ch;
-    margin-top: var(--space-2);
-    line-height: 1.6;
-    color: var(--ink-dim);
-  }
-
-  .fleet-fit {
-    padding: var(--space-8);
-    border-top: 3px solid var(--enamel-ink);
-    background: var(--paper-lift);
-  }
-
-  .fleet-fit__head {
-    margin-top: var(--space-4);
-  }
-
-  .fleet-fit__list {
-    margin: var(--space-8) 0 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid var(--paper-line);
-  }
-
-  .fleet-fit__list a {
-    display: grid;
-    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
-    align-items: center;
-    gap: var(--space-4);
-    padding-block: var(--space-4);
-    border-bottom: 1px solid var(--paper-line);
-    color: var(--ink);
-    text-decoration: none;
-  }
-
-  .fleet-fit__list a:hover {
-    color: var(--enamel-ink);
-  }
-
-  .fleet-fit__cap {
-    display: block;
-    font-size: 1.1rem;
-    font-weight: 900;
-    color: var(--enamel-ink);
-  }
-
-  .fleet-fit__unit {
-    display: block;
-    margin-top: 2px;
-    font-size: 0.5625rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
-  }
-
-  .fleet-fit__name {
-    font-size: 0.875rem;
-    font-weight: 700;
-  }
-
-  .fleet-fit__list :global(svg) {
-    color: var(--ink-dim);
-  }
-
-  .fleet-fit__all {
-    margin-top: var(--space-6);
-  }
-
   @media (max-width: 30rem) {
-    .service-card__body,
-    .fleet-fit {
-      padding: var(--space-6);
-    }
-
-    .fleet-fit__list a {
-      grid-template-columns: 5.5rem minmax(0, 1fr) auto;
-      gap: var(--space-3);
-    }
+    .service-card__body { padding: var(--space-6); }
   }
 
   @media (prefers-reduced-motion: reduce) {

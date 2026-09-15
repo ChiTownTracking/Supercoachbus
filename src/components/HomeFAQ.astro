@@ -1,0 +1,210 @@
+---
+import { FLEET, MAX_SINGLE_VEHICLE } from '../data/fleet';
+import LinkedText from './LinkedText.astro';
+import { TRANSPORT_LINKS as T } from '../data/transportationLinks';
+
+const fleetOptions = [...FLEET]
+  .sort((a, b) => a.seatsMax - b.seatsMax)
+  .map((vehicle) => `${vehicle.name} (${vehicle.capacityLabel} passengers)`)
+  .join(', ');
+
+const faqs = [
+  {
+    question: 'Can I rent a charter bus near me?',
+    answer:
+      'For trips starting in Chicago or nearby suburbs, use our quote form to request a pickup at your hotel, school, office, or another address. Include your travel date, passenger count, destination, and luggage needs so our team can confirm availability and pricing. Residential pickups depend on safe bus access without obstructing traffic.',
+    links: [{ phrase: 'Chicago or nearby suburbs', href: '/service-areas' }, { phrase: 'quote form', href: T.quote }],
+  },
+  {
+    question: 'How much does a charter bus cost in Chicago?',
+    answer:
+      'Your quote depends on the vehicle, travel date, trip duration, mileage, pickup locations, and itinerary. Share your passenger count, route, and schedule so our team can provide a quote for your trip.',
+  },
+  {
+    question: 'How far in advance should I book a Chicago charter bus?',
+    answer:
+      'Reservations are first come, first served and depend on vehicle availability. Contact us as soon as you know your date and approximate passenger count, especially for weddings, conventions, and game days. For an upcoming trip, ask our team what is available.',
+  },
+  {
+    question: "Can you pick up our group at O'Hare Airport?",
+    answer:
+      "Yes. We provide private group transportation from O'Hare Airport to Chicago hotels, event venues, and other destinations. Share your flight details, passenger count, destination, and luggage needs so our team can coordinate your trip and confirm pickup arrangements.",
+    links: [{ phrase: "group transportation from O'Hare Airport", href: T.ohare }, { phrase: 'Chicago hotels', href: T.hotels }],
+  },
+  {
+    question: 'Do you provide transportation to Midway Airport?',
+    answer:
+      'Yes. We provide private group transportation to and from Midway Airport. Tell us your pickup address, flight schedule, group size, and luggage needs so we can plan the route and timing with you.',
+    links: [{ phrase: 'transportation to and from Midway Airport', href: T.midway }],
+  },
+  {
+    question: 'Can you pick up groups at Chicago hotels?',
+    answer:
+      'Yes. We arrange hotel pickups and transportation between Chicago hotels, airports, restaurants, attractions, meeting venues, and event locations. Send each hotel address and your schedule so our team can coordinate the pickup details. Extra stops on round-trip transfers must be arranged with your reservation manager.',
+    links: [{ phrase: 'hotel pickups', href: T.hotels }],
+  },
+  {
+    question: 'Do you provide transportation for Chicago weddings?',
+    answer:
+      'Yes. We provide wedding transportation for guests and wedding parties, including travel between hotels, ceremonies, photo locations, and receptions. Share your venue addresses, passenger count, and timeline to plan pickups and return trips.',
+    links: [{ phrase: 'wedding transportation', href: '/services/weddings' }],
+  },
+  {
+    question: 'Do you provide transportation for Cubs or White Sox games?',
+    answer:
+      'Yes. We provide group transportation for Cubs and White Sox games and other sporting events. Tell us your game date, pickup location, passenger count, and return plans so we can coordinate transportation for your group.',
+    links: [{ phrase: 'group transportation for Cubs and White Sox games', href: T.sports }],
+  },
+  {
+    question: 'Do you provide transportation to McCormick Place?',
+    answer:
+      'Yes. We provide transportation to McCormick Place for conventions, conferences, exhibitors, and corporate groups. We can coordinate hotel-to-venue shuttles or scheduled transfers around your event itinerary.',
+    links: [{ phrase: 'transportation to McCormick Place', href: T.conventions }, { phrase: 'hotel-to-venue shuttles', href: T.hotels }],
+  },
+  {
+    question: 'Can you provide transportation outside Chicago?',
+    answer:
+      'Yes. We serve Chicago, surrounding suburbs, and out-of-state destinations, including overnight and multi-day trips. Out-of-state pickups can also be arranged. Send your full itinerary, travel dates, and passenger count so we can plan the trip around required driver rest and driving limits.',
+    links: [{ phrase: 'surrounding suburbs', href: '/service-areas' }, { phrase: 'out-of-state destinations', href: '/services/long-distance-charter-bus-rental' }],
+  },
+  {
+    question: 'What size charter bus do I need for my group?',
+    answer:
+      `The right vehicle depends on your passenger count, luggage, and travel plans. Our fleet includes the ${fleetOptions}. For groups above ${MAX_SINGLE_VEHICLE} passengers, ask us to coordinate multiple vehicles. Your reservation manager will confirm seating and luggage space for your trip.`,
+    links: [{ phrase: 'Our fleet', href: T.fleet }],
+  },
+  {
+    question: 'Can I request a restroom, Wi-Fi, or an accessible bus?',
+    answer:
+      'Yes. Restrooms are available on select coaches, Wi-Fi must be requested, and wheelchair-accessible coaches are available by arrangement. Tell your reservation manager about these needs, PA or TV/DVD requirements, and any large luggage before booking so the vehicle and equipment can be confirmed.',
+    links: [{ phrase: 'before booking', href: T.quote }],
+  },
+];
+---
+
+<section class="section--tight home-faq" id="chicago-faq" aria-labelledby="home-faq-heading">
+  <div class="shell home-faq__layout">
+    <h2 class="title home-faq__heading" id="home-faq-heading">Chicago Charter Bus Rental FAQs</h2>
+    <div class="home-faq__list">
+      {
+        faqs.map((faq) => (
+          <details class="home-faq__item" name="home-charter-faq">
+            <summary class="home-faq__question">
+              <h3>
+                <span>{faq.question}</span>
+                <span class="home-faq__toggle" aria-hidden="true" />
+              </h3>
+            </summary>
+            <p class="home-faq__answer"><LinkedText text={faq.answer} links={faq.links} /></p>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-faq {
+    border-top: 1px solid var(--paper-line);
+    border-bottom: 1px solid var(--paper-line);
+    scroll-margin-top: 7rem;
+  }
+
+  .home-faq__layout {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .home-faq__heading {
+    max-width: 22ch;
+    color: var(--enamel-ink);
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    line-height: 1.1;
+  }
+
+  .home-faq__list {
+    border-top: 1px solid var(--paper-line);
+  }
+
+  .home-faq__item {
+    border-bottom: 1px solid var(--paper-line);
+  }
+
+  .home-faq__question {
+    padding-block: var(--space-4);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .home-faq__question::-webkit-details-marker {
+    display: none;
+  }
+
+  .home-faq__question::marker {
+    content: '';
+  }
+
+  .home-faq__question h3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    font-size: 1.0625rem;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--enamel-ink);
+    text-wrap: pretty;
+  }
+
+  .home-faq__question:focus-visible {
+    outline: 3px solid var(--enamel-ink);
+    outline-offset: 4px;
+    border-radius: var(--radius);
+  }
+
+  .home-faq__toggle {
+    position: relative;
+    flex: 0 0 1.5rem;
+    height: 1.5rem;
+  }
+
+  .home-faq__toggle::before,
+  .home-faq__toggle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 2px;
+    background: currentColor;
+    transform: translate(-50%, -50%);
+  }
+
+  .home-faq__toggle::after {
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+
+  .home-faq__question:hover .home-faq__toggle {
+    background: var(--paper-line);
+  }
+
+  .home-faq__item[open] .home-faq__toggle::after {
+    display: none;
+  }
+
+  .home-faq__answer {
+    padding: 0 var(--space-8) var(--space-5) 0;
+    max-width: 80ch;
+    color: var(--ink-dim);
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  @media (min-width: 64rem) {
+    .home-faq__layout {
+      grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr);
+      gap: var(--space-12);
+    }
+  }
+</style>

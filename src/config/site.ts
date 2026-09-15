@@ -97,10 +97,10 @@ export const BUSINESS = {
 /** Trust claims carried over from the live site. All owner-confirmed; none invented. */
 export const TRUST_CLAIMS = [
   'Licensed, experienced drivers',
-  'Insured professional drivers',
+  'Insured transportation',
   'Drivers are drug tested',
   'Regularly maintained fleet',
-  'Seatbelts on every seat',
+  'Seatbelts on every coach seat',
 ] as const;
 
 /**
@@ -109,14 +109,6 @@ export const TRUST_CLAIMS = [
  * never an action — `Reserve now` in the masthead and `Get a quote` everywhere
  * else stay the only conversion targets, and nothing here displaces them.
  */
-export const NAV = [
-  { label: 'Fleet', href: '/fleet' },
-  { label: 'Services', href: '/services' },
-  { label: 'Guides', href: '/guides' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
-] as const;
-
 export const FOOTER_NAV = [
   { label: 'Home', href: '/' },
   { label: 'Fleet', href: '/fleet' },

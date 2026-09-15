@@ -72,17 +72,17 @@ export const PACKAGE = {
       href: SISTER.weddings,
     },
     {
-      vehicle: 'Coach Bus',
+      vehicle: 'Guest Shuttle Coach',
       operator: 'Chicago Super Coach',
       carries: 'The guest list',
       capacity: 'Up to 50',
       unit: 'guests',
       duration: '8 hours',
-      href: '/fleet/coach',
+      href: '/fleet',
     },
   ],
   included: [
-    'Unlimited scheduled stops and mileage',
+    'Scheduled stops and mileage confirmed with your package quote',
     'Guest shuttle service recommended from 4:00 pm to midnight',
     'An experienced chauffeur on each of the two vehicles',
     'One timeline, coordinated across both',
@@ -108,9 +108,9 @@ export const GUEST_RUN: Stop[] = [
       'The guest list arrives at the door together, on one schedule — not as a twenty-minute trickle of rideshares while the ceremony waits.',
   },
   {
-    label: 'The coach waits on site',
+    label: 'Time between shuttle runs',
     detail:
-      'After the drop-off it parks at the venue and stays there until return service begins. Nobody spends the reception wondering whether a vehicle is coming back.',
+      'Tell us whether you need the coach to remain at the venue. Waiting and parking arrangements are confirmed around venue access and the booked schedule.',
   },
   {
     label: 'Venue pickup',
@@ -178,7 +178,7 @@ export const WEDDING_FAQ: WeddingQuestion[] = [
   },
   {
     q: 'Can the coach wait at the venue between runs?',
-    a: 'Yes — that is how a guest shuttle is normally run. The coach drops your guests, parks at the venue, and stays there until return service begins.',
+    a: 'On-site waiting can be requested. Your reservation manager will confirm the arrangement based on the venue parking rules, vehicle availability, and the schedule you book.',
   },
   {
     q: 'Our guests are staying at three different hotels.',
@@ -191,7 +191,7 @@ export const WEDDING_FAQ: WeddingQuestion[] = [
   },
   {
     q: 'How far ahead should we book?',
-    a: 'Popular wedding-season Saturdays often fill six to twelve months out, so booking early gets you the best choice of date and time. It is still worth calling about a near date — cancellations happen, and we would rather tell you plainly than have you assume.',
+    a: 'Reservations are first come, first served and depend on vehicle availability. Send your date and approximate guest count as soon as you know them. If your wedding is coming up soon, ask our team which vehicles are available.',
   },
   {
     q: 'What happens if the reception runs late?',
@@ -203,6 +203,6 @@ export const WEDDING_FAQ: WeddingQuestion[] = [
   },
   {
     q: 'Can guests bring drinks aboard?',
-    a: 'Tell us in advance and we will confirm what is allowed on the vehicle you are booking, and on the date. It depends on the vehicle and on everyone drinking being of legal age.',
+    a: 'Drinks and coolers are generally not allowed on coach shuttles, so discuss any request with your reservation manager before booking. Rules differ for party buses and trolleys. We do not provide alcohol; your manager will confirm the policy for the vehicle you select.',
   },
 ];

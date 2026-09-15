@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { FLEET, MAX_SINGLE_VEHICLE, vehicleHref } from '../data/fleet';
+import { shotsFor } from '../data/fleetPhotos';
+/**
+ * `quoteHref` is where "Request this vehicle" goes.
+ *
+ * On a page carrying the quote form it stays the in-page anchor, and the form's
+ * own script reads `data-quote-vehicle` off the link to preselect the vehicle
+ * without losing anything already typed. A page with no form on it sends the
+ * visitor to the booking page instead, and the slug rides along in the query
+ * string — /reserve prefills its fields by name — so the choice survives the
+ * jump rather than being asked for again.
+ */
+interface Props { slugs?: string[]; quoteHref?: string }
+const { slugs, quoteHref = '#quote-form' } = Astro.props;
+const onPage = quoteHref.startsWith('#');
+const vehicles = FLEET.filter((vehicle) => !slugs?.length || slugs.includes(vehicle.slug));
+const requestHref = (slug: string) =>
+  onPage ? quoteHref : `${quoteHref}?vehicle=${encodeURIComponent(slug)}`;
+---
+<section class="section--tight landing-fleet" aria-labelledby="landing-fleet-heading">
+  <div class="shell">
+    <h2 class="title landing-fleet__heading" id="landing-fleet-heading">Choose space for your group</h2>
+    <p class="lede landing-fleet__intro">Compare passenger capacities, then request your preferred vehicle. We'll confirm seating, luggage space, and availability. Groups above {MAX_SINGLE_VEHICLE} can arrange multiple vehicles.</p>
+    <ul class="landing-fleet__grid">
+      {vehicles.map((vehicle) => {
+        const shot = shotsFor(vehicle.slug)[0];
+        return <li class="landing-fleet__card">
+          {shot && <Image src={shot.src} alt={shot.alt} widths={[320, 480, 720]} sizes="(min-width: 70rem) 18rem, (min-width: 40rem) 43vw, 90vw" loading="lazy" />}
+          <div class="landing-fleet__body">
+            <p class="mono landing-fleet__capacity">{vehicle.capacityLabel} passengers</p>
+            <h3>{vehicle.name}</h3>
+            <p class="landing-fleet__uses">{vehicle.bestFor[0]} and {vehicle.bestFor[1].charAt(0).toLowerCase() + vehicle.bestFor[1].slice(1)}.</p>
+            <div class="landing-fleet__links">
+              <a href={requestHref(vehicle.slug)} data-quote-vehicle={onPage ? vehicle.slug : undefined} aria-label={`Request the ${vehicle.name}`}>Request this vehicle<Icon name="arrow" size={15} /></a>
+              <a href={vehicleHref(vehicle)} aria-label={`View ${vehicle.name} details`}>Vehicle details</a>
+            </div>
+          </div>
+        </li>;
+      })}
+    </ul>
+  </div>
+</section>
+<style>
+  .landing-fleet { border-top: 1px solid var(--paper-line); }
+  .landing-fleet__heading { color: var(--enamel-ink); font-size: clamp(1.75rem, 3vw, 2.5rem); }
+  .landing-fleet__intro { max-width: 75ch; margin-top: var(--space-4); font-size: 1.0625rem; }
+  .landing-fleet__grid { display: grid; grid-template-columns: minmax(0, 1fr); list-style: none; gap: var(--space-5); padding: 0; margin: var(--space-8) 0 0; }
+  .landing-fleet__card { display: flex; flex-direction: column; min-width: 0; background: var(--paper-lift); border: 1px solid var(--paper-line); border-radius: var(--radius); overflow: hidden; }
+  .landing-fleet__card :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; }
+  .landing-fleet__body { display: flex; flex-direction: column; flex: 1; gap: var(--space-3); padding: var(--space-5); }
+  .landing-fleet__capacity { font-size: .875rem; font-weight: 700; color: var(--enamel-ink); }
+  .landing-fleet__body h3 { font-size: 1.25rem; line-height: 1.2; color: var(--enamel-ink); }
+  .landing-fleet__uses { font-size: .9375rem; line-height: 1.5; color: var(--ink-dim); }
+  .landing-fleet__links { display: grid; gap: var(--space-3); margin-top: auto; padding-top: var(--space-4); }
+  .landing-fleet__links a { display: inline-flex; align-items: center; justify-content: space-between; gap: var(--space-2); width: fit-content; max-width: 100%; min-height: 2.75rem; font-weight: 700; text-underline-offset: 4px; color: var(--enamel-ink); }
+  .landing-fleet__links a:first-child { width: 100%; border-bottom: 1px solid var(--paper-line); }
+  .landing-fleet__links :global(svg) { flex: none; }
+  .landing-fleet__links a:focus-visible { outline: 3px solid var(--enamel-ink); outline-offset: 4px; }
+  @media(min-width: 40rem) { .landing-fleet__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media(min-width: 70rem) { .landing-fleet__grid { grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); } }
+</style>

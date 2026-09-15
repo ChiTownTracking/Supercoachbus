@@ -1,0 +1,199 @@
+---
+import Icon from './Icon.astro';
+import { BOOKING_POLICY } from '../data/bookingPolicy';
+
+const steps = [
+  {
+    title: 'Fill Out the Quote Form',
+    description: 'Enter your route, date, pickup time, passenger count, and vehicle preference. Add your contact details and any special requests, then select “Request my quote.”',
+  },
+  {
+    title: 'Review Your Quote',
+    description: 'Your reservation manager will review your trip details by email, check availability, and help you finalize the vehicle, itinerary, and price.',
+  },
+  {
+    title: 'Confirm Your Booking',
+    description: `Your reservation manager will guide you through confirmation and the $${BOOKING_POLICY.depositAmount} credit card deposit. The remaining balance will be charged ${BOOKING_POLICY.balanceDaysBeforeTrip} days before your scheduled trip date.`,
+  },
+];
+
+---
+
+<div class="shell booking-guide">
+  <section class="section--tight booking-guide__section" id="how-it-works" aria-labelledby="how-it-works-heading">
+    <div class="booking-guide__intro">
+      <h2 class="title booking-guide__heading" id="how-it-works-heading">
+        How to Rent a Charter Bus in Chicago
+      </h2>
+      <p class="lede">
+        Start with the quote form above. Send us your travel plans, review
+        your quote, and confirm your trip with our team.
+      </p>
+    </div>
+
+    <ol class="booking-guide__steps">
+      {
+        steps.map((step, index) => (
+          <li class="booking-guide__step">
+            <span class="booking-guide__number mono" aria-hidden="true">0{index + 1}</span>
+            <div>
+              <h3>{step.title}</h3>
+              <p>{step.description}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <a class="action booking-guide__cta" href="#quote-form">
+      <span>Fill Out the Quote Form</span>
+      <Icon name="arrow" size={18} />
+    </a>
+  </section>
+
+  <section class="section--tight booking-guide__section booking-guide__pricing" id="charter-bus-pricing" aria-labelledby="pricing-heading">
+    <div>
+      <h2 class="title booking-guide__heading" id="pricing-heading">
+        What Affects Charter Bus Rental Prices in Chicago?
+      </h2>
+      <p class="lede booking-guide__pricing-intro">
+        Vehicle size, travel date, duration, mileage, pickup locations, and
+        your itinerary all affect the final quote.
+      </p>
+    </div>
+
+    <div class="plate booking-guide__quote">
+      <h3 class="subtitle">A Price Based on Your Itinerary</h3>
+      <p>
+        Share your passenger count, dates, pickup addresses, and planned stops
+        for a quote tailored to your trip. A short local journey may be priced
+        differently from an all-day tour or transportation to the suburbs.
+      </p>
+      <p>
+        Driver gratuity is generally separate from the base trip cost. Your
+        reservation manager can explain the charges included in your quote.
+      </p>
+      <a class="action booking-guide__cta" href="/#quote-form">
+        <span>Get My Trip Quote</span>
+        <Icon name="arrow" size={18} />
+      </a>
+    </div>
+  </section>
+
+</div>
+
+<style>
+  .booking-guide__section {
+    border-bottom: 1px solid var(--paper-line);
+    scroll-margin-top: 7rem;
+  }
+
+  .booking-guide__intro,
+  .booking-guide__pricing {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .booking-guide__heading {
+    max-width: 28ch;
+    font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+    line-height: 1.1;
+    color: var(--enamel-ink);
+  }
+
+  .booking-guide__intro .lede,
+  .booking-guide__pricing-intro {
+    max-width: 65ch;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .booking-guide__steps {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    margin: var(--space-8) 0 0;
+    list-style: none;
+  }
+
+  .booking-guide__step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: start;
+    gap: var(--space-4);
+    border-top: 2px solid var(--enamel-ink);
+    padding-top: var(--space-5);
+  }
+
+  .booking-guide__number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--enamel-ink);
+  }
+
+  .booking-guide__step h3 {
+    font-size: 1.125rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--enamel-ink);
+  }
+
+  .booking-guide__step p {
+    margin-top: var(--space-2);
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ink-dim);
+  }
+
+  .booking-guide__pricing {
+    gap: var(--space-6);
+    align-items: start;
+  }
+
+  .booking-guide__pricing-intro {
+    margin-top: var(--space-5);
+  }
+
+  .booking-guide__quote h3 {
+    color: var(--enamel-ink);
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+  }
+
+  .booking-guide__quote p {
+    margin-top: var(--space-4);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+
+  .booking-guide__cta {
+    margin-top: var(--space-6);
+    max-width: 100%;
+    line-height: 1.4;
+  }
+
+  .booking-guide__cta :global(svg) {
+    flex: none;
+  }
+
+  .booking-guide__cta:focus-visible {
+    outline: 3px solid var(--enamel-ink);
+    outline-offset: 5px;
+  }
+
+  @media (min-width: 48rem) {
+    .booking-guide__steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-6);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .booking-guide__intro,
+    .booking-guide__pricing {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: var(--space-12);
+    }
+
+  }
+</style>

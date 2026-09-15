@@ -2,6 +2,27 @@
 import Icon from './Icon.astro';
 import { BUSINESS } from '../config/site';
 import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formOptions';
+import { quoteSourcePath } from '../data/bookingPolicy';
+
+interface Props {
+  heading?: string;
+  intro?: string;
+  context?: string;
+  eventType?: string;
+  hours?: string;
+  notesPlaceholder?: string;
+  /** The small kicker above the heading. Off on the homepage, where the
+   * section is already introduced by the page around it. */
+  showContext?: boolean;
+}
+const {
+  heading = 'Get Your Charter Bus Quote', intro, context = 'Chicago group transportation',
+  eventType = '', hours: defaultHours = '',
+  notesPlaceholder = 'Multiple pickups, return timing, luggage, accessibility needs',
+  showContext = false,
+} = Astro.props;
+if (eventType && !EVENT_TYPES.includes(eventType)) throw new Error(`Unknown quote event type: ${eventType}`);
+if (defaultHours && !HOURS.includes(defaultHours)) throw new Error(`Unknown quote duration: ${defaultHours}`);
 
 /**
  * The quote form that sits under the hero.
@@ -27,7 +48,11 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formO
 
 <section class="qq" id="quote-form">
   <div class="shell qq__inner">
-    <h2 class="title qq__head">Tell us the trip. We'll price it.</h2>
+    <div>
+      {showContext && <p class="coordinate coordinate--ink qq__context">{context}</p>}
+      <h2 class="title qq__head">{heading}</h2>
+      {intro && <p class="qq__intro">{intro}</p>}
+    </div>
 
     <form
       class="qq__form"
@@ -39,6 +64,8 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formO
       netlify-honeypot="bot-field"
     >
       <input type="hidden" name="form-name" value="quote-request" />
+      <input type="hidden" name="sourcePage" value={quoteSourcePath(Astro.url.pathname)} />
+      <input type="hidden" name="requestContext" value={context} />
       <p class="sr-only" aria-hidden="true">
         <label>
           Do not fill this out if you are human:
@@ -69,7 +96,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formO
             <select name="hours">
               <option value="">Select</option>
               {HOURS.map((h) => (
-                <option value={h} data-out-of-state={h === OUT_OF_STATE ? '' : undefined}>{h}</option>
+                <option value={h} selected={h === defaultHours} data-out-of-state={h === OUT_OF_STATE ? '' : undefined}>{h}</option>
               ))}
             </select>
           </label>
@@ -89,7 +116,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formO
             <span>Event type</span>
             <select name="eventType">
               <option value="">Select</option>
-              {EVENT_TYPES.map((e) => <option value={e}>{e}</option>)}
+              {EVENT_TYPES.map((e) => <option value={e} selected={e === eventType}>{e}</option>)}
             </select>
           </label>
           <label class="control">
@@ -139,7 +166,7 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formO
             </label>
             <label class="control qq__span--all">
               <span>Special notes</span>
-              <textarea name="notes" placeholder="Multiple pickups, return timing, luggage, accessibility needs"></textarea>
+              <textarea name="notes" placeholder={notesPlaceholder}></textarea>
             </label>
           </div>
 
@@ -214,6 +241,10 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formO
   .qq__head {
     max-width: 20ch;
   }
+
+  .qq__context { margin-bottom: var(--space-3); }
+  .qq__intro { max-width: 75ch; margin-top: var(--space-4); line-height: 1.6; color: var(--ink-dim); }
+  .qq__intro { font-size: 1.0625rem; }
 
   /* ---- Fields ---- */
 
@@ -798,6 +829,19 @@ import { EVENT_TYPES, HOURS, OUT_OF_STATE, VEHICLE_OPTIONS } from '../data/formO
     };
     syncDays();
     form.addEventListener('change', syncDays);
+
+    // Vehicle/package choices stay on this page and preserve everything already typed.
+    document.querySelectorAll<HTMLAnchorElement>('[data-quote-vehicle]').forEach((link) => {
+      link.addEventListener('click', () => {
+        const vehicle = form.elements.namedItem('vehicle') as HTMLSelectElement | null;
+        const value = link.dataset.quoteVehicle;
+        if (vehicle && [...vehicle.options].some((option) => option.value === value)) vehicle.value = value!;
+        const duration = link.dataset.quoteHours;
+        if (hours && duration && [...hours.options].some((option) => option.value === duration)) hours.value = duration;
+        syncDays();
+        form.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+    });
 
     let sent = false;
 

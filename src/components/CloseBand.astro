@@ -1,30 +1,44 @@
 ---
 import Icon from './Icon.astro';
 
-/**
- * The site's closing band. It was written inline on the homepage and is now a
- * component because the guides end on it too — the last thing a reader sees
- * after an article is the same ask the homepage closes with, in the same words.
- * Two copies of that would drift the moment either one was edited.
- *
- * The footer already carries the site's closing quote action, so this band
- * advances visitors who are ready to move ahead to the reservation form.
- */
+/** Shared closing layout with optional page-specific copy and actions. */
+interface Props {
+  id?: string;
+  heading?: string;
+  description?: string;
+  primaryAction?: { label: string; href: string };
+  secondaryAction?: { label: string; href: string };
+  supportingText?: string;
+}
+
+const {
+  id,
+  heading = 'Give us a date and a headcount.',
+  description = 'Ready to move ahead? Send the route and return time to start your reservation.',
+  primaryAction = { label: 'Reserve now', href: '/reserve' },
+  secondaryAction,
+  supportingText,
+} = Astro.props;
 ---
 
-<section class="close field field--deep">
+<section class="close field field--deep" id={id} aria-labelledby={id ? `${id}-heading` : undefined}>
   <div class="shell close__inner">
-    <div>
-      <h2 class="title close__head">Give us a date and a headcount.</h2>
-      <p class="lede close__lede">
-        Ready to move ahead? Send the route and return time to start your reservation.
-      </p>
+    <div class="close__copy">
+      <h2 class="title close__head" id={id ? `${id}-heading` : undefined}>{heading}</h2>
+      <p class="lede close__lede">{description}</p>
+      {supportingText && <p class="close__support">{supportingText}</p>}
     </div>
     <div class="close__actions">
-      <a class="action" href="/reserve">
-        Reserve now
+      <a class="action" href={primaryAction.href}>
+        <span>{primaryAction.label}</span>
         <Icon name="arrow" size={16} />
       </a>
+      {secondaryAction && (
+        <a class="action action--ghost" href={secondaryAction.href}>
+          <Icon name={secondaryAction.href.startsWith('tel:') ? 'phone' : 'arrow'} size={16} />
+          <span>{secondaryAction.label}</span>
+        </a>
+      )}
     </div>
   </div>
 </section>
@@ -55,5 +69,30 @@ import Icon from './Icon.astro';
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-4);
+    max-width: 100%;
+  }
+
+  .close__copy {
+    flex: 1 1 28rem;
+  }
+
+  .close__support {
+    margin-top: var(--space-5);
+    color: var(--signal-dim);
+    font-size: 0.9375rem;
+  }
+
+  .close__actions a {
+    max-width: 100%;
+    line-height: 1.4;
+  }
+
+  .close__actions :global(svg) {
+    flex: none;
+  }
+
+  .close__actions a:focus-visible {
+    outline: 3px solid var(--signal);
+    outline-offset: 5px;
   }
 </style>

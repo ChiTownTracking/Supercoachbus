@@ -12,6 +12,7 @@ single source for everything below — the Astro config, the generated
 
 | Old URL | New URL | Why |
 |---|---|---|
+| `/services/out-of-state` | `/services/long-distance-charter-bus-rental` | Owner-requested keyword URL for the expanded long-distance service page. |
 | `/shuttle-bus-fleet` | `/fleet` | Direct equivalent. Highest-value page after home. |
 | `/shuttle-bus-services` | `/services` | Direct equivalent; the five service pages hang off it. |
 | `/about-our-charter-bus-company` | `/about` | Direct equivalent. |
@@ -104,6 +105,7 @@ If the site lands somewhere else, translate the same table:
 
 ```apache
 RewriteEngine On
+Redirect 301 /services/out-of-state /services/long-distance-charter-bus-rental
 Redirect 301 /shuttle-bus-fleet /fleet
 Redirect 301 /shuttle-bus-services /services
 Redirect 301 /about-our-charter-bus-company /about
@@ -120,6 +122,7 @@ Redirect 301 /terms-and-conditions /terms
 **nginx**
 
 ```nginx
+location = /services/out-of-state { return 301 /services/long-distance-charter-bus-rental; }
 location = /shuttle-bus-fleet { return 301 /fleet; }
 location = /shuttle-bus-services { return 301 /services; }
 location = /about-our-charter-bus-company { return 301 /about; }

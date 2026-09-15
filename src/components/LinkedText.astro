@@ -1,0 +1,23 @@
+---
+import { withLinks, type InlineLink } from '../lib/inlineLinks';
+interface Props {
+  text: string;
+  links?: InlineLink[];
+  quoteHref?: string;
+}
+const { text, links, quoteHref } = Astro.props;
+---
+
+{withLinks(text, links).map((part) => typeof part === 'string' ? part : <a href={quoteHref && part.href === '/#quote-form' ? quoteHref : part.href}>{part.phrase}</a>)}
+
+<style>
+  a {
+    color: inherit;
+    font-weight: 650;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  a:hover { text-decoration-thickness: 2px; }
+  a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+</style>

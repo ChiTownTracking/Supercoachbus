@@ -1,0 +1,13 @@
+---
+import Icon from './Icon.astro';
+import { BUSINESS } from '../config/site';
+---
+<div class="landing-actions">
+  <a class="action" href="#quote-form">Get a Quote <Icon name="arrow" size={16} /></a>
+  <a class="direction" href={BUSINESS.phone.href}>Call {BUSINESS.phone.display}<Icon name="phone" size={16} /></a>
+</div>
+<style>
+  .landing-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-5); margin-top: var(--space-6); }
+  .landing-actions a { max-width: 100%; }
+  .landing-actions a:focus-visible { outline: 3px solid currentColor; outline-offset: 5px; }
+</style>
