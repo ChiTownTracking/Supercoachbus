@@ -26,7 +26,7 @@ const slash = (s) => s.split('\\').join('/');
 const NON_PAGE = new Set(['/netlify-forms']);
 
 /** Dedicated tracking URLs can be shared directly without a marketing-site link. */
-const DIRECT_ENTRY_PAGES = new Set(['/the-mart-bus']);
+const DIRECT_ENTRY_PAGES = new Set(['/themartbus']);
 
 /**
  * Paths that must never be indexable. `/404` is the not-found document itself;

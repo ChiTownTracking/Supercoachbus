@@ -23,6 +23,11 @@ export interface RedirectRule {
 
 export const REDIRECTS: RedirectRule[] = [
   {
+    from: '/the-mart-bus',
+    to: '/themartbus',
+    rationale: 'Renamed the tracking page to themartbus. Preserve existing shared links and bookmarks.',
+  },
+  {
     from: '/services/out-of-state',
     to: '/services/long-distance-charter-bus-rental',
     rationale: 'Renamed at the owner’s request to include the primary long-distance rental keyword. Existing links and bookmarks redirect directly to the same expanded service page.',
